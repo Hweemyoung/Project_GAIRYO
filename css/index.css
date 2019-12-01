@@ -1,0 +1,24 @@
+#section-quick-menu{
+    margin-top: 5rem;
+}
+
+#section-quick-menu a{
+    color: #000;
+}
+
+.quick-menu-img{
+    /* width: fit-content; */
+}
+
+.quick-menu-item .row{
+    height: 7rem;
+}
+
+.quick-menu-item h4, .quick-menu-item h5{
+    margin: .75rem;
+    word-wrap: break-word;
+}
+
+.quick-menu-item p{
+    font-size: .85rem;
+}
