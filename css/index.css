@@ -1,5 +1,9 @@
+nav{
+    height: 3rem !important;
+}
+
 #section-quick-menu{
-    margin-top: 5rem;
+    margin-top: 4rem;
 }
 
 #section-quick-menu a{
@@ -11,14 +15,69 @@
 }
 
 .quick-menu-item .row{
-    height: 7rem;
+    height: 6rem;
 }
 
-.quick-menu-item h4, .quick-menu-item h5{
-    margin: .75rem;
+.quick-menu-item > .quick-menu-icon-row{
+    height: 4.3rem;
+}
+
+.quick-menu-item > .row > .col-12{
+    padding: .25rem .5rem;
+}
+
+.quick-menu-item h6{
+    font-size: .65rem;
     word-wrap: break-word;
 }
 
 .quick-menu-item p{
-    font-size: .85rem;
+    font-size: .6rem;
+}
+
+.quick-menu-item .row{
+    margin: 0;
+}
+
+.quick-menu-item .row .col-12{
+    /* word-wrap: break-word; */
+}
+
+.quick-menu-icon-row{
+    border-width: 3px !important;
+}
+
+#section-news{
+    margin-top: 1rem;
+}
+
+#section-news .list-group{
+    text-align: left;
+}
+
+#section-news .list-group > a{
+    padding: 1rem 1rem !important;
+    /* height: 5rem; */
+}
+
+#section-news .list-group > a > span{
+    display: block;
+}
+
+#section-news .list-group > a > span:first-child{
+    float: left;
+    margin-right: .5rem;
+}
+
+#section-news .list-group > a > span:last-child{
+    float: right;
+}
+
+.section-title h5{
+    display: inline-block;
+}
+
+.section-title img{
+    /* display: inline-block; */
+    float: right;
 }

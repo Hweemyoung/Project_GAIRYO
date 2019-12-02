@@ -32,8 +32,10 @@
             <!-- logo -->
             <a href="./index.html" class="navbar-brand"><img src="" alt="imgLogo"></a>
             <!-- navbar toggler -->
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navMenu"><span
-                    class="navbar-toggler-icon"></span></button>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navMenu">
+                <img src="./data/png/list-2x.png" alt="navbar-toggler-icon">
+                <!-- <span class="navbar-toggler-icon"></span> -->
+            </button>
             <!-- menu -->
             <div class="collapse navbar-collapse" id="navMenu">
                 <ul class="navbar-nav">
@@ -47,75 +49,120 @@
         </nav>
     </div>
 
-    <section class="text-center" id="section-quick-menu">
-        <div class="container">
-            <div class="row no-gutters">
-                <div class="col-4">
-                    <a href="">
-                        <div class="quick-menu-item bg-primary">
-                            <div class="row">
-                                <div class="quick-menu-icon m-auto">
-                                    <img class="quick-menu-img mx-auto" src="./data/png/transfer-6x.png" alt="transfer">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 m-auto">
-                                    <h6>
-                                        募集
-                                    </h6>
-                                    <p>
-                                        Check&Create transfer requests
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+    <main>
+        <section class="text-center" id="section-quick-menu">
+            <div class="container">
+                <div class="section-title">
+                    <h5>Quick Menu</h5>
+                    <a href=""><img src="./data/png/ellipses-3x.png" alt="more"></a>
                 </div>
-                <div class="col-4">
-                    <a href="">
-                        <div class="quick-menu-item bg-secondary">
-                            <div class="row">
-                                <div class="col-12 m-auto">
-                                    <h6>
-                                        シフト表
-                                    </h6>
-                                    <p>
-                                        Load entire shift table
-                                    </p>
+                <div class="row no-gutters">
+                    <div class="col-4">
+                        <a href="">
+                            <div class="quick-menu-item">
+                                <div class="row quick-menu-icon-row border border-primary rounded-top">
+                                    <div class="quick-menu-icon m-auto">
+                                        <img class="quick-menu-img mx-auto" src="./data/png/transfer-4x.png"
+                                            alt="transfer">
+                                    </div>
+                                </div>
+                                <div class="row bg-primary rounded-bottom">
+                                    <div class="col-12 mx-auto">
+                                        <h6>
+                                            <!-- TRANSFER -->
+                                            募集
+                                        </h6>
+                                        <p>
+                                            Check & Create transfer requests
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="quick-menu-icon m-auto">
-                                    <img class="quick-menu-img mx-auto" src="./data/png/layers-6x.png" alt="transfer">
+                        </a>
+                    </div>
+                    <div class="col-4">
+                        <a href="">
+                            <div class="quick-menu-item">
+                                <div class="row quick-menu-icon-row border border-secondary rounded-top">
+                                    <div class="quick-menu-icon m-auto">
+                                        <img class="quick-menu-img mx-auto" src="./data/png/layers-4x.png"
+                                            alt="transfer">
+                                    </div>
+                                </div>
+                                <div class="row bg-secondary rounded-bottom">
+                                    <div class="col-12 mx-auto ">
+                                        <h6>
+                                            <!-- SHIFT TABLE -->
+                                            シフト表
+                                        </h6>
+                                        <p>
+                                            Load entire shift table
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-4">
-                    <a href="">
-                        <div class="quick-menu-item bg-info">
-                            <div class="row">
-                                <div class="quick-menu-icon m-auto">
-                                    <img class="quick-menu-img mx-auto" src="./data/png/list-rich-6x.png" alt="transfer">
+                        </a>
+                    </div>
+                    <div class="col-4">
+                        <a href="">
+                            <div class="quick-menu-item">
+                                <div class="row quick-menu-icon-row border border-info rounded-top">
+                                    <div class="quick-menu-icon m-auto">
+                                        <img class="quick-menu-img mx-auto" src="./data/png/list-rich-4x.png"
+                                            alt="transfer">
+                                    </div>
+                                </div>
+                                <div class="row bg-info rounded-bottom">
+                                    <div class="col-12 mx-auto">
+                                        <h6>
+                                            <!-- MY SHIFT -->
+                                            マイ・シフト
+                                        </h6>
+                                        <p>
+                                            Check my shift schedule
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-12 m-auto">
-                                    <h6>
-                                        マイ・シフト
-                                    </h6>
-                                    <p>
-                                        Check my shift schedule
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+        <section class="text-center" id="section-news">
+            <div class="container">
+                <div class="section-title">
+                    <h5>News Releases</h5>
+                    <a href=""><img src="./data/png/ellipses-3x.png" alt="more"></a>
+                </div>
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-info">
+                        <span>上段固定アイテム</span>
+                        <span>23 Oct 2019</span>
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span>普通のお知らせ1</span>
+                        <div class="badge badge-primary">new</div>
+                        <span>2 Dec 2019</span>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-warning">
+                        <span>重要なお知らせ</span>
+                        <span>1 Dec 2019</span>
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span>普通のお知らせ2</span>
+                        <span>30 Nov 2019</span>
+                    </a>
+                    <!-- <a href="#" class="list-group-item">item <span>2 Dec 2019</span></a> -->
+                    <!-- <a href="#" class="list-group-item">item <span>2 Dec 2019</span></a> -->
+                </div>
+            </div>
+        </section>
+
+        <section class="text-center" id="section-board">
+
+        </section>
+    </main>
 </body>
 
 </html>
