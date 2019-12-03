@@ -1,5 +1,9 @@
 nav{
-    height: 3rem !important;
+    /* height: 3rem !important; */
+}
+
+.container{
+    padding: 0 5%;
 }
 
 #section-quick-menu{
@@ -10,24 +14,22 @@ nav{
     color: #000;
 }
 
-.quick-menu-img{
-    /* width: fit-content; */
+.quick-menu-item{
+    display: inline-block;
+    width: 32%;
 }
 
-.quick-menu-item .row{
-    height: 6rem;
+.quick-menu-item .row:first-child{
+    height: 3.5rem;
 }
 
-.quick-menu-item > .quick-menu-icon-row{
-    height: 4.3rem;
-}
-
-.quick-menu-item > .row > .col-12{
-    padding: .25rem .5rem;
+.quick-menu-item .row:last-child{
+    height: 7rem;
 }
 
 .quick-menu-item h6{
-    font-size: .65rem;
+    /* font-size: .7rem; */
+    font-weight: bold;
     word-wrap: break-word;
 }
 
@@ -35,20 +37,16 @@ nav{
     font-size: .6rem;
 }
 
-.quick-menu-item .row{
-    margin: 0;
+.quick-menu-item .border{
+    border-width: 2px !important;
 }
 
-.quick-menu-item .row .col-12{
-    /* word-wrap: break-word; */
-}
-
-.quick-menu-icon-row{
-    border-width: 3px !important;
+.quick-menu-item > .row > .col-12{
+    padding: .3rem .1rem;
 }
 
 #section-news{
-    margin-top: 1rem;
+    /* margin-top: 1rem; */
 }
 
 #section-news .list-group{
@@ -56,12 +54,12 @@ nav{
 }
 
 #section-news .list-group > a{
-    padding: 1rem 1rem !important;
+    padding: .5rem .75rem !important;
     /* height: 5rem; */
 }
 
 #section-news .list-group > a > span{
-    display: block;
+    /* display: block; */
 }
 
 #section-news .list-group > a > span:first-child{
@@ -71,6 +69,13 @@ nav{
 
 #section-news .list-group > a > span:last-child{
     float: right;
+    font-size: .7rem;
+    line-height: 1.5rem;
+    vertical-align: middle;
+}
+
+.section-title{
+    /* justify-content: center; */
 }
 
 .section-title h5{
@@ -78,6 +83,5 @@ nav{
 }
 
 .section-title img{
-    /* display: inline-block; */
     float: right;
 }
