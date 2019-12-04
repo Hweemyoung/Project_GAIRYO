@@ -1,0 +1,24 @@
+#navbar > li{
+    display: inline-block !important;
+}
+
+.nav-item > a{
+    display: inline;
+    padding: 0 0 0 .5rem;
+}
+
+.nav-item > .badge{
+    display: inline;
+}
+
+.no-arrow > a::after{
+    display: none;
+}
+
+.navbar-nav .nav-item{
+    margin: .5rem 0;
+}
+
+#section-shift{
+    padding-top: 5rem;
+}
