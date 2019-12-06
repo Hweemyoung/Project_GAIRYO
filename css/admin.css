@@ -2,6 +2,13 @@
     display: inline-block !important;
 }
 
+#navbar .badge{
+    position: absolute;
+    top: -.5rem;
+    right: -.5rem;
+    opacity: .7;
+}
+
 .nav-item > a{
     display: inline;
     padding: 0 0 0 .5rem;
@@ -21,4 +28,53 @@
 
 #section-shift{
     padding-top: 5rem;
+}
+
+#card-shift .card-body{
+    padding: .5rem;
+}
+
+#div-your-shift{
+    margin: auto;
+}
+
+#div-your-shift *{
+    margin-bottom: .25rem;
+}
+
+#div-warning-request p:first-child{
+    font-size: .75rem;
+}
+
+#shift-member-table{
+    font-size: .75rem;
+}
+
+#shift-member-table .row{
+    margin: 0;
+}
+
+#shift-member-table .col-sm-6 > .row{
+    margin: .1rem 0;
+}
+
+#shift-member-table .row > *{
+    padding: 0;
+}
+
+#shift-member-table .d-flex > p{
+    margin: auto;
+}
+
+#shift-member-table .list-group-item{
+    padding: .25rem .25rem;
+}
+
+#card-shift .card-footer{
+    padding: ;
+}
+
+#card-shift .btn-sm{
+    font-size: .75rem;
+    padding: .25rem .25rem;
 }
