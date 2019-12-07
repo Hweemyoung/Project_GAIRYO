@@ -1,17 +1,43 @@
+.navbar-brand{
+    margin-right: 0;
+}
+
+.navbar-brand > *{
+    margin-right: .5rem;
+}
+
+.navbar-brand img{
+    height: 2.5rem;
+}
+
+.navbar-brand p{
+    font-size: 1rem;
+    line-height: 2.5rem;
+    margin-bottom: 0;
+    color: rgb(8, 14, 99);
+}
+
 #navbar > li{
     display: inline-block !important;
 }
 
-#navbar .badge{
+#navbar .nav-item > .badge{
     position: absolute;
     top: -.5rem;
     right: -.5rem;
     opacity: .7;
 }
 
+#navbar .nav-item a .badge i{
+    width: 1rem;
+    height: 1rem;
+    line-height: 1rem;
+}
+
 .nav-item > a{
     display: inline;
     padding: 0 0 0 .5rem;
+    color: #000;
 }
 
 .nav-item > .badge{
@@ -42,7 +68,7 @@
     margin-bottom: .25rem;
 }
 
-#div-warning-request p:first-child{
+#div-your-shift > div p:first-child{
     font-size: .75rem;
 }
 
@@ -70,11 +96,24 @@
     padding: .25rem .25rem;
 }
 
-#card-shift .card-footer{
-    padding: ;
+#card-shift .btn-sm{
+    /* font-size: .75rem; */
+    padding: .25rem .25rem;
 }
 
-#card-shift .btn-sm{
-    font-size: .75rem;
-    padding: .25rem .25rem;
+#section-boards .col-md-6{
+    margin-bottom: .5rem;
+}
+
+#section-boards .list-group a{
+    display: block;
+}
+
+#section-boards .list-group a > span:first-child{
+    float: left;
+    margin-right: .5rem;
+}
+
+#section-boards .list-group a > span:last-child{
+    float: right;
 }
