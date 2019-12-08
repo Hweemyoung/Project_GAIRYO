@@ -1,0 +1,12 @@
+#section-main{
+    padding-top: 5rem;
+}
+
+#section-main .nav-tabs .nav-link{
+    padding: .5rem .25rem;
+    font-size: .75rem;
+}
+
+#section-main .tab-content .tab-pane{
+    padding: 1rem 0;
+}
