@@ -23,15 +23,115 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/js/bootstrap.min.js"
         integrity="sha384-3qaqj0lc6sV/qpzrc1N5DC6i1VRn/HyX4qdPaiEFbn54VjQBEU341pvjz7Dv3n6P"
         crossorigin="anonymous"></script>
+    <!-- Icon libraries -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/shifts.css">
 </head>
 
 <body>
-    <nav>
-        <div class="navbar bg-dark"></div>
-    </nav>
-    <section>
-        
+    <section id="section-nav">
+        <nav class="navbar navbar-expand-sm bg-light fixed-top">
+            <!-- logo -->
+            <a href="#" class="navbar-brand order-sm-1 d-flex">
+                <img class="d-none d-md-block mr-md-4" src="./data/png/logo_travel_color_large.png" alt="imgLogo">
+                <p class="d-none d-sm-block mr-md-4">外国人旅行センター</p>
+                <p class="d-sm-none">外旅</p>
+            </a>
+            <!-- Navbar -->
+            <ul class="px-0 ml-auto mr-2 my-0 order-sm-3" id="navbar">
+                <li class="nav-item dropdown no-arrow">
+                    <a href="" class="nav-link dropdown-toggle text-light" role="button" data-toggle="dropdown">
+                        <span class="badge badge-sm badge-danger">
+                            <i class="fas fa-exchange-alt"></i>
+                        </span>
+
+                    </a>
+                    <span class="badge badge-sm badge-danger">3</span>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <div class="dropdown-header">Requests</div>
+                        <a href="#" class="dropdown-item">Request 1</a>
+                        <a href="#" class="dropdown-item">Request 2</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">Action</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown no-arrow">
+                    <a href="" class="nav-link dropdown-toggle text-light" role="button" data-toggle="dropdown">
+                        <span class="badge badge-sm badge-warning">
+                            <i class="fas fa-bell fa-fw"></i>
+                        </span>
+                    </a>
+                    <span class="badge badge-sm badge-warning">3</span>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <div class="dropdown-header">Notices</div>
+                        <a href="#" class="dropdown-item">Notice 1</a>
+                        <a href="#" class="dropdown-item">Notice 2</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">Action</a>
+                    </div>
+                </li>
+            </ul>
+            <!-- nav-menu toggler -->
+            <button class="navbar-toggler btn" data-toggle="collapse" data-target="#navMenu">
+                <!-- <img src="./data/png/list-2x.png" alt="navbar-toggler-icon"> -->
+                <i class="fas fa-bars"></i>
+            </button>
+            <!-- menu -->
+            <div class="collapse navbar-collapse order-sm-2" id="navMenu">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a href="#" class="nav-link">Overview</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">Shifts</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">History</a></li>
+                    <li class="nav-item text-"><a href="#" class="nav-link">News</a></li>
+                </ul>
+            </div>
+        </nav>
     </section>
+    <header></header>
+    <main>
+        <div class="container">
+            <section id="section-main">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">My Shifts</a></li>
+                    <li class="nav-item"><a href="#tab2" class="nav-link" data-toggle="tab">Daily Members</a></li>
+                    <li class="nav-item"><a href="#tab3" class="nav-link" data-toggle="tab">Market</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tab1">
+                        <h5 class="text-center">Shifts Assigned</h5>
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr>
+                                    <td>2020/1/20</td>
+                                    <td>H</td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <a href="#" data-toggle="dropdown"><i class="fas fa-ellipsis-h"></i></a>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <a class="dropdown-item" href="#">See daily members</a>
+                                                <a class="dropdown-item" href="#">Put</a>
+                                                <a class="dropdown-item" href="#">Advertise</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>td2-1</td>
+                                    <td>td2-2</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane" id="tab2">asd</div>
+                    <div class="tab-pane" id="tab3">asd</div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <footer></footer>
 </body>
 
 </html>
