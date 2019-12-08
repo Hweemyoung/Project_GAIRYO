@@ -57,7 +57,8 @@
 }
 
 #shift-member-table .dropdown-menu{
-    font-size: .75rem;
+    font-size: 1rem;
+    min-width: 0rem;
 }
 
 #shift-member-table .dropdown-menu > *{
