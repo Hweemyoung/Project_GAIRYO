@@ -95,17 +95,18 @@
         <div class="container">
             <section id="section-main">
                 <ul class="nav nav-tabs">
-                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">My Shifts</a></li>
-                    <li class="nav-item"><a href="#tab2" class="nav-link" data-toggle="tab">Daily Members</a></li>
+                    <li class="nav-item"><a href="#tab1" class="nav-link" data-toggle="tab">My Shifts</a></li>
+                    <li class="nav-item"><a href="#tab2" class="nav-link active" data-toggle="tab">Daily Members</a>
+                    </li>
                     <li class="nav-item"><a href="#tab3" class="nav-link" data-toggle="tab">Market</a></li>
                 </ul>
                 <div class="tab-content">
-                    <div class="tab-pane active" id="tab1">
+                    <div class="tab-pane fade" id="tab1">
                         <h5 class="text-center">Shifts Assigned</h5>
                         <table class="table table-striped">
                             <tbody>
                                 <tr>
-                                    <td>2020/1/20</td>
+                                    <td>2020/1/15</td>
                                     <td>H</td>
                                     <td>
                                         <div class="dropdown">
@@ -119,14 +120,355 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>td2-1</td>
-                                    <td>td2-2</td>
+                                    <td>2020/1/13</td>
+                                    <td>D</td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <a href="#" data-toggle="dropdown"><i class="fas fa-ellipsis-h"></i></a>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <a class="dropdown-item" href="#">See daily members</a>
+                                                <a class="dropdown-item" href="#">Put</a>
+                                                <a class="dropdown-item" href="#">Advertise</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2020/1/7</td>
+                                    <td>B</td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <a href="#" data-toggle="dropdown"><i class="fas fa-ellipsis-h"></i></a>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <a class="dropdown-item" href="#">See daily members</a>
+                                                <a class="dropdown-item" href="#">Put</a>
+                                                <a class="dropdown-item" href="#">Advertise</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2020/1/2</td>
+                                    <td>B</td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <a href="#" data-toggle="dropdown"><i class="fas fa-ellipsis-h"></i></a>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <a class="dropdown-item" href="#">See daily members</a>
+                                                <a class="dropdown-item" href="#">Put</a>
+                                                <a class="dropdown-item" href="#">Advertise</a>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div class="tab-pane" id="tab2">asd</div>
-                    <div class="tab-pane" id="tab3">asd</div>
+                    <div class="tab-pane fade active show" id="tab2">
+                        <div id="accordion">
+                            <div class="card">
+                                <div class="card-header"><a href="#day1" class="card-link"
+                                        data-toggle="collapse">Monday</a></div>
+                                <div class="collapse" data-parent="#accordion" id="day1">
+                                    <div class="card-body"></div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header"><a href="#day2" class="card-link"
+                                        data-toggle="collapse">Tuesday</a></div>
+                                <div class="collapse" data-parent="#accordion" id="day2">
+                                    <div class="card-body"></div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header"><a href="#day3" class="card-link"
+                                        data-toggle="collapse">Wednesday</a></div>
+                                <div class="collapse" data-parent="#accordion" id="day3">
+                                    <div class="card-body"></div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header"><a href="#day4" class="card-link"
+                                        data-toggle="collapse">Thurday</a></div>
+                                <div class="collapse show" data-parent="#accordion" id="day4">
+                                    <div class="card-body">
+                                        <div class="row no-gutters">
+                                            <!-- col left -->
+                                            <div class="col-6 px-0"></div>
+                                            <!-- col right -->
+                                            <div class="col-6 px-0">
+                                                <div id="shift-member-table">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="row">
+                                                                <div class="col-2 d-flex">
+                                                                    <p>A</p>
+                                                                </div>
+                                                                <div class="col-10">
+                                                                    <ul class="list-group">
+                                                                        <li class="list-group-item px-1">
+                                                                            <div class="dropdown">
+                                                                                <a data-toggle="dropdown">
+                                                                                    Member
+                                                                                </a>
+                                                                                <div
+                                                                                    class="dropdown-menu dropdown-menu-right">
+                                                                                    <div class="dropdown-header">Member
+                                                                                    </div>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Call this
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Put your
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Send
+                                                                                        message</a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-2 d-flex">
+                                                                    <p>H</p>
+                                                                </div>
+                                                                <div class="col-10">
+                                                                    <ul class="list-group">
+                                                                        <li class="list-group-item">
+                                                                            <div class="dropdown">
+                                                                                <a data-toggle="dropdown">
+                                                                                    Member
+                                                                                </a>
+                                                                                <div
+                                                                                    class="dropdown-menu dropdown-menu-right">
+                                                                                    <div class="dropdown-header">Member
+                                                                                    </div>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Call this
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Put your
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Send
+                                                                                        message</a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="list-group-item text-info">
+                                                                            <div class="dropdown">
+                                                                                <a data-toggle="dropdown">
+                                                                                    Member(Toshi)
+                                                                                </a>
+                                                                                <div
+                                                                                    class="dropdown-menu dropdown-menu-right">
+                                                                                    <div class="dropdown-header">Member
+                                                                                    </div>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Call this
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Put your
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Send
+                                                                                        message</a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-2 d-flex">
+                                                                    <p>B</p>
+                                                                </div>
+                                                                <div class="col-10">
+                                                                    <ul class="list-group">
+                                                                        <li class="list-group-item active">YOU</li>
+                                                                        <li class="list-group-item">
+                                                                            <div class="dropdown">
+                                                                                <a data-toggle="dropdown">
+                                                                                    Member
+                                                                                </a>
+                                                                                <div
+                                                                                    class="dropdown-menu dropdown-menu-right">
+                                                                                    <div class="dropdown-header">Member
+                                                                                    </div>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Call this
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Put your
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Send
+                                                                                        message</a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="list-group-item">
+                                                                            <div class="dropdown">
+                                                                                <a data-toggle="dropdown">
+                                                                                    Member
+                                                                                </a>
+                                                                                <div
+                                                                                    class="dropdown-menu dropdown-menu-right">
+                                                                                    <div class="dropdown-header">Member
+                                                                                    </div>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Call this
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Put your
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Send
+                                                                                        message</a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="row">
+                                                                <div class="col-2 d-flex">
+                                                                    <p>C</p>
+                                                                </div>
+                                                                <div class="col-10">
+                                                                    <ul class="list-group">
+                                                                        <li class="list-group-item">
+                                                                            <div class="dropdown">
+                                                                                <a data-toggle="dropdown">
+                                                                                    Member
+                                                                                </a>
+                                                                                <div
+                                                                                    class="dropdown-menu dropdown-menu-right">
+                                                                                    <div class="dropdown-header">Member
+                                                                                    </div>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Call this
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Put your
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Send
+                                                                                        message</a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="list-group-item">
+                                                                            <div class="dropdown">
+                                                                                <a data-toggle="dropdown">
+                                                                                    Member
+                                                                                </a>
+                                                                                <div
+                                                                                    class="dropdown-menu dropdown-menu-right">
+                                                                                    <div class="dropdown-header">Member
+                                                                                    </div>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Call this
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Put your
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Send
+                                                                                        message</a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="px-0 col-2 d-flex">
+                                                                    <p>D</p>
+                                                                </div>
+                                                                <div class="px-0 col-10">
+                                                                    <ul class="list-group">
+                                                                        <li class="list-group-item text-info">
+                                                                            <div class="dropdown">
+                                                                                <a data-toggle="dropdown">
+                                                                                    Member(Toshi)
+                                                                                </a>
+                                                                                <div
+                                                                                    class="dropdown-menu dropdown-menu-right">
+                                                                                    <div class="dropdown-header">Member
+                                                                                    </div>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Call this
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Put your
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Send
+                                                                                        message</a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </li>
+                                                                        <li class="list-group-item">
+                                                                            <div class="dropdown">
+                                                                                <a data-toggle="dropdown">
+                                                                                    Member
+                                                                                </a>
+                                                                                <div
+                                                                                    class="dropdown-menu dropdown-menu-right">
+                                                                                    <div class="dropdown-header">Member
+                                                                                    </div>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Call this
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Put your
+                                                                                        shift</a>
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#">Send
+                                                                                        message</a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header"><a href="#day5" class="card-link"
+                                        data-toggle="collapse">Friday</a></div>
+                                <div class="collapse" data-parent="#accordion" id="day5">
+                                    <div class="card-body"></div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header"><a href="#day6" class="card-link"
+                                        data-toggle="collapse">Saturday</a></div>
+                                <div class="collapse" data-parent="#accordion" id="day6">
+                                    <div class="card-body"></div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header"><a href="#day7" class="card-link"
+                                        data-toggle="collapse">Sunday</a></div>
+                                <div class="collapse" data-parent="#accordion" id="day7">
+                                    <div class="card-body"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab3">asd</div>
                 </div>
             </section>
         </div>

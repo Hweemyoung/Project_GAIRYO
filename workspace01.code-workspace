@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "."
+		},
+		{
+			"path": "/home/hweem/git/Hweemyoung/bootstrap"
 		}
 	],
 	"settings": {}

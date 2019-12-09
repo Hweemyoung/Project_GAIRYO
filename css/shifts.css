@@ -4,9 +4,46 @@
 
 #section-main .nav-tabs .nav-link{
     padding: .5rem .25rem;
-    font-size: .75rem;
+    font-size: 1rem;
 }
 
 #section-main .tab-content .tab-pane{
     padding: 1rem 0;
+}
+
+#section-main .tab-content a{
+    color: #000;
+}
+
+#shift-member-table{
+    font-size: 1rem;
+}
+
+#shift-member-table .row{
+    margin: 0;
+}
+
+#shift-member-table .row .row{
+    margin: .1rem 0;
+}
+
+#shift-member-table .row > *{
+    padding: 0;
+}
+
+#shift-member-table .d-flex > p{
+    margin: auto;
+}
+
+#shift-member-table .list-group-item{
+    padding: .25rem .25rem;
+}
+
+#shift-member-table .dropdown-menu{
+    font-size: 1rem;
+    min-width: 0rem;
+}
+
+#shift-member-table .dropdown-menu > *{
+    padding: .25rem .5rem;
 }
