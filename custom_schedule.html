@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Deactivate zoom in mobile device -->
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <!-- Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css"
+        integrity="sha384-SI27wrMjH3ZZ89r4o+fGIJtnzkAnFs3E4qz9DIYioCQ5l9Rd/7UAa8DHcaL8jkWt" crossorigin="anonymous">
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/js/bootstrap.min.js"
+        integrity="sha384-3qaqj0lc6sV/qpzrc1N5DC6i1VRn/HyX4qdPaiEFbn54VjQBEU341pvjz7Dv3n6P"
+        crossorigin="anonymous"></script>
+    <style>
+        body * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .div-schedule {
+            position: relative;
+            width: 100%;
+            height: 1000px;
+        }
+
+        .div-schedule .timeline {
+            position: absolute;
+            width: 100%;
+        }
+
+        .div-schedule .timeline li {
+            position: relative;
+            font-size: .75rem;
+        }
+
+        .div-schedule .timeline li::after {
+            content: '';
+            position: absolute;
+            width: calc(100% - 40px);
+            top: .5rem;
+            left: 40px;
+            height: 1px;
+            background: rgb(200, 200, 200);
+        }
+
+        #div-columns {
+            position: absolute;
+            width: 300px;
+            height: 100%;
+            top: 0;
+            left: 40px;
+            display: flex;
+        }
+
+        #div-columns .column {
+            /* width: 33%; */
+            height: 100%;
+            border: 1px solid red;
+        }
+
+        #div-columns .column a{
+            position: absolute;
+            
+        }
+    </style>
+</head>
+
+<body>
+    <div class="div-schedule">
+        <!-- timeline -->
+        <div class="timeline">
+            <ul>
+                <li><span>07:00</span></li>
+                <li><span>07:30</span></li>
+                <li><span>08:00</span></li>
+                <li><span>08:30</span></li>
+                <li><span>09:00</span></li>
+                <li><span>09:30</span></li>
+                <li><span>10:00</span></li>
+                <li><span>10:30</span></li>
+                <li><span>11:00</span></li>
+                <li><span>11:30</span></li>
+                <li><span>12:00</span></li>
+                <li><span>12:30</span></li>
+                <li><span>13:00</span></li>
+                <li><span>13:30</span></li>
+                <li><span>14:00</span></li>
+                <li><span>14:30</span></li>
+                <li><span>15:00</span></li>
+                <li><span>15:30</span></li>
+                <li><span>16:00</span></li>
+                <li><span>16:30</span></li>
+                <li><span>17:00</span></li>
+                <li><span>17:30</span></li>
+                <li><span>18:00</span></li>
+            </ul>
+        </div>
+        <div id="div-columns">
+            <div class="column" id="column1">
+                <a href="#modal-A" class="btn btn-primary" time-start="07:30" time-end="12:00">btn</a>
+                <!-- <a href="#modal-A" class="btn btn-primary">btn</a> -->
+            </div>
+            
+            <div class="column" id="column2"></div>
+            <div class="column" id="column3"></div>
+        </div>
+    </div>
+    <script>
+        // Distance between horizontal lines
+        var num_horizontal_lines = $('.timeline li').length;
+        var dist_horizonal = Math.floor($('.div-schedule').height() / num_horizontal_lines);
+        $('.timeline li').css('margin-bottom', dist_horizonal).attr('type', 'none');
+
+        // Remove 2n th li object
+        $('.timeline li:nth-child(2n)').css('display', 'none');
+
+        // set top of #div-columns
+        $('#div-columns').css('top', '.5rem');
+
+        function resizeColumns(){
+            var timeline_width = $('.timeline').width();
+            var columns_left = $('#div-columns').offset().left;
+
+            // Calc width of #div-columns
+            $('#div-columns').css('width', Math.floor(timeline_width - columns_left)).css('height', $('.timeline').height());
+
+            // Calc width of every column and buttons
+            var width = Math.floor($('#div-columns').width() / $('.column').length)
+            $('.column').css('width', width);
+            $('.column a').css('width', width);
+
+            // Calc height of every buttons
+        }
+
+        resizeColumns();
+        $(window).resize(resizeColumns);
+    </script>
+</body>
+
+</html>
