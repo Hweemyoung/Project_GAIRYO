@@ -1,0 +1,72 @@
+body * {
+    margin: 0;
+    padding: 0;
+}
+
+.div-schedule {
+    position: relative;
+    width: 100%;
+    height: 500px;
+}
+
+.div-schedule .timeline {
+    position: absolute;
+    width: 100%;
+}
+
+.div-schedule .timeline li {
+    position: relative;
+    font-size: .75rem;
+}
+
+.div-schedule .timeline li::after {
+    content: '';
+    position: absolute;
+    width: calc(100% - 40px);
+    top: .5rem;
+    left: 40px;
+    height: 1px;
+    background: rgb(200, 200, 200);
+}
+
+#div-columns {
+    position: absolute;
+    width: 300px;
+    height: 100%;
+    top: 0;
+    left: 40px;
+    display: flex;
+}
+
+#div-columns .column {
+    /* width: 33%; */
+    height: 100%;
+    /* border: 1px solid red; */
+}
+
+#div-columns .column a{
+    position: absolute;
+    padding: 0;
+}
+
+#div-columns .column a p{
+    /* text-align: center; */
+}
+
+@media screen and (max-width: 575px){
+    .div-schedule {
+        height: 500px;
+    }
+
+    .div-schedule .timeline li::after {
+        left: 20px;
+    }
+    
+    #div-columns {
+        left: 20px;
+    }
+
+    .div-schedule .timeline li::after {
+        width: calc(100% - 20px);
+    }
+}

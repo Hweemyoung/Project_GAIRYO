@@ -22,58 +22,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/js/bootstrap.min.js"
         integrity="sha384-3qaqj0lc6sV/qpzrc1N5DC6i1VRn/HyX4qdPaiEFbn54VjQBEU341pvjz7Dv3n6P"
         crossorigin="anonymous"></script>
-    <style>
-        body * {
-            margin: 0;
-            padding: 0;
-        }
-
-        .div-schedule {
-            position: relative;
-            width: 100%;
-            height: 1000px;
-        }
-
-        .div-schedule .timeline {
-            position: absolute;
-            width: 100%;
-        }
-
-        .div-schedule .timeline li {
-            position: relative;
-            font-size: .75rem;
-        }
-
-        .div-schedule .timeline li::after {
-            content: '';
-            position: absolute;
-            width: calc(100% - 40px);
-            top: .5rem;
-            left: 40px;
-            height: 1px;
-            background: rgb(200, 200, 200);
-        }
-
-        #div-columns {
-            position: absolute;
-            width: 300px;
-            height: 100%;
-            top: 0;
-            left: 40px;
-            display: flex;
-        }
-
-        #div-columns .column {
-            /* width: 33%; */
-            height: 100%;
-            border: 1px solid red;
-        }
-
-        #div-columns .column a{
-            position: absolute;
-            
-        }
-    </style>
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="./css/custom_schedule.css">
 </head>
 
 <body>
@@ -81,71 +31,64 @@
         <!-- timeline -->
         <div class="timeline">
             <ul>
-                <li><span>07:00</span></li>
-                <li><span>07:30</span></li>
-                <li><span>08:00</span></li>
-                <li><span>08:30</span></li>
-                <li><span>09:00</span></li>
-                <li><span>09:30</span></li>
-                <li><span>10:00</span></li>
-                <li><span>10:30</span></li>
-                <li><span>11:00</span></li>
-                <li><span>11:30</span></li>
-                <li><span>12:00</span></li>
-                <li><span>12:30</span></li>
-                <li><span>13:00</span></li>
-                <li><span>13:30</span></li>
-                <li><span>14:00</span></li>
-                <li><span>14:30</span></li>
-                <li><span>15:00</span></li>
-                <li><span>15:30</span></li>
-                <li><span>16:00</span></li>
-                <li><span>16:30</span></li>
-                <li><span>17:00</span></li>
-                <li><span>17:30</span></li>
-                <li><span>18:00</span></li>
             </ul>
         </div>
         <div id="div-columns">
             <div class="column" id="column1">
-                <a href="#modal-A" class="btn btn-primary" time-start="07:30" time-end="12:00">btn</a>
-                <!-- <a href="#modal-A" class="btn btn-primary">btn</a> -->
+                <a href="#modal-A" class="btn btn-info" time-start="07:30" time-end="12:00">
+                    <h5>A</h5>
+                    <ul type="none">
+                        <li>Member1</li>
+                        <li>Member2</li>
+                        <li>Member3</li>
+                        <li>Member4</li>
+                    </ul>
+                </a>
+                <a href="#modal-C" class="btn btn-secondary" time-start="12:30" time-end="18:00">
+                    <h5>C</h5>
+                    <ul type="none">
+                        <li>Member1</li>
+                        <li>Member2</li>
+                        <li>Member3</li>
+                        <li>Member4</li>
+                    </ul>
+                </a>
             </div>
-            
-            <div class="column" id="column2"></div>
-            <div class="column" id="column3"></div>
+
+            <div class="column" id="column2">
+                <a href="#modal-D" class="btn btn-success" time-start="13:30" time-end="18:00">
+                    <h5>D</h5>
+                    <ul type="none">
+                        <li>Member1</li>
+                        <li>Member2</li>
+                        <li>Member3</li>
+                        <li>Member4</li>
+                    </ul>
+                </a>
+                <a href="#modal-H" class="btn btn-dark text-light" time-start="08:00" time-end="13:00">
+                    <h5>H</h5>
+                    <ul type="none">
+                        <li>Member1</li>
+                        <li>Member2</li>
+                        <li>Member3</li>
+                        <li>Member4</li>
+                    </ul>
+                </a>
+            </div>
+            <div class="column" id="column3">
+                <a href="#modal-D" class="btn btn-warning" time-start="08:00" time-end="13:30">
+                    <h5>B</h5>
+                    <ul type="none">
+                        <li>Member1</li>
+                        <li>Member2</li>
+                        <li>Member3</li>
+                        <li>Member4</li>
+                    </ul>
+                </a>
+            </div>
         </div>
     </div>
-    <script>
-        // Distance between horizontal lines
-        var num_horizontal_lines = $('.timeline li').length;
-        var dist_horizonal = Math.floor($('.div-schedule').height() / num_horizontal_lines);
-        $('.timeline li').css('margin-bottom', dist_horizonal).attr('type', 'none');
-
-        // Remove 2n th li object
-        $('.timeline li:nth-child(2n)').css('display', 'none');
-
-        // set top of #div-columns
-        $('#div-columns').css('top', '.5rem');
-
-        function resizeColumns(){
-            var timeline_width = $('.timeline').width();
-            var columns_left = $('#div-columns').offset().left;
-
-            // Calc width of #div-columns
-            $('#div-columns').css('width', Math.floor(timeline_width - columns_left)).css('height', $('.timeline').height());
-
-            // Calc width of every column and buttons
-            var width = Math.floor($('#div-columns').width() / $('.column').length)
-            $('.column').css('width', width);
-            $('.column a').css('width', width);
-
-            // Calc height of every buttons
-        }
-
-        resizeColumns();
-        $(window).resize(resizeColumns);
-    </script>
+    <script src="./js/custom_schedule.js"></script>
 </body>
 
 </html>

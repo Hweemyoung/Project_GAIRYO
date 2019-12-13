@@ -20,11 +20,7 @@
 }
 
 #shift-member-table .row{
-    margin: 0;
-}
-
-#shift-member-table .row .row{
-    margin: .1rem 0;
+    margin: .25rem;
 }
 
 #shift-member-table .row > *{
