@@ -15,32 +15,32 @@
     color: #000;
 }
 
-#shift-member-table{
+.shift-member-table{
     font-size: 1rem;
 }
 
-#shift-member-table .row{
+.shift-member-table .row{
     margin: .25rem;
 }
 
-#shift-member-table .row > *{
+.shift-member-table .row > *{
     padding: 0;
 }
 
-#shift-member-table .d-flex > p{
+.shift-member-table .d-flex > p{
     margin: auto;
 }
 
-#shift-member-table .list-group-item{
+.shift-member-table .list-group-item{
     padding: .25rem .25rem;
 }
 
-#shift-member-table .dropdown-menu{
+.shift-member-table .dropdown-menu{
     font-size: 1rem;
     min-width: 0rem;
 }
 
-#shift-member-table .dropdown-menu > *{
+.shift-member-table .dropdown-menu > *{
     padding: .25rem .5rem;
 }
 

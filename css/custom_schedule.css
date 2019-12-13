@@ -29,7 +29,7 @@ body * {
     background: rgb(200, 200, 200);
 }
 
-#div-columns {
+.div-columns {
     position: absolute;
     width: 300px;
     height: 100%;
@@ -38,18 +38,18 @@ body * {
     display: flex;
 }
 
-#div-columns .column {
+.div-columns .column {
     /* width: 33%; */
     height: 100%;
     /* border: 1px solid red; */
 }
 
-#div-columns .column a{
+.div-columns .column a{
     position: absolute;
     padding: 0;
 }
 
-#div-columns .column a p{
+.div-columns .column a p{
     /* text-align: center; */
 }
 
@@ -62,7 +62,7 @@ body * {
         left: 20px;
     }
     
-    #div-columns {
+    .div-columns {
         left: 20px;
     }
 
