@@ -83,8 +83,8 @@
             <!-- menu -->
             <div class="collapse navbar-collapse order-sm-2" id="navMenu">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a href="#" class="nav-link">Overview</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link">Shifts</a></li>
+                    <li class="nav-item"><a href="./admin.html" class="nav-link">Overview</a></li>
+                    <li class="nav-item"><a href="./shifts.html" class="nav-link">Shifts</a></li>
                     <li class="nav-item"><a href="#" class="nav-link">History</a></li>
                     <li class="nav-item text-"><a href="#" class="nav-link">News</a></li>
                 </ul>
@@ -199,6 +199,21 @@
                                             <!-- col left -->
                                             <div class="col-md-8" id="schedule">
                                                 <div class="div-schedule">
+                                                    <!-- Empty modal -->
+                                                    <div class="modal fade" id="modal-A">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <div class="modal-title"></div>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                </div>
+                                                                <div class="modal-footer"><button class="btn btn-danger"
+                                                                        type="button"
+                                                                        data-dismiss="modal">Close</button></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <!-- timeline -->
                                                     <div class="timeline">
                                                         <ul>
@@ -206,8 +221,8 @@
                                                     </div>
                                                     <div id="div-columns">
                                                         <div class="column" id="column1">
-                                                            <a href="#modal-A" class="btn btn-info" time-start="07:30"
-                                                                time-end="12:00">
+                                                            <a class="btn btn-info" time-start="07:30" time-end="12:00"
+                                                                data-toggle="modal">
                                                                 <h5>A</h5>
                                                                 <ul type="none">
                                                                     <li>Member1</li>
@@ -216,8 +231,8 @@
                                                                     <li>Member4</li>
                                                                 </ul>
                                                             </a>
-                                                            <a href="#modal-C" class="btn btn-secondary"
-                                                                time-start="12:30" time-end="18:00">
+                                                            <a class="btn btn-secondary" time-start="12:30"
+                                                                time-end="18:00" data-toggle="modal">
                                                                 <h5>C</h5>
                                                                 <ul type="none">
                                                                     <li>Member1</li>
@@ -227,10 +242,9 @@
                                                                 </ul>
                                                             </a>
                                                         </div>
-
                                                         <div class="column" id="column2">
-                                                            <a href="#modal-D" class="btn btn-success"
-                                                                time-start="13:30" time-end="18:00">
+                                                            <a class="btn btn-success" time-start="13:30"
+                                                                time-end="18:00" data-toggle="modal">
                                                                 <h5>D</h5>
                                                                 <ul type="none">
                                                                     <li>Member1</li>
@@ -239,8 +253,8 @@
                                                                     <li>Member4</li>
                                                                 </ul>
                                                             </a>
-                                                            <a href="#modal-H" class="btn btn-dark text-light"
-                                                                time-start="08:00" time-end="13:00">
+                                                            <a class="btn btn-dark text-light" time-start="08:00"
+                                                                time-end="13:00" data-toggle="modal">
                                                                 <h5>H</h5>
                                                                 <ul type="none">
                                                                     <li>Member1</li>
@@ -251,8 +265,8 @@
                                                             </a>
                                                         </div>
                                                         <div class="column" id="column3">
-                                                            <a href="#modal-D" class="btn btn-warning"
-                                                                time-start="08:00" time-end="13:30">
+                                                            <a class="btn btn-warning" time-start="08:00"
+                                                                time-end="13:30" data-toggle="modal">
                                                                 <h5>B</h5>
                                                                 <ul type="none">
                                                                     <li>Member1</li>
@@ -474,35 +488,42 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-header"><a href="#day5" class="card-link" data-toggle="collapse">Friday</a>
+                            <div class="card">
+                                <div class="card-header"><a href="#day5" class="card-link"
+                                        data-toggle="collapse">Friday</a>
+                                </div>
+                                <div class="collapse" data-parent="#accordion" id="day5">
+                                    <div class="card-body"></div>
+                                </div>
                             </div>
-                            <div class="collapse" data-parent="#accordion" id="day5">
-                                <div class="card-body"></div>
+                            <div class="card">
+                                <div class="card-header"><a href="#day6" class="card-link"
+                                        data-toggle="collapse">Saturday</a></div>
+                                <div class="collapse" data-parent="#accordion" id="day6">
+                                    <div class="card-body"></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-header"><a href="#day6" class="card-link"
-                                    data-toggle="collapse">Saturday</a></div>
-                            <div class="collapse" data-parent="#accordion" id="day6">
-                                <div class="card-body"></div>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-header"><a href="#day7" class="card-link" data-toggle="collapse">Sunday</a>
-                            </div>
-                            <div class="collapse" data-parent="#accordion" id="day7">
-                                <div class="card-body"></div>
+                            <div class="card">
+                                <div class="card-header"><a href="#day7" class="card-link"
+                                        data-toggle="collapse">Sunday</a>
+                                </div>
+                                <div class="collapse" data-parent="#accordion" id="day7">
+                                    <div class="card-body"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="tab-content3">Market!</div>
                 </div>
-            </div>
+                <div class="div-search">
+                    <p>
+                        1st week, January
+                        <i></i>
+                    </p>
+                </div>
+            </section>
         </div>
-        </section>
-        </div>
+
     </main>
     <footer></footer>
 </body>

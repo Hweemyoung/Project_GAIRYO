@@ -35,6 +35,16 @@ if(screen_sm){
     })
 }
 
+// Manipulate modal
+$(document).ready(function () {
+    $('#div-columns a').click(function () {
+        $('.modal-title').html('<h1>' + $(this).children('h5').html() + '</h1>');
+        $('.modal-body').empty();
+        $(this).children('ul').clone().appendTo($('.modal-body'));
+        $('.modal').modal();
+    });
+});
+
 function resizeColumns() {
     // Distance between timestamps
     var num_horizontal_lines = timeline_valid.length;
