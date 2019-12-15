@@ -1,68 +1,9 @@
 // RESIZE
 function resizeColumns() {
-    // Distance between timestamps
-    var num_horizontal_lines = timeline_valid.length;
-    var dist_horizontal = $('.div-schedule').height() / num_horizontal_lines;
-    $('.timeline li').css('height', dist_horizontal).attr('type', 'none');
-
-
-    // set top of #div-columns
-    $('.div-columns').css('top', '.5rem');
-
-    // var timeline_width = $('.card-body .row .col-md-8').width(); // Cannot use when all cards are fold.
-    var timeline_width = $('.card').width() - parseInt($('.card-body').css('padding-left')) - parseInt($('.card-body').css('padding-right'));
-    if (screen_sm) {
-        var columns_left = 20;
-    } else {
-        var columns_left = 40;
-    }
-
-    // Calc width and height of .div-columns
-    // $('.div-columns').css('width', timeline_width - columns_left).css('height', $('.timeline').height());
-    // if (!screen_md){
-    //     $('.div-columns').css('width', timeline_width*2/3 - columns_left) // col-md-8
-    // } else {
-    //     $('.div-columns').css('width', timeline_width - columns_left).css('height', $('.timeline').height());
-    // }
-    if (!screen_md) {
-        $('.div-columns').css('width', timeline_width * 2 / 3 - columns_left).css('height', $('.timeline').height()); // col-md-8
-    } else {
-        $('.div-columns').css('width', timeline_width - columns_left).css('height', $('.timeline').height());
-    }
-
-    // Calc width of every column and button
-    var width = $('.div-columns').width() / numColumnsPerDiv;
-    $('.column').css('width', width);
-    $('.column a').css('width', width);
-
-    var time_head = timeline_default[0];
-    var time_head = Number(time_head.slice(0, 2)) + Number(time_head.slice(-2)) / 60;
-    $('.div-columns .column a').map(function () {
-        // Calc top
-        // Get hours
-        var hours_start = Number(this.getAttribute('time-start').slice(0, 2));
-        // Get minutes
-        var minutes_start = Number(this.getAttribute('time-start').slice(-2));
-        // Scale
-        var scale_start = hours_start + minutes_start / 60;
-        // Calc num of blocks
-        var blocks = scale_start - time_head;
-        // Calc top of button
-        var top = blocks * dist_horizontal;
-        // console.log(scale_start, time_head, dist_horizontal);
-        $(this).css('top', top);
-
-        // Calc button height
-        var hours_end = Number(this.getAttribute('time-end').slice(0, 2));
-        var minutes_end = Number(this.getAttribute('time-end').slice(-2));
-        var scale_end = hours_end + minutes_end / 60;
-        var blocks = scale_end - scale_start;
-        var height = blocks * dist_horizontal;
-        $(this).css('height', height);
-
+    $('.div-columns .column a.btn').map(function () {
         // Switch screen_sm
         if (window.innerWidth < 576 && !screen_sm) {
-            $('.timeline ul li').children('span').map(function () {
+            $('.div-schedule .timeline ul li span').map(function () {
                 // Slice timeline texts
                 this.innerHTML = this.innerHTML.slice(0, 2);
             });
@@ -74,24 +15,33 @@ function resizeColumns() {
                 }).map(function (index) {
                     $(this).children('span').html(timeline_valid[index]);
                 });
-
-                // li_valid.children('span').map(function (index) {
-                //     // Timeline full texts
-                //     this.innerHTML = timeline_valid[index];
-                // });
             });
             screen_sm = false;
         }
     });
+
     if (window.innerWidth < 768 && !screen_md) {
         $('.div-schedule').css('height', 500);
         screen_md = true;
-    } else if (window.innerWidth >= 768 && screen_md) {
-        if ($('.shift-member-table').height() > 500) {
-            $('.div-schedule').css('height', $('.shift-member-table').height());
-        }
+    } else if (window.innerWidth >= 768 && screen_md && $('.shift-member-table').height() > 500) {
+        $('.div-schedule').css('height', $('.shift-member-table').height());
         screen_md = false;
     }
+
+    resizeButtons();
+}
+
+function resizeButtons(){
+    var heightLi = $('.div-schedule .timeline ul li').height()
+    $('.div-schedule .div-columns .column a.btn').map(function(){
+        // Calc button height and top
+        timeStartScaled = parseInt($(this).attr('time-start').slice(0, 2), 10) + parseInt($(this).attr('time-start').slice(-2), 10) / 60;
+        timeEndScaled = parseInt($(this).attr('time-end').slice(0, 2), 10) + parseInt($(this).attr('time-end').slice(-2), 10) / 60;
+        var heightButton = heightLi * (timeEndScaled - timeStartScaled);
+        var topButton = heightLi * (timeStartScaled - timelineStartScaled)
+        // Set height and top of button
+        $(this).css('height', heightButton).css('top', topButton);
+    });
 }
 
 // INITIALIZATION
@@ -129,6 +79,9 @@ if (window.innerWidth < 576) {
         timeline_valid.push($(this).children('span').html());
     });
 
+    // Timeline start
+    var timelineStartScaled = parseInt(timeline_valid[0].slice(0, 2), 10) + parseInt(timeline_valid[0].slice(-2), 10) / 60;
+
     // Slice timeline text when screen_sm
     if (screen_sm) {
         li_valid.map(function () {
@@ -148,9 +101,11 @@ if (window.innerWidth < 576) {
 
     // Resize
     resizeColumns();
+    $(window).resize(resizeColumns);
+    
 
     // EVENTS
-    $(window).resize(resizeColumns);
+    // $(window).resize(resizeColumns);
     // $(document).ready(function () {
     //     $('#accordion .card .card-header a').click(function () {
     //         $(this).parent().siblings('.collapse').append()
@@ -160,7 +115,7 @@ if (window.innerWidth < 576) {
 
     // TEMPORARY
     // Duplicate card-body
-    $('#accordion .card .collapse:not(#day4) .card-body').map(function () {
-        $(this).replaceWith($('#day4 .card-body').clone());
-    });
+    // $('#accordion .card .collapse:not(#day4) .card-body').map(function () {
+    //     $(this).replaceWith($('#day4 .card-body').clone());
+    // });
 // $('#accordion .card .collapse .card-body').replaceWith($('#day4 .card-body'))

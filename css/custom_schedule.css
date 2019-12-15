@@ -12,14 +12,17 @@ body * {
 .div-schedule .timeline {
     position: absolute;
     width: 100%;
+    height: 100%;
 }
 
-.div-schedule .timeline li {
+.div-schedule .timeline ul li {
     position: relative;
     font-size: .75rem;
+    /* .div-schedule .timeline{height} / Number of timeline_valid */
+    height: calc(500px / 12);
 }
 
-.div-schedule .timeline li::after {
+.div-schedule .timeline ul li::after {
     content: '';
     position: absolute;
     width: calc(100% - 40px);
@@ -29,44 +32,40 @@ body * {
     background: rgb(200, 200, 200);
 }
 
-.div-columns {
+.div-schedule .div-columns {
     position: absolute;
-    width: 300px;
     height: 100%;
-    top: 0;
+    /* .div-schedule .timeline li::after{top} */
+    top: .5rem;
+    /* 100% -  .div-schedule .timeline li::after{left} */
     left: 40px;
+    width: calc(100% - 40px);
     display: flex;
 }
-
-.div-columns .column {
-    /* width: 33%; */
+.div-schedule .div-columns .column{
+    /* .div-schedule .div-columns{width} / Number of columns */
+    width: calc(100% / 3);
     height: 100%;
-    /* border: 1px solid red; */
 }
 
-.div-columns .column a{
+.div-schedule .div-columns .column a.btn{
     position: absolute;
+    width: calc(100% / 3);
     padding: 0;
 }
 
-.div-columns .column a p{
-    /* text-align: center; */
-}
-
 @media screen and (max-width: 575px){
-    .div-schedule {
-        height: 500px;
-    }
-
-    .div-schedule .timeline li::after {
+    .div-schedule .timeline ul li::after {
         left: 20px;
+        width: calc(100% - 20px);
     }
     
-    .div-columns {
+    .div-schedule .div-columns{
+        /* .div-schedule .timeline li::after{top} */
+        top: .5rem;
+        /* 100% -  .div-schedule .timeline li::after{left} */
         left: 20px;
-    }
-
-    .div-schedule .timeline li::after {
         width: calc(100% - 20px);
+        display: flex;
     }
 }
