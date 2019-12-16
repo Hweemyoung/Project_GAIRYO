@@ -1,8 +1,14 @@
+.bs4-timeline{
+  background: linear-gradient(120deg, #3498db, #8e44ad);
+  border-radius: .5rem;
+}
+
 .circle {
-    padding: .5rem;
-    border-radius: .5rem;
-    background-color: #ED8D8D;
-    color: #fff;
+    padding: .25rem;
+    border-radius: .25rem;
+    font-size: .75rem;
+    background-color: rgb(88, 218, 223);
+    color: #000;
     /* max-height: 50px; */
     z-index: 2;
 }
@@ -22,7 +28,7 @@
 .how-it-works.row .col-2::after {
   content: "";
   position: absolute;
-  border-left: 3px solid #ED8D8D;
+  border-left: 3px solid rgb(88, 218, 223);
   z-index: 1;
 }
 .how-it-works.row .col-2.bottom::after {
@@ -39,11 +45,38 @@
   left: 50%;
   top: 0;
 }
-.how-it-works.row .col-8 .row .col-put{
-    background-color: tomato;
+.how-it-works.row .col-6 .row .col-put{
+  background-color: rgba(255, 35, 35, .35);
+  transition: 350ms;
 }
-.how-it-works.row .col-8 .row .col-call{
-    background-color: deepskyblue;
+
+.how-it-works.row .col-6 .row .col-put .btn-group button.btn{
+  /* color: ; */
+}
+
+.how-it-works.row .col-6 .row .col-call{
+  background-color: rgba(35, 35, 255, .35);
+  transition: 350ms;
+}
+
+.how-it-works.row .col-6 .row .col-put:hover{
+  background-color: rgba(255, 35, 35, .5);
+}
+.how-it-works.row .col-6 .row .col-call:hover{
+  background-color: rgba(35, 35, 255, .5);
+}
+
+.how-it-works.row .col-6 .row .col-put,
+.how-it-works.row .col-6 .row .col-call{
+  margin: .25rem 0;
+  border-radius: .5rem;
+  padding: .5rem;
+  max-width: 500px;
+}
+
+.how-it-works.row .col-6.text-right .row,
+.how-it-works.row .col-6.text-right .row{
+  flex-direction: row-reverse;
 }
 
 .timeline div {
@@ -51,7 +84,7 @@
   height: 40px;
 }
 .timeline hr {
-  border-top: 3px solid #ED8D8D;
+  border-top: 3px solid rgb(88, 218, 223);
   margin: 0;
   top: 17px;
   position: relative;
@@ -60,12 +93,31 @@
   display: flex;
   overflow: hidden;
 }
+
+.timeline .line-top{
+  position: absolute;
+  width: 4px;
+  height: calc(50% + 4px);
+  top: 0;
+  left: calc(50% - 2px);
+}
+
+.timeline .line-right{
+  position: absolute;
+  width: calc(50% + 4px);
+  height: 4px;
+  top: calc(50% - 2px);
+  right: 0;
+}
+
 .timeline .corner {
-  border: 3px solid #ED8D8D;
+  border: 3px solid rgb(88, 218, 223);
   width: 100%;
   position: relative;
   border-radius: 15px;
 }
+
+
 .timeline .top-right {
   left: 50%;
   top: -50%;
@@ -82,8 +134,8 @@
   left: 50%;
   top: calc(50% - 3px);
 }
-.how-it-works .col-8{
-    border: 1px solid red;
+.how-it-works .col-6{
+    /* border: 1px solid red; */
 }
 
 .div-market-bg{
