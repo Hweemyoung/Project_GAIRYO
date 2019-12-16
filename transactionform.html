@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Deactivate zoom in mobile device -->
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> -->
+    <style></style>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <!-- Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css"
+        integrity="sha384-SI27wrMjH3ZZ89r4o+fGIJtnzkAnFs3E4qz9DIYioCQ5l9Rd/7UAa8DHcaL8jkWt" crossorigin="anonymous">
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/js/bootstrap.min.js"
+        integrity="sha384-3qaqj0lc6sV/qpzrc1N5DC6i1VRn/HyX4qdPaiEFbn54VjQBEU341pvjz7Dv3n6P"
+        crossorigin="anonymous"></script>
+    <!-- Icon libraries -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/transactionform.css">
+</head>
+
+<body>
+    <section id="section-nav">
+        <nav class="navbar navbar-expand-sm bg-light fixed-top">
+            <!-- logo -->
+            <a href="#" class="navbar-brand order-sm-1 d-flex">
+                <img class="d-none d-md-block mr-md-4" src="./data/png/logo_travel_color_large.png" alt="imgLogo">
+                <p class="d-none d-sm-block mr-md-4">外国人旅行センター</p>
+                <p class="d-sm-none">外旅</p>
+            </a>
+            <!-- Navbar -->
+            <ul class="px-0 ml-auto mr-2 my-0 order-sm-3" id="navbar">
+                <li class="nav-item dropdown no-arrow">
+                    <a href="" class="nav-link dropdown-toggle text-light" role="button" data-toggle="dropdown">
+                        <span class="badge badge-sm badge-danger">
+                            <i class="fas fa-exchange-alt"></i>
+                        </span>
+                    </a>
+                    <span class="badge badge-sm badge-danger">3</span>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <div class="dropdown-header">Requests</div>
+                        <a href="#" class="dropdown-item">Request 1</a>
+                        <a href="#" class="dropdown-item">Request 2</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">Action</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown no-arrow">
+                    <a href="" class="nav-link dropdown-toggle text-light" role="button" data-toggle="dropdown">
+                        <span class="badge badge-sm badge-warning">
+                            <i class="fas fa-bell fa-fw"></i>
+                        </span>
+                    </a>
+                    <span class="badge badge-sm badge-warning">3</span>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <div class="dropdown-header">Notices</div>
+                        <a href="#" class="dropdown-item">Notice 1</a>
+                        <a href="#" class="dropdown-item">Notice 2</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">Action</a>
+                    </div>
+                </li>
+            </ul>
+            <!-- nav-menu toggler -->
+            <button class="navbar-toggler btn" data-toggle="collapse" data-target="#navMenu">
+                <!-- <img src="./data/png/list-2x.png" alt="navbar-toggler-icon"> -->
+                <i class="fas fa-bars"></i>
+            </button>
+            <!-- menu -->
+            <div class="collapse navbar-collapse order-sm-2" id="navMenu">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a href="./admin.html" class="nav-link">Overview</a></li>
+                    <li class="nav-item"><a href="./shifts.html" class="nav-link">Shifts</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">History</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">News</a></li>
+                    <li class="nav-item"><a href="./forms.html" class="nav-link">Forms</a></li>
+                </ul>
+            </div>
+        </nav>
+    </section>
+    <header>
+        <h3>Request Transactions</h1>
+    </header>
+    <main>
+        <div class="container px-1">
+            <hr>
+            <section>
+                <form action="" method="POST">
+                    <div class="form-item row no-gutters" id="form-item1">
+                        <div class="col-md-4">
+                            <div class="form-group row no-gutters">
+                                <div class="col-3 text-center">
+                                    <label for="from">From</label>
+                                </div>
+                                <div class="col-9">
+                                    <select name="id_from" class="form-control">
+                                        <option value="0">Whom?</option>
+                                        <option value="1">Member1</option>
+                                        <option value="2">Member2</option>
+                                        <option value="3">Member3</option>
+                                        <option value="4">Member4</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group row no-gutters">
+                                <div class="col-4">
+                                    <select name="month" class="form-control" disabled>
+                                        <option value="0">Month</option>
+                                        <option value="1">Jan</option>
+                                        <option value="2">Feb</option>
+                                        <option value="3" disabled>Mar</option>
+                                        <option value="4" disabled>Apr</option>
+                                        <option value="5" disabled>May</option>
+                                        <option value="6" disabled>Jun</option>
+                                        <option value="7" disabled>Jul</option>
+                                        <option value="8" disabled>Aug</option>
+                                        <option value="9" disabled>Sep</option>
+                                        <option value="10" disabled>Oct</option>
+                                        <option value="11" disabled>Nov</option>
+                                        <option value="12" disabled>Dec</option>
+                                    </select>
+                                </div>
+                                <div class="col-4">
+                                    <select name="day" class="form-control" disabled>
+                                        <option value="0">day</option>
+                                        <option value="1">01</option>
+                                        <option value="2">02</option>
+                                        <option value="3">03</option>
+                                        <option value="4" disabled>04</option>
+                                        <option value="5" disabled>05</option>
+                                        <option value="6" disabled>06</option>
+                                        <option value="7">07</option>
+                                        <option value="8" disabled>08</option>
+                                        <option value="9" disabled>09</option>
+                                        <option value="10" disabled>10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                        <option value="13" disabled>13</option>
+                                        <option value="14" disabled>14</option>
+                                        <option value="15" disabled>15</option>
+                                        <option value="16">16</option>
+                                        <option value="17">17</option>
+                                        <option value="18">18</option>
+                                        <option value="19">19</option>
+                                        <option value="20" disabled>20</option>
+                                        <option value="21" disabled>21</option>
+                                        <option value="22" disabled>22</option>
+                                        <option value="23">23</option>
+                                        <option value="24" disabled>24</option>
+                                        <option value="25" disabled>25</option>
+                                        <option value="26" disabled>26</option>
+                                        <option value="27">27</option>
+                                        <option value="28" disabled>28</option>
+                                        <option value="29" disabled>29</option>
+                                        <option value="30" disabled>30</option>
+                                        <option value="31">31</option>
+                                    </select>
+                                </div>
+                                <div class="col-4">
+                                    <select name="shift" id="shift" class="form-control" disabled>
+                                        <option value="0">Shift</option>
+                                        <option value="1" disabled>A</option>
+                                        <option value="2" disabled>B</option>
+                                        <option value="3">H</option>
+                                        <option value="4" disabled>C</option>
+                                        <option value="5" disabled>D</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group row no-gutters">
+                                <div class="col-3 text-center">
+                                    <label for="from">To</label>
+                                </div>
+                                <div class="col-9">
+                                    <select name="id_to" class="form-control" disabled>
+                                        <option value="0">Whom?</option>
+                                        <option value="1">Member1</option>
+                                        <option value="2">Member2</option>
+                                        <option value="3">Member3</option>
+                                        <option value="4">Member4</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                </form>
+                <div id="buttons" class="text-right">
+                    <button id="btn-add-item" class="btn btn-primary" title="Add another transaction"><i
+                            class="fas fa-plus"></i></button>
+                    <button id="btn-confirm" class="btn btn-primary" title="Confirm"><i
+                            class="fas fa-check"></i></button>
+                </div>
+            </section>
+        </div>
+    </main>
+    <footer></footer>
+    <script src="./js/transactionform.js"></script>
+</body>
+
+</html>
