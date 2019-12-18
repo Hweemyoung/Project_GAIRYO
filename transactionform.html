@@ -102,7 +102,7 @@
                         <div class="col-md-4">
                             <div class="form-group row no-gutters">
                                 <div class="col-3 text-center">
-                                    <label for="from">From</label>
+                                    <label for="id_from">From</label>
                                 </div>
                                 <div class="col-9">
                                     <select name="id_from" class="form-control">
@@ -184,10 +184,10 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group row no-gutters">
-                                <div class="col-3 text-center">
-                                    <label for="from">To</label>
+                                <div class="col-2 text-center">
+                                    <label for="id_to">To</label>
                                 </div>
-                                <div class="col-9">
+                                <div class="col-8">
                                     <select name="id_to" class="form-control" disabled>
                                         <option value="0">Whom?</option>
                                         <option value="1">Member1</option>
@@ -196,16 +196,46 @@
                                         <option value="4">Member4</option>
                                     </select>
                                 </div>
+                                <div class="col-2 d-flex flex-row-reverse">
+                                    <button class="btn btn-danger btn-delete" title="Delete transaction"><i class="fas fa-minus"></i></button>
+                                </div>
                             </div>
                         </div>
+                        <div class="col-12">
+                            <hr>
+                        </div>
                     </div>
-                    <hr>
                 </form>
                 <div id="buttons" class="text-right">
-                    <button id="btn-add-item" class="btn btn-primary" title="Add another transaction"><i
-                            class="fas fa-plus"></i></button>
-                    <button id="btn-confirm" class="btn btn-primary" title="Confirm"><i
-                            class="fas fa-check"></i></button>
+                    <button id="btn-add-item" class="btn btn-primary" title="Add another transaction"><i class="fas fa-plus"></i></button>
+                    <a id="btn-confirm" class="btn btn-primary disabled" href="#modal-confirm" data-toggle="modal"><i class="fas fa-check"></i></a>
+                </div>
+                <div class="modal fade" id="modal-confirm">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title">Confirm Requests</h1>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-responsive-sm table-sm table-hover text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>From</th>
+                                            <th>Month</th>
+                                            <th>Day</th>
+                                            <th>Shift</th>
+                                            <th>To</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer"><button class="btn btn-danger" type="button"
+                                    data-dismiss="modal">Back</button></div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>

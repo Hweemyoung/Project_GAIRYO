@@ -1,3 +1,7 @@
 header{
     padding-top: 5rem;
 }
+
+form .form-item hr{
+    margin-top: 0;
+}
