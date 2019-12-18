@@ -1,0 +1,19 @@
+header{
+    padding-top: 5rem;
+    padding-bottom: 3rem;
+    text-align: center;
+}
+
+#div-form h3{
+    text-align: center;
+}
+
+.form-group .form-check-inline label{
+    transition: 300ms;
+}
+
+.text-selected{
+    font-size: 2rem;
+    font-weight: 200;
+    line-height: 1.2;
+}
