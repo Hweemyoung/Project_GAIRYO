@@ -131,5 +131,77 @@ $('label').filter(function () {
             })
         );
     }
+});
 
+// BUTTONS
+// btn-clear
+$('#btn-clear').click(function (event) {
+    uncheckLabels($('#div-form form .form-group label'));
 })
+
+// btn-comfirm
+// Complete modal body
+lastMonth
+$('#btn-confirm').click(function (event) {
+    $('#div-form table tbody tr').clone().filter(function () {
+        return $(this).find('td:last-child input').is(':checked')
+    }).map(function () {
+        // For each tr
+        $(this).find('td:first-child').each(function(){
+            // For each td:first-child
+            if (parseInt($(this).text()) < 16){
+                $(this).prepend(document.createTextNode(' '));
+                $(this).prepend(months[thisMonth - 1]);
+            } else {
+                $(this).prepend(document.createTextNode(' '));
+                $(this).prepend(months[lastMonth.getMonth()] + ' ');
+            }
+        })
+        $(this).find('td:last-child').each(function () {
+            // For each td:last-child
+            var $td = $(this);
+            var texts = $(this).clone().find('input').filter(function () {
+                return $(this).is(':checked')
+            }).map(function () {
+                // $(text, ..., text)
+                return this.nextSibling.nextSibling
+            });
+            $td.empty();
+            texts.each(function(){
+                $('<kbd></kbd>').append(this).appendTo($td);
+                // $td.append(this)
+                $td.append(document.createTextNode(' '));
+            })
+            // for (var i = 0; i < texts.length; i++) {
+            //     $('<mark></mark>').append(text);
+            //     $(this).append(texts[i]);
+            //     if(i==texts.length - 1){
+            //         break;
+            //     } else {
+            //         $(this).append('/');
+            //     }
+            // }
+        });
+        return this
+    }).appendTo('#modal-confirm .modal-body tbody');
+    $('#modal-confirm').modal('show');
+});
+// Clear modal body
+$('#modal-confirm').on('hidden.bs.modal', function (event) {
+    $('#modal-confirm .modal-body tbody').empty();
+})
+
+
+// $('#div-form table tbody tr form-group form-check-inline').filter(function () {
+//     // Return true if any checkbox in .form-check-inline is checked
+//     return $(this).find('input').is(':checked')
+// }).clone().map(function () {
+//     $(this).closest('td').html($(this).find('input').filter(function () {
+//         // $('input', ...,'input')
+//         return $(this).is(':checked')
+//     }).map(function () {
+//         // $(text, ..., text)
+//         return this.nextSibling.nextSibling
+//     }))
+// })
+// $('#modal-confirm').modal('show');

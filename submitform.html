@@ -100,14 +100,14 @@
         <div class="container px-1">
             <section>
                 <div id="div-form">
-                    <form action="" method="POST" id="form-application">
+                    <form action="./submitshifts.php?mode=submit" method="POST" id="form-application">
                         <!-- .row.no-gutters>.col-sm-6>h3+hr+table.table.table-hover>(thead>tr>th{Date}+th{Day}+th{Shift})+tbody>tr>td*2+td>.form-group>form-check-inline>label.form-check-label>input.form-check-input[type="checkbox"
                         name value] -->
                         <div class="row no-gutters">
                             <div class="col-sm-6">
                                 <h3></h3>
                                 <hr>
-                                <table class="table table-hover">
+                                <table class="table table-hover text-center">
                                     <thead>
                                         <tr>
                                             <th>Date</th>
@@ -134,7 +134,38 @@
                                 </table>
                             </div>
                         </div>
+                        <div class="modal fade" id="modal-confirm">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title">Confirm Application</h1>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table class="table table-sm table-hover text-center">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Day</th>
+                                                    <th>Shift</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-danger" type="button" title="Back" data-dismiss="modal"><i class="fas fa-undo"></i></button>
+                                        <button class="btn btn-primary" type="submit" title="Submit"><i class="fas fa-file-export"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </form>
+                </div>
+                <div id="div-buttons" class="text-right p-1">
+                    <button id="btn-clear" class="btn btn-primary" title="Clear"><i class="fas fa-eraser"></i></button>
+                    <button id="btn-confirm" class="btn btn-primary" title="Confirm" data-toggle="modal"><i
+                            class="fas fa-check"></i></button>
                 </div>
             </section>
         </div>
