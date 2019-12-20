@@ -197,7 +197,8 @@
                                     </select>
                                 </div>
                                 <div class="col-2 d-flex flex-row-reverse">
-                                    <button class="btn btn-danger btn-delete" title="Delete transaction"><i class="fas fa-minus"></i></button>
+                                    <button class="btn btn-danger btn-delete" title="Delete transaction"><i
+                                            class="fas fa-minus"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -205,37 +206,41 @@
                             <hr>
                         </div>
                     </div>
-                </form>
-                <div id="buttons" class="text-right">
-                    <button id="btn-add-item" class="btn btn-primary" title="Add another transaction"><i class="fas fa-plus"></i></button>
-                    <a id="btn-confirm" class="btn btn-primary disabled" href="#modal-confirm" data-toggle="modal"><i class="fas fa-check"></i></a>
-                </div>
-                <div class="modal fade" id="modal-confirm">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title">Confirm Requests</h1>
-                            </div>
-                            <div class="modal-body">
-                                <table class="table table-responsive-sm table-sm table-hover text-center">
-                                    <thead>
-                                        <tr>
-                                            <th>From</th>
-                                            <th>Month</th>
-                                            <th>Day</th>
-                                            <th>Shift</th>
-                                            <th>To</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
+                    <div class="modal fade" id="modal-confirm">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title">Confirm Requests</h1>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table table-responsive-sm table-sm table-hover text-center">
+                                        <thead>
+                                            <tr>
+                                                <th>From</th>
+                                                <th>Month</th>
+                                                <th>Day</th>
+                                                <th>Shift</th>
+                                                <th>To</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
 
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-danger" type="button" title="Back" data-dismiss="modal"><i class="fas fa-undo"></i></button>
+                                    <button class="btn btn-primary" type="submit" title="Check"><i class="fas fa-file-export"></i></button>
+                                </div>
                             </div>
-                            <div class="modal-footer"><button class="btn btn-danger" type="button"
-                                    data-dismiss="modal">Back</button></div>
                         </div>
                     </div>
+                </form>
+                <div id="buttons" class="text-right">
+                    <button id="btn-add-item" class="btn btn-primary" title="Add"><i
+                            class="fas fa-plus"></i></button>
+                    <a id="btn-confirm" class="btn btn-primary disabled" href="#modal-confirm" data-toggle="modal"><i
+                            class="fas fa-check"></i></a>
                 </div>
             </section>
         </div>
