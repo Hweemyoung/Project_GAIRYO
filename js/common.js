@@ -106,10 +106,12 @@ function clickSignButton() {
         gauth.signOut().then(
             console.log('Sign Out Successful!')
         );
+        menuSignedOut();
     } else {
         gauth.signIn().then(
             console.log('Sign In Successful!')
         );
+        menuSignedIn();
     }
 }
 
