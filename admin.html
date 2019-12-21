@@ -27,8 +27,17 @@
     <!-- Load the Google Platform Library -->
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <!-- Specify your app's client ID -->
-    <meta name="google-signin-client_id" content="794838339499-23a529hgs9ldqdse3avsprseclt6uaoe.apps.googleusercontent.com">
-
+    <meta name="google-signin-client_id"
+        content="794838339499-23a529hgs9ldqdse3avsprseclt6uaoe.apps.googleusercontent.com">
+    <script>
+        function onSignIn(googleUser) {
+            var profile = googleUser.getBasicProfile();
+            console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+            console.log('Name: ' + profile.getName());
+            console.log('Image URL: ' + profile.getImageUrl());
+            console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+        }
+    </script>
 
     <!-- Icon libraries -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
