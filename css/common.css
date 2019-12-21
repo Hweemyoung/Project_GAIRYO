@@ -25,6 +25,19 @@
     display: inline-block !important;
 }
 
+#i-sync{
+    -webkit-animation: rotation 2s infinite linear;
+}
+
+@-webkit-keyframes rotation {
+    from {
+            -webkit-transform: rotate(0deg);
+    }
+    to {
+            -webkit-transform: rotate(359deg);
+    }
+}
+
 #navbar .nav-item > .badge{
     position: absolute;
     top: -.5rem;

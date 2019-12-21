@@ -93,15 +93,18 @@ function init() {
         var gauth = gapi.auth2.init({
             // Specify your app's client ID
             client_id: '794838339499-eq7uhgrb57bsglhrjvcm760n4blj3lrs.apps.googleusercontent.com'
-          });
-        gauth.then(function(){
+        });
+        gauth.then(function () {
             console.log('GoogleAuth Initialized!');
-            if(gauth.isSignedIn.get()){
+            var btnSign = $('#btn-sign');
+            if (gauth.isSignedIn.get()) {
                 console.log('Signed In');
-            } else{
-                console.log('Not signed in');
+                btnSign.html($('<i></i>').addClass('fas fa-sign-out-alt'));
+            } else {
+                console.log('Not Signed In');
+                btnSign.html($('<i></i>').addClass('fas fa-sign-in-alt'));
             }
-        }, function(){
+        }, function () {
             console.log('GoogleAuth Initialization FAILED!');
         });
     });
