@@ -85,3 +85,10 @@ function onSignIn(googleUser) {
     console.log('Image URL: ' + profile.getImageUrl());
     console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 }
+
+function init() {
+    console.log('init');
+    gapi.load('auth2', function () {
+        /* Ready. Make a call to gapi.auth2.init or some other API */
+    });
+}

@@ -495,14 +495,8 @@
     <!-- Google Sign-In JavaScript client reference -->
     <!-- Load the Google APIs platform library -->
     <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
-    <script>
-        function init() {
-            console.log('init');
-            gapi.load('auth2', function () {
-                /* Ready. Make a call to gapi.auth2.init or some other API */
-            });
-        }
-    </script>
+    <!-- Custom JS -->
+    <script src="./js/common.js"></script>
 </body>
 
 </html>
