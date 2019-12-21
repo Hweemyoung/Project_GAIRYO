@@ -86,28 +86,52 @@
 //     console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 // }
 
+var $liAccount = $('#li-account');
+
+function menuSignedIn($liAccount) {
+    $liAccount.find('#dropdown-account').removeClass('d-none').find('#dropdown-item-sign').attr('title', 'Sign Out').html($('<i></i>').addClass('fas fa-sign-out-alt'));
+    $liAccount.find('#btn-account span').html($('<i></i>').addClass('fas fa-user-circle'));
+}
+
+function menuSignedOut($liAccount) {
+    $liAccount.find('#dropdown-account').removeClass('d-none').find('#dropdown-item-sign').attr('title', 'Sign In').html($('<i></i>').addClass('fas fa-sign-in-alt'));;
+    $liAccount.find('#btn-account span').html($('<i></i>').addClass('fas fa-user-alt-slash'));
+}
+
+function clickSignButton() {
+    $('#btn-account span').html($('<i></i>').attr('id', 'i-sync').addClass('fas fa-sync'));
+    if ($(this).children('i').hasClass('fa-sign-out-alt')) {
+        gauth.signOut().then(
+            console.log('Sign Out Successful!')
+        );
+    } else {
+        gauth.signIn().then(
+            console.log('Sign In Successful!')
+        );
+    }
+}
+
 function init() {
     console.log('init');
     gapi.load('auth2', function () {
         /* Ready. Make a call to gapi.auth2.init or some other API */
-        var gauth = gapi.auth2.init({
+        window.gauth = gapi.auth2.init({
             // Specify your app's client ID
             client_id: '794838339499-eq7uhgrb57bsglhrjvcm760n4blj3lrs.apps.googleusercontent.com'
         });
         gauth.then(function () {
             console.log('GoogleAuth Initialized!');
-            var liAccount = $('#li-account');
             if (gauth.isSignedIn.get()) {
                 console.log('Signed In');
-                liAccount.find('#dropdown-account').removeClass('d-none').find('#dropdown-item-sign').html($('<i></i>').addClass('fas fa-sign-in-alt').attr('title', 'Sign Out'));
-                liAccount.find('#btn-account i').removeClass('fa-sync').addClass('fa-user-circle');
+                menuSignedIn($liAccount);
             } else {
                 console.log('Not Signed In');
-                liAccount.find('#dropdown-account').removeClass('d-none');
-                liAccount.find('#btn-account i').removeClass('fa-sync').addClass('fa-user-alt-slash');
+                menuSignedOut($liAccount);
             }
         }, function () {
             console.log('GoogleAuth Initialization FAILED!');
         });
     });
 }
+
+$('#dropdown-item-sign').click(clickSignButton);
