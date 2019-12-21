@@ -96,6 +96,11 @@ function init() {
           });
         gauth.then(function(){
             console.log('GoogleAuth Initialized!');
+            if(gauth.isSignedIn.get()){
+                console.log('Signed In');
+            } else{
+                console.log('Not signed in');
+            }
         }, function(){
             console.log('GoogleAuth Initialization FAILED!');
         });
