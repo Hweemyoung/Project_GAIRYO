@@ -38,7 +38,6 @@
             console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
         }
     </script>
-
     <!-- Icon libraries -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
         integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
@@ -501,7 +500,14 @@
         </div>
     </main>
     <footer></footer>
-
+    <!-- Google Sign-In JavaScript client reference -->
+    <!-- Load the Google APIs platform library -->
+    <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
+    <script>
+        function init() {
+            console.log('init');
+        }
+    </script>
 </body>
 
 </html>
