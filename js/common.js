@@ -88,25 +88,26 @@
 
 var $liAccount = $('#li-account');
 
-function menuSignedIn($liAccount) {
+function menuSignedIn(basicProfile) {
     $liAccount.find('#dropdown-account').removeClass('d-none').find('#dropdown-item-sign').attr('title', 'Sign Out').html($('<i></i>').addClass('fas fa-sign-out-alt'));
-    $liAccount.find('#dropdown-account .dropdown-header').html('Welcome, Member!');
+    $liAccount.find('#dropdown-account .dropdown-header').html(basicProfile.getGivenName());
     $liAccount.find('#btn-account span').html($('<i></i>').addClass('fas fa-user-circle'));
 }
 
-function menuSignedOut($liAccount) {
+function menuSignedOut() {
     $liAccount.find('#dropdown-account').removeClass('d-none').find('#dropdown-item-sign').attr('title', 'Sign In').html($('<i></i>').addClass('fas fa-sign-in-alt'));
     $liAccount.find('#dropdown-account .dropdown-header').html('Not Signed In');
     $liAccount.find('#btn-account span').html($('<i></i>').addClass('fas fa-user-alt-slash'));
 }
 
-function modifySignInMenu() {
+function checkSignInStatus() {
     if (gauth.isSignedIn.get()) {
         console.log('Signed In!');
-        menuSignedIn($liAccount);
+        var profile = gauth.currentUser.get().getBasicProfile();
+        menuSignedIn(profile);
     } else {
         console.log('Signed Out!');
-        menuSignedOut($liAccount);
+        menuSignedOut();
     }
 }
 
@@ -114,11 +115,11 @@ function clickSignButton() {
     $('#btn-account span').html($('<i></i>').attr('id', 'i-sync').addClass('fas fa-sync'));
     if ($(this).children('i').hasClass('fa-sign-out-alt')) {
         gauth.signOut().then(function () {
-            modifySignInMenu();
+            checkSignInStatus();
         });
     } else {
         gauth.signIn().then(function(){
-            modifySignInMenu();
+            checkSignInStatus();
         });
     }
 }
@@ -133,7 +134,8 @@ function init() {
         });
         gauth.then(function () {
             console.log('GoogleAuth Initialized!');
-            modifySignInMenu();
+            gauth
+            checkSignInStatus();
         }, function () {
             console.log('GoogleAuth Initialization FAILED!');
         });
