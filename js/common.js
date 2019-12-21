@@ -90,13 +90,13 @@ var $liAccount = $('#li-account');
 
 function menuSignedIn($liAccount) {
     $liAccount.find('#dropdown-account').removeClass('d-none').find('#dropdown-item-sign').attr('title', 'Sign Out').html($('<i></i>').addClass('fas fa-sign-out-alt'));
-    $liAccount.find('#dropdown-account dropdown-header').html('Welcome, Member!');
+    $liAccount.find('#dropdown-account .dropdown-header').html('Welcome, Member!');
     $liAccount.find('#btn-account span').html($('<i></i>').addClass('fas fa-user-circle'));
 }
 
 function menuSignedOut($liAccount) {
     $liAccount.find('#dropdown-account').removeClass('d-none').find('#dropdown-item-sign').attr('title', 'Sign In').html($('<i></i>').addClass('fas fa-sign-in-alt'));
-    $liAccount.find('#dropdown-account dropdown-header').html('Not Signed In');
+    $liAccount.find('#dropdown-account .dropdown-header').html('Not Signed In');
     $liAccount.find('#btn-account span').html($('<i></i>').addClass('fas fa-user-alt-slash'));
 }
 
