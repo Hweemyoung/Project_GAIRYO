@@ -100,18 +100,26 @@ function menuSignedOut($liAccount) {
     $liAccount.find('#btn-account span').html($('<i></i>').addClass('fas fa-user-alt-slash'));
 }
 
+function modifySignInMenu() {
+    if (gauth.isSignedIn.get()) {
+        console.log('Signed In!');
+        menuSignedIn($liAccount);
+    } else {
+        console.log('Signed Out!');
+        menuSignedOut($liAccount);
+    }
+}
+
 function clickSignButton() {
     $('#btn-account span').html($('<i></i>').attr('id', 'i-sync').addClass('fas fa-sync'));
     if ($(this).children('i').hasClass('fa-sign-out-alt')) {
-        gauth.signOut().then(
-            console.log('Sign Out Successful!')
-        );
-        menuSignedOut();
+        gauth.signOut().then(function () {
+            modifySignInMenu();
+        });
     } else {
-        gauth.signIn().then(
-            console.log('Sign In Successful!')
-        );
-        menuSignedIn();
+        gauth.signIn().then(function(){
+            modifySignInMenu();
+        });
     }
 }
 
@@ -125,13 +133,7 @@ function init() {
         });
         gauth.then(function () {
             console.log('GoogleAuth Initialized!');
-            if (gauth.isSignedIn.get()) {
-                console.log('Signed In');
-                menuSignedIn($liAccount);
-            } else {
-                console.log('Not Signed In');
-                menuSignedOut($liAccount);
-            }
+            modifySignInMenu();
         }, function () {
             console.log('GoogleAuth Initialization FAILED!');
         });
