@@ -96,13 +96,15 @@ function init() {
         });
         gauth.then(function () {
             console.log('GoogleAuth Initialized!');
-            var btnSign = $('#btn-sign');
+            var liAccount = $('#li-account');
             if (gauth.isSignedIn.get()) {
                 console.log('Signed In');
-                btnSign.html($('<i></i>').addClass('fas fa-sign-out-alt'));
+                liAccount.find('#dropdown-account').removeClass('d-none').find('#dropdown-item-sign').html($('<i></i>').addClass('fas fa-sign-in-alt').attr('title', 'Sign Out'));
+                liAccount.find('#btn-account i').removeClass('fa-sync').addClass('fa-user-circle');
             } else {
                 console.log('Not Signed In');
-                btnSign.html($('<i></i>').addClass('fas fa-sign-in-alt'));
+                liAccount.find('#dropdown-account').removeClass('d-none');
+                liAccount.find('#btn-account i').removeClass('fa-sync').addClass('fa-user-alt-slash');
             }
         }, function () {
             console.log('GoogleAuth Initialization FAILED!');

@@ -76,13 +76,20 @@
                         <a href="#" class="dropdown-item">Action</a>
                     </div>
                 </li>
-                <!-- Google Sign In -->
-                <li class="nav-item">
-                    <a href="" class="nav-link" role="button">
+                <!-- Account -->
+                <li id="li-account" class="nav-item">
+                    <a href="" id="btn-account" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown">
                         <span class="badge badge-sm badge-secondary">
-                            <i class="fas fa-bell fa-sync"></i>
+                            <i class="fas fa-sync"></i>
                         </span>
                     </a>
+                    <div id="dropdown-account" class="dropdown-menu dropdown-menu-right d-none">
+                        <div class="dropdown-header">Not Signed In</div>
+                        <a href="#" class="dropdown-item">Notice 1</a>
+                        <a href="#" class="dropdown-item">Notice 2</a>
+                        <div class="dropdown-divider"></div>
+                        <a id="dropdown-item-sign" href="#" class="dropdown-item"><i class="fas fa-sign-in-alt"></i></a>
+                    </div>
                 </li>
             </ul>
             <!-- nav-menu toggler -->
