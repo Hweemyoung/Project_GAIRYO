@@ -74,7 +74,6 @@
 // // badge_number_notices
 // $('<span></span>').addClass('badge badge-sm badge-danger').text(number_notices).appendTo($liNotices);
 
-
 // Append 'a' to 'nav'
 
 // GOOGLE API
@@ -104,6 +103,7 @@ function checkSignInStatus() {
     if (gauth.isSignedIn.get()) {
         console.log('Signed In!');
         var profile = gauth.currentUser.get().getBasicProfile();
+        console.log(profile);
         menuSignedIn(profile);
     } else {
         console.log('Signed Out!');
