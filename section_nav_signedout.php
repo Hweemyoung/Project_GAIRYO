@@ -1,37 +1,66 @@
 <?php
-$id_user = 2;
-global $dbh;
-$dbh = new PDO('mysql:host=localhost;dbname=gairyo', 'root', '111111', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-function scriptRequest($request, $id_user)
+class userOrientedRequest
 {
-    if ($request["id_from"] === $id_user) {
-        $counterpart = $dbh . $request["id_to"];
-        $script = 'Your ' . $request["date_shift"] . ' ' . $request["shift"] . ' to ' . $request["id_to"];
-    } else {
-        $script = $request["id_from"] . '\'s ' . $request["date_shift"] . ' ' . $request["shift"] . ' to you';
-    }
-    if ($request["time_proceeded"]) {
-        switch ($request["status"]) {
-            case 0:
-                $script = 'Denied: ' . $script;
+    public function __construct($id_user, $arrayRequest)
+    {
+        $this->id_user = $id_user;
+        $this->arrayRequest = $arrayRequest;
+        $this->transaction_order = $arrayRequest["transaction_order"];
+        global $arrayMembers;
+        if (intval($arrayRequest["id_from"]) === $id_user) {
+            $this->position = 'from';
+            $this->agreed_user = $arrayRequest["agreed_from"];
+            $this->checked_user = $arrayRequest["checked_from"];
+            $this->counterpart = $arrayMembers[intval($arrayRequest["id_to"]) + 1];
+            $this->script = 'Your ' . $arrayRequest["date_shift"] . ' ' . $arrayRequest["shift"] . ' to ' . $this->counterpart["nickname"];
+        } else {
+            $this->position = 'to';
+            $this->agreed_user = $arrayRequest["agreed_to"];
+            $this->checked_user = $arrayRequest["checked_to"];
+            $this->counterpart = $arrayMembers[intval($arrayRequest["id_from"]) + 1];
+            $this->script = $this->counterpart["nickname"] . '\'s ' . $arrayRequest["date_shift"] . ' ' . $arrayRequest["shift"] . ' to you';
+        }
+
+        // Notification script
+        switch ($arrayRequest["status"]) {
+            case '0':
+                $this->scriptNotice = 'Denied: ' . $this->script;
                 break;
-            case 1:
-                $script = 'Accepted: ' . $script;
+            case '1':
+                $this->scriptNotice = 'Accepted: ' . $this->script;
+                break;
+            case '2':
+                $this->scriptNotice = 'Awaiting: ' . $this->script;
                 break;
         }
-    } else {
-        $script = 'Awaiting agreement(s): ' . $script;
     }
-    echo $script;
 }
 
-$sql = 'SELECT * FROM requests_pending WHERE id_from=:user_id or id_to=:user_id ORDER BY time_proceeded DESC, time_created DESC LIMIT 5';
+$dbh = new PDO('mysql:host=localhost;dbname=gairyo', 'root', '111111', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+
+// Get nicknames of whole members
+// Column"id_user" = $id_u
+$sql = 'SELECT nickname FROM members';
+$stmt = $dbh->prepare($sql);
+$stmt->execute();
+$arrayMembers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// echo var_dump($arrayMembers);
+// echo '<br>';
+
+// Get requests
+$sql = 'SELECT * FROM requests_pending WHERE id_from=:user_id OR id_to=:user_id ORDER BY time_proceeded DESC LIMIT 5';
 $stmt = $dbh->prepare($sql);
 $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
 $user_id = 2;
 $stmt->execute();
-$requests = $stmt->fetchAll();
-
+$requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+echo var_dump($requests);
+echo '<br>';
+// From array to object
+for ($i = 0; $i < count($requests); $i++) {
+    $requests[$i] = new userOrientedRequest($id_user, $requests[$i]);
+}
+echo var_dump($requests);
 echo '<br>';
 ?>
 
@@ -51,24 +80,18 @@ echo '<br>';
                         <i class="fas fa-exchange-alt"></i>
                     </span>
                 </a>
-                <span class="badge badge-sm badge-danger">
-                    <? echo count($requests); ?>
-                </span>
                 <div class="dropdown-menu dropdown-menu-right">
-                    <div class="dropdown-header">Requests</div>
-                    <a href="#" class="dropdown-item">Request 1</a>
-                    <a href="#" class="dropdown-item">Request 2</a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">Action</a>
+                    <div class="dropdown-header">Not Signed In</div>
                 </div>
             </li>
-            <li class="nav-item dropdown no-arrow">
+            <!-- <li class="nav-item dropdown no-arrow">
                 <a href="" class="nav-link dropdown-toggle text-light" role="button" data-toggle="dropdown">
                     <span class="badge badge-sm badge-warning">
                         <i class="fas fa-bell fa-fw"></i>
                     </span>
                 </a>
-                <span class="badge badge-sm badge-warning">3</span>
+                <span class="badge badge-sm badge-warning">3
+                </span>
                 <div class="dropdown-menu dropdown-menu-right">
                     <div class="dropdown-header">Notices</div>
                     <a href="#" class="dropdown-item">Notice 1</a>
@@ -76,7 +99,7 @@ echo '<br>';
                     <div class="dropdown-divider"></div>
                     <a href="#" class="dropdown-item">Action</a>
                 </div>
-            </li>
+            </li> -->
             <!-- Account -->
             <li id="li-account" class="nav-item dropdown no-arrow">
                 <a href="" id="btn-account" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown">
@@ -87,7 +110,6 @@ echo '<br>';
                 <div id="dropdown-account" class="dropdown-menu dropdown-menu-right d-none">
                     <div class="dropdown-header">Not Signed In</div>
                     <a href="#" class="dropdown-item">Notice 1</a>
-                    <a href="#" class="dropdown-item">Notice 2</a>
                     <div class="dropdown-divider"></div>
                     <a id="dropdown-item-sign" href="#" class="dropdown-item" title="Sign In"><i class="fas fa-sign-in-alt"></i></a>
                 </div>
@@ -101,13 +123,12 @@ echo '<br>';
         <!-- menu -->
         <div class="collapse navbar-collapse order-sm-2" id="navMenu">
             <ul class="navbar-nav">
-                <li class="nav-item"><a href="./admin.html" class="nav-link">Overview</a></li>
-                <li class="nav-item"><a href="./shifts.html" class="nav-link">Shifts</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">History</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">News</a></li>
-                <li class="nav-item"><a href="./forms.html" class="nav-link">Forms</a></li>
+                <li class="nav-item"><a href="./admin.php" class="nav-link">Overview</a></li>
+                <li class="nav-item"><a href="./shifts.php" class="nav-link">Shifts</a></li>
+                <li class="nav-item"><a href="./transactions.php" class="nav-link">Transactions</a></li>
+                <li class="nav-item"><a href="./logs.php" class="nav-link">Logs</a></li>
+                <li class="nav-item"><a href="./forms.php" class="nav-link">Board</a></li>
             </ul>
         </div>
     </nav>
-
 </section>

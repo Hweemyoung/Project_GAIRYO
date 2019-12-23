@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <!-- jQuery CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script></script>
+    <style></style>
+</head>
+
+<body>
+</body>
+<script>
+    function pageMoveWithPost(url) {
+        var form = document.createElement("form");
+        var parm = new Array();
+        var input = new Array();
+
+        form.action = url;
+        form.method = "post";
+
+
+        parm.push( ['id1', 'id_string'] );
+
+
+        for (var i = 0; i < parm.length; i++) {
+            input[i] = document.createElement("input");
+            input[i].setAttribute("type", "hidden");
+            input[i].setAttribute('name', parm[i][0]);
+            input[i].setAttribute("value", parm[i][1]);
+            form.appendChild(input[i]);
+        }
+        document.body.appendChild(form);
+        form.submit();
+    }
+    pageMoveWithPost('./test.php')
+
+    // var $form = $('<form></form>').attr('method', 'POST').attr('action', './test.php');
+    // $('<input type="text">').attr('value', '1234').appendTo($form);
+    // var button = $('<button>SUBMIT</button>').attr('type', 'submit').appendTo($form);
+    // button.click();
+</script>
+
+</html>

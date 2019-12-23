@@ -85,7 +85,39 @@
 //     console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 // }
 
-var $liAccount = $('#li-account');
+// var $liAccount = $('#li-account');
+function pageMoveWithPost(url = undefined, paramsObject = undefined) {
+    var form = document.createElement("form");
+    var input = new Array();
+
+    if (url) {
+        form.action = url;
+    } else {
+        form.action = this.href;
+    }
+    form.method = "post";
+
+    inputIDGoogle = document.createElement("input");
+    inputIDGoogle.setAttribute("type", "hidden");
+    inputIDGoogle.setAttribute('name', 'id_google');
+    inputIDGoogle.setAttribute("value", gauth.currentUser.get().getId());
+    form.appendChild(inputIDGoogle);
+
+    if (paramsObject) {
+        for (var i = 0; i < paramsObject.length; i++) {
+            var keys = Object.keys(paramsObject);
+            var values = Object.values(paramsObject);
+            input[i] = document.createElement("input");
+            input[i].setAttribute("type", "hidden");
+            input[i].setAttribute('name', keys[i]);
+            input[i].setAttribute("value", values[i]);
+            form.appendChild(input[i]);
+        }
+    }
+    
+    document.body.appendChild(form);
+    form.submit();
+}
 
 function menuSignedIn(basicProfile) {
     $liAccount.find('#dropdown-account').removeClass('d-none').find('#dropdown-item-sign').attr('title', 'Sign Out').html($('<i></i>').addClass('fas fa-sign-out-alt'));
@@ -118,7 +150,7 @@ function clickSignButton() {
             checkSignInStatus();
         });
     } else {
-        gauth.signIn().then(function(){
+        gauth.signIn().then(function () {
             checkSignInStatus();
         });
     }
@@ -134,7 +166,6 @@ function init() {
         });
         gauth.then(function () {
             console.log('GoogleAuth Initialized!');
-            gauth
             checkSignInStatus();
         }, function () {
             console.log('GoogleAuth Initialization FAILED!');
@@ -143,3 +174,5 @@ function init() {
 }
 
 $('#dropdown-item-sign').click(clickSignButton);
+
+$('a').click(pageMoveWithPost);

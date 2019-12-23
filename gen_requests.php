@@ -27,7 +27,7 @@ for ($i = 0; $i < $num_shifts; $i++) {
     echo $time_created;
     echo '<br>';
 
-    $sql = 'INSERT INTO requests_pending (id_from, date_shift, shift, id_to, id_created, time_created, transaction_order) VALUES (:id_from, ' . $date . ', :shift, :id_to, :id_created, ' . $time_created . ', :transaction_order)';
+    $sql = 'INSERT INTO requests_pending (id_from, date_shift, shift, id_to, id_created, time_created, time_proceeded, transaction_order) VALUES (:id_from, ' . $date . ', :shift, :id_to, :id_created, ' . $time_created . ', ' . $time_created . ', :transaction_order)';
     echo $sql;
     echo '<br>';
     $stmt = $dbh->prepare($sql);
