@@ -173,6 +173,6 @@ function init() {
     });
 }
 
-$('#dropdown-item-sign').click(clickSignButton);
+$('.btn-sign').click(clickSignButton);
 
 $('a').click(pageMoveWithPost);

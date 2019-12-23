@@ -1,9 +1,24 @@
 <?php
 session_start();
 if(!isset($_SESSION['id_google'])){
-    $signedin = false;
+    if(isset($_POST['id_google'])){
+        $_SESSION['id_google'] = $_POST['id_google'];
+        $signedin = true;
+    } else {
+        $signedin = false;
+    }
 } else {
-    $signedin = true;
+    if(!isset($_POST['id_google'])){
+        // You were not signed in at previous page. Destroy session.
+        session_destroy();
+        $signedin = false;
+    } else if($_SESSION['id_google'] !== $_POST['id_google']){
+        // Different user. Destroy session.
+        session_destroy();
+        $signedin = false;
+    } else {
+        $signedin = true;
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -34,14 +49,19 @@ if(!isset($_SESSION['id_google'])){
     <link rel="stylesheet" href="./css/common.css">
     <link rel="stylesheet" href="./css/admin.css">
 </head>
-
+<?php
+require ('./admin_header.php');
+if(!$signedin){
+    require ('./common_nav_signedout');
+    require ('./admin_signedout.php');
+} else {
+    require ('./common_nav_signedin.php');
+    require ('./admin__main.php');
+}
+require ('./common_footer.php');
+?>
 <body>
     <?php
-    if ($signedin){
-        require ('./section_nav_signedin.php');
-    } else {
-        require ('./section_nav_signedout.php');
-    }
     
     // <section id="section-nav">
     //     <nav class="navbar navbar-expand-sm bg-light fixed-top">
@@ -118,6 +138,9 @@ if(!isset($_SESSION['id_google'])){
     // </section>
     ?>
     <header></header>
+    <?php
+    
+    ?>
     <main>
         <div class="container px-1">
             <section id="section-shift">
