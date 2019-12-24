@@ -1,6 +1,7 @@
 <?php
 $signedin = false;
 require 'check_session.php';
+
 ?>
 
 <!DOCTYPE html>

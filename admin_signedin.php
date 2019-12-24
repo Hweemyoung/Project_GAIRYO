@@ -20,9 +20,7 @@ if ($result[0]["under_request"] !== '0') {
     $id_shift = $result[0]["id_shift"];
     $stmt->execute();
     $result = $stmt->fetchAll(PDO::FETCH_UNIQUE);
-    for($i=0;$i<count($result),$i++){
-        key($result)
-    }
+    foreach($result)
 }
 ?>
 
