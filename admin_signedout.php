@@ -1,7 +1,7 @@
 <main>
     <div class="container px-1 text-center">
         <?php
-        echo '$signedin = ' . $signedin;
+        echo '<br>';
         echo '<br>';
         ?>
         <p>

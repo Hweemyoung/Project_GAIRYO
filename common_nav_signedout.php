@@ -9,8 +9,8 @@
         <!-- Navbar -->
         <ul class="px-0 ml-auto mr-2 my-0 order-sm-3" id="navbar">
             <li class="nav-item dropdown no-arrow">
-                <a href="" class="nav-link dropdown-toggle text-light" role="button" data-toggle="dropdown">
-                    <span class="badge badge-sm badge-danger">
+                <a href="#" class="nav-link dropdown-toggle text-light" role="button" data-toggle="dropdown">
+                    <span class="badge badge-sm badge-secondary">
                         <i class="fas fa-exchange-alt"></i>
                     </span>
                 </a>

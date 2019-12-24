@@ -36,8 +36,6 @@ class userOrientedRequest
     }
 }
 
-$id_user = 2;
-$dbh = new PDO('mysql:host=localhost;dbname=gairyo', 'root', '111111', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
 
 // Get nicknames of whole members
 // Column"id_user" = $id_u

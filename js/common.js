@@ -85,7 +85,8 @@
 //     console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 // }
 
-// var $liAccount = $('#li-account');
+var $liAccount = $('#li-account');
+
 function pageMoveWithPost(url = undefined, paramsObject = undefined) {
     var form = document.createElement("form");
     var input = new Array();
@@ -169,10 +170,11 @@ function init() {
             checkSignInStatus();
         }, function () {
             console.log('GoogleAuth Initialization FAILED!');
+            checkSignInStatus();
         });
     });
 }
 
 $('.btn-sign').click(clickSignButton);
 
-$('a').click(pageMoveWithPost);
+// $('a').click(pageMoveWithPost);
