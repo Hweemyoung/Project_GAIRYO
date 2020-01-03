@@ -27,19 +27,18 @@ for ($i = 0; $i < $num_shifts; $i++) {
     echo $time_created;
     echo '<br>';
 
-    $sql = 'INSERT INTO requests_pending (id_from, date_shift, shift, id_to, id_created, time_created, time_proceeded, transaction_order) VALUES (:id_from, ' . $date . ', :shift, :id_to, :id_created, ' . $time_created . ', ' . $time_created . ', :transaction_order)';
+    $sql = 'INSERT INTO requests_pending (id_shift, id_from, id_to, id_created, time_created, time_proceeded, id_transaction) VALUES (:id_shift, :id_from, :id_to, :id_created, ' . $time_created . ', ' . $time_created . ', :id_transaction)';
     echo $sql;
     echo '<br>';
     $stmt = $dbh->prepare($sql);
+    $stmt->bindParam(':id_shift', $id_shift, PDO::PARAM_INT);
     $stmt->bindParam(':id_from', $id_from, PDO::PARAM_INT);
-    $stmt->bindParam(':shift', $shift);
     $stmt->bindParam(':id_to', $id_to, PDO::PARAM_INT);
     $stmt->bindParam(':id_created', $id_created, PDO::PARAM_INT);
-    $stmt->bindParam(':transaction_order', $transaction, PDO::PARAM_INT);
-    // $stmt->bindParam(':time_created', $time_created);
-    $id_from = mt_rand(1,5);
-    $shift = $shifts[mt_rand(0, 4)];
-    $id_to = mt_rand(1,5);
+    $stmt->bindParam(':id_transaction', $transaction, PDO::PARAM_INT);
+    $id_shift = mt_rand(1, 100);
+    $id_from = mt_rand(1,20);
+    $id_to = mt_rand(1,20);
     $id_created = mt_rand(1,4);
     $transaction = mt_rand(1,15);
     $result = $stmt->execute();

@@ -39,7 +39,7 @@ function generateRandomMembers($dbh, $num_members, $nationalities, $start, $end)
     for ($i = 0; $i < $num_members; $i++) {
         $date_sign_up = randomDateInRange($start, $end);
 
-        $sql = 'INSERT INTO members (id_google, first_name, middle_name, last_name, nationality, date_sign_up, en, cn, kr, th, my, ru, fr, de) VALUES (:id_google, :first_name, :middle_name, :last_name, :nationality, ' . $date_sign_up . ', :en, :cn, :kr, :th, :my, :ru, :fr, :de)';
+        $sql = 'INSERT INTO members (id_google, nickname, first_name, middle_name, last_name, nationality, date_sign_up, en, cn, kr, th, my, ru, fr, de) VALUES (:id_google, :nickname, :first_name, :middle_name, :last_name, :nationality, ' . $date_sign_up . ', :en, :cn, :kr, :th, :my, :ru, :fr, :de)';
         echo $sql;
         echo '<br>';
         $id_google = generateRandomNumberString();
@@ -48,11 +48,12 @@ function generateRandomMembers($dbh, $num_members, $nationalities, $start, $end)
         $nationality = $nationalities[mt_rand(0, count($nationalities) - 1)];
         echo $nationality;
         echo '<br>';
-        $first_name = generateRandomString(20, .5);
+        $nickname = generateRandomString(20, .7);
+        $first_name = generateRandomString(20, .7);
         echo $first_name;
         echo '<br>';
-        $middle_name = generateRandomString(20, .5);
-        $last_name = generateRandomString(20, .5);
+        $middle_name = generateRandomString(20, .7);
+        $last_name = generateRandomString(20, .7);
         $en = strval(mt_rand(0, 1));
         echo $en;
         echo '<br>';
@@ -65,6 +66,7 @@ function generateRandomMembers($dbh, $num_members, $nationalities, $start, $end)
         $de = strval(mt_rand(0, 1));
         $stmt = $dbh->prepare($sql);
         $stmt->bindParam(':id_google', $id_google, PDO::PARAM_STR);
+        $stmt->bindParam(':nickname', $nickname, PDO::PARAM_STR);
         $stmt->bindParam(':first_name', $first_name, PDO::PARAM_STR);
         $stmt->bindParam(':middle_name', $middle_name, PDO::PARAM_STR);
         $stmt->bindParam(':last_name', $last_name, PDO::PARAM_STR);
@@ -82,7 +84,7 @@ function generateRandomMembers($dbh, $num_members, $nationalities, $start, $end)
         $result = $stmt->execute();
         echo var_dump($stmt->errorInfo());
         echo '<br>';
-        return $result;
+        // return $result;
     }
 }
 
@@ -92,15 +94,15 @@ $end = new DateTime();
 $nationalities = ['jp', 'cn', 'tw', 'kr', 'th', 'my', 'ru', 'other'];
 
 $dbh = new PDO('mysql:host=localhost;dbname=gairyo', 'root', '111111', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-// generateRandomMembers($dbh, $num_members, $nationalities, $start, $end);
-for ($i = 0; $i < 11; $i++) {
-    $sql = 'UPDATE members SET nickname = :nickname WHERE id_user=:id_user';
-    $stmt = $dbh->prepare($sql);
-    $stmt->bindParam(':nickname', $nickname);
-    $stmt->bindParam(':id_user', $id_user, PDO::PARAM_INT);
-    $nickname = generateRandomString();
-    $id_user = $i+1;
-    $stmt->execute();
-    echo $stmt->errorInfo();
-    echo '<br>';
-}
+generateRandomMembers($dbh, $num_members, $nationalities, $start, $end);
+// for ($i = 0; $i < 11; $i++) {
+//     $sql = 'UPDATE members SET nickname = :nickname WHERE id_user=:id_user';
+//     $stmt = $dbh->prepare($sql);
+//     $stmt->bindParam(':nickname', $nickname);
+//     $stmt->bindParam(':id_user', $id_user, PDO::PARAM_INT);
+//     $nickname = generateRandomString();
+//     $id_user = $i+1;
+//     $stmt->execute();
+//     echo $stmt->errorInfo();
+//     echo '<br>';
+// }

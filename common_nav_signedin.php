@@ -5,20 +5,28 @@ class userOrientedRequest
     {
         $this->id_user = $id_user;
         $this->arrayRequest = $arrayRequest;
-        $this->transaction_order = $arrayRequest["transaction_order"];
-        global $arrayMembers;
-        if (intval($arrayRequest["id_from"]) === $id_user) {
+        $this->id_transaction = $arrayRequest["id_transaction"];
+        $this->time_proceeded = $arrayRequest["time_proceeded"];
+        global $arrayMembersByIdUser;
+        global $dbh;
+        $sql = 'SELECT date_shift, shift FROM shifts_assigned WHERE id_shift=:id_shift';
+        $id_shift = $arrayRequest["id_shift"];
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindParam(':id_shift', $id_shift, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        if ($arrayRequest["id_from"] === $id_user) {
             $this->position = 'from';
             $this->agreed_user = $arrayRequest["agreed_from"];
             $this->checked_user = $arrayRequest["checked_from"];
-            $this->counterpart = $arrayMembers[intval($arrayRequest["id_to"]) + 1];
-            $this->script = 'Your ' . $arrayRequest["date_shift"] . ' ' . $arrayRequest["shift"] . ' to ' . $this->counterpart["nickname"];
+            $this->counterpart = $arrayMembersByIdUser[intval($arrayRequest["id_to"])];
+            $this->script = 'Your ' . $result[0]["date_shift"] . ' ' . $result[0]["shift"] . ' to ' . $this->counterpart["nickname"];
         } else {
             $this->position = 'to';
             $this->agreed_user = $arrayRequest["agreed_to"];
             $this->checked_user = $arrayRequest["checked_to"];
-            $this->counterpart = $arrayMembers[intval($arrayRequest["id_from"]) + 1];
-            $this->script = $this->counterpart["nickname"] . '\'s ' . $arrayRequest["date_shift"] . ' ' . $arrayRequest["shift"] . ' to you';
+            $this->counterpart = $arrayMembersByIdUser[intval($arrayRequest["id_from"])];
+            $this->script = $this->counterpart["nickname"] . '\'s ' . $result[0]["date_shift"] . ' ' . $result[0]["shift"] . ' to you';
         }
 
         // Notification script
@@ -36,31 +44,22 @@ class userOrientedRequest
     }
 }
 
-
-// Get nicknames of whole members
-// Column"id_user" = $id_u
-$sql = 'SELECT nickname FROM members';
-$stmt = $dbh->prepare($sql);
-$stmt->execute();
-$arrayMembers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-// echo var_dump($arrayMembers);
-// echo '<br>';
-
 // Get requests
-$sql = 'SELECT * FROM requests_pending WHERE id_from=:user_id OR id_to=:user_id ORDER BY time_proceeded DESC LIMIT 5';
+$sql = 'SELECT * FROM requests_pending WHERE id_from=:id_user OR id_to=:id_user ORDER BY time_proceeded DESC LIMIT 5';
 $stmt = $dbh->prepare($sql);
-$stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-$user_id = 2;
+$stmt->bindParam(':id_user', $id_user);
 $stmt->execute();
 $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
-echo var_dump($requests);
-echo '<br>';
+// var_dump($requests); OK
 // From array to object
+
 for ($i = 0; $i < count($requests); $i++) {
+    // var_dump($requests[$i]);
     $requests[$i] = new userOrientedRequest($id_user, $requests[$i]);
 }
-echo var_dump($requests);
-echo '<br>';
+// echo '$requests = ';
+// echo var_dump($requests);
+// echo '<br>';
 ?>
 
 <section id="section-nav">
@@ -83,7 +82,7 @@ echo '<br>';
                     <?php
                     $numNew = 0;
                     for ($i = 0; $i < count($requests); $i++) {
-                        if (!intval($requests->checked_user)) {
+                        if (!intval($requests[$i]->checked_user)) {
                             $numNew++;
                         }
                     }
@@ -95,10 +94,10 @@ echo '<br>';
                     <?php
                     for ($i = 0; $i < count($requests); $i++) {
                         $request = $requests[$i];
-                        echo '<a href="./logs.php?transaction_order="' . $request->transaction_order . '" class="dropdown-item">' . $requests[$i]->scriptNotice . '</a>';
+                        echo '<a href="./logs.php?id_transaction="' . $request->id_transaction . '" class="dropdown-item">' . $requests[$i]->scriptNotice . '</a>';
                     }
                     ?>
-                    <!-- Like <a href="./transactions.php?transaction_order=3" class="dropdown-item">Request 1</a> -->
+                    <!-- Like <a href="./transactions.php?id_transaction=3" class="dropdown-item">Request 1</a> -->
                     <div class="dropdown-divider"></div>
                     <a href="#" class="dropdown-item">More</a>
                 </div>

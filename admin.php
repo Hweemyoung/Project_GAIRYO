@@ -21,7 +21,7 @@ if (!$signedin) {
     require './admin_signedout.php';
 } else {
     require './common_nav_signedin.php';
-    require './admin__main.php';
+    require './admin_signedin.php';
 }
 require './common_footer.php';
 ?>
