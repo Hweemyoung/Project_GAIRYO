@@ -143,7 +143,7 @@ function echoShiftMemberElements($arrayMembersByIdUser, $arrayShiftMembers)
     }
 }
 
-function echoRequestsBoard($requests)
+function echoRequestsList($requests)
 {
     echo '
         <div class="div-list-title d-flex">
@@ -197,6 +197,46 @@ function echoRequestsBoard($requests)
     // </a>
 }
 
+function echoBoardList($arrayBoardItems)
+{
+    echo '
+        <div class="div-list-title d-flex">
+            <h5 class="mx-auto">Board</h5>
+            <a href="#"><i class="fas fa-angle-right"></i></a>
+        </div>
+        <div class="list-group">';
+    foreach ($arrayBoardItems as $boardItem) {
+        // $request: userOrientedRequest
+        $title = $boardItem["title"];
+        $timeCreated = date('j M Y', strtotime($boardItem["timeCreated"]));
+        
+        if (!$boardItem["checked_user"]) {
+            echo '
+            <a href="#" class="list-group-item list-group-item-action list-group-item-info">';
+        } else {
+            echo '
+            <a href="#" class="list-group-item list-group-item-action">';
+        }
+        echo strtr('
+            <span>$title</span>',
+            array('$title' => $title));
+        
+        // if (!$request->checked_user) {
+            // echo '
+            // <div class="badge badge-sm badge-primary">new</div>
+            // ';
+        // }
+
+        echo strtr('
+            <span>$timeCreated</span>
+            </a>',
+            array('$timeCreated' => $timeCreated));
+    }
+    echo '
+        </div>
+    ';
+}
+
 function echoExclamations($nicksAndAd){
     if ($nicksAndAd["arrayNicknamesTo"]) {
         echo '
@@ -238,6 +278,11 @@ $arrayShiftMembers = $stmt->fetchAll(PDO::FETCH_GROUP);
 // var_dump($arrayShiftMembers);OK
 // $arrayShiftMembers = array('A'=>array(0=>array('other columns'=>'field values'), 1=>...), 'B'=>array(...), ...)
 
+// Get Board Items
+$sql = strtr('SELECT title, id_board_item, checked_$id_user FROM board ORDER BY time_created ASC LIMIT 5', array('$id_user'=>$id_user));
+$stmt = $dbh->prepare($sql);
+$stmt->execute();
+$arrayBoardItems = $stmt->fetchAll();
 
 ?>
 
@@ -335,11 +380,13 @@ $arrayShiftMembers = $stmt->fetchAll(PDO::FETCH_GROUP);
             <div class="row">
                 <div class="col-md-6">
                     <?php
-                    echoRequestsBoard($requests);
+                    echoRequestsList($requests);
                     ?>
                 </div>
                 <div class="col-md-6">
-
+                    <?php
+                    echoBoardList($arrayBoardItems);
+                    ?>
                     <div class="div-list-title d-flex">
                         <h5 class="mx-auto">Notices</h5>
                         <a href="#"><i class="fas fa-angle-right"></i></a>
