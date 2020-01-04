@@ -206,11 +206,10 @@ function echoBoardList($arrayBoardItems)
         </div>
         <div class="list-group">';
     foreach ($arrayBoardItems as $boardItem) {
-        // $request: userOrientedRequest
         $title = $boardItem["title"];
-        $timeCreated = date('j M Y', strtotime($boardItem["timeCreated"]));
+        $dateCreated = date('j M Y', strtotime($boardItem["date_created"]));
         
-        if (!$boardItem["checked_user"]) {
+        if (!array_values($boardItem)[count($boardItem) - 1]) {
             echo '
             <a href="#" class="list-group-item list-group-item-action list-group-item-info">';
         } else {
@@ -228,9 +227,9 @@ function echoBoardList($arrayBoardItems)
         // }
 
         echo strtr('
-            <span>$timeCreated</span>
+            <span>$dateCreated</span>
             </a>',
-            array('$timeCreated' => $timeCreated));
+            array('$dateCreated' => $dateCreated));
     }
     echo '
         </div>
@@ -279,10 +278,12 @@ $arrayShiftMembers = $stmt->fetchAll(PDO::FETCH_GROUP);
 // $arrayShiftMembers = array('A'=>array(0=>array('other columns'=>'field values'), 1=>...), 'B'=>array(...), ...)
 
 // Get Board Items
-$sql = strtr('SELECT title, id_board_item, checked_$id_user FROM board ORDER BY time_created ASC LIMIT 5', array('$id_user'=>$id_user));
+$sql = strtr('SELECT id_board_item, title, content, date_created, checked_$id_user FROM board ORDER BY date_created DESC LIMIT 5', array('$id_user'=>$id_user));
 $stmt = $dbh->prepare($sql);
 $stmt->execute();
-$arrayBoardItems = $stmt->fetchAll();
+// var_dump($stmt->errorInfo());OK
+$arrayBoardItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// var_dump($arrayBoardItems);OK
 
 ?>
 
@@ -387,31 +388,6 @@ $arrayBoardItems = $stmt->fetchAll();
                     <?php
                     echoBoardList($arrayBoardItems);
                     ?>
-                    <div class="div-list-title d-flex">
-                        <h5 class="mx-auto">Notices</h5>
-                        <a href="#"><i class="fas fa-angle-right"></i></a>
-                    </div>
-                    <div class="list-group">
-                        <a href="#" class="list-group-item list-group-item-action list-group-item-info">
-                            <span>上段固定アイテム</span>
-                            <span>23 Oct 2019</span>
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <span>普通のお知らせ1</span>
-                            <div class="badge badge-sm badge-primary">new</div>
-                            <span>2 Dec 2019</span>
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action list-group-item-warning">
-                            <span>重要なお知らせ</span>
-                            <span>1 Dec 2019</span>
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <span>普通のお知らせ2</span>
-                            <span>30 Nov 2019</span>
-                        </a>
-                        <!-- <a href="#" class="list-group-item">item <span>2 Dec 2019</span></a> -->
-                        <!-- <a href="#" class="list-group-item">item <span>2 Dec 2019</span></a> -->
-                    </div>
                 </div>
             </div>
         </section>
