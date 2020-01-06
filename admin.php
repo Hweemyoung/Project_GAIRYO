@@ -18,7 +18,7 @@ require 'check_session.php';
 require './admin_header.php';
 if (!$signedin) {
     require './common_nav_signedout.php';
-    require './admin_signedout.php';
+    require './common_main_signedout.php';
 } else {
     require './common_nav_signedin.php';
     require './admin_signedin.php';

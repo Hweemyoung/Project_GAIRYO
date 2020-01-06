@@ -1,14 +1,16 @@
 <?php
 function echoTr($arrayShifts)
 {
-    foreach($arrayShifts as $shift){
+    foreach ($arrayShifts as $shift) {
 
         echo '
             <tr>';
-        echo strtr('
+        echo strtr(
+            '
                 <td>$date_shift</td>
                 <td>$shift</td>',
-                array('$date_shift'=>$shift["date_shift"], '$shift'=>$shift["shift"]));
+            array('$date_shift' => $shift["date_shift"], '$shift' => $shift["shift"])
+        );
         echo '
                 <td>
                     <div class="dropdown">
@@ -35,40 +37,40 @@ $arrayShifts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
-<div class="tab-pane fade" id="tab-content1">
-    <h5 class="text-center">Shifts Assigned</h5>
-    <table class="table table-striped">
-        <tbody>
-            <?php
-            foreach($arrayShifts as $arrayShift){
-                echo '
+
+<h5 class="text-center">Shifts Assigned</h5>
+<table class="table table-striped">
+    <tbody>
+        <?php
+        foreach ($arrayShifts as $arrayShift) {
+            echo '
                     <tr>
                 ';
-                $date = new DateTime($arrayShift["date_shift"]);
-                $date = $date->getTimestamp();
-                $dateShift = date('M j (D) ', $date);
-                $shift = $arrayShift["shift"];
-                switch (intval(date('w', $date))){
-                    case 0:
-                        echo strtr('
+            $date = new DateTime($arrayShift["date_shift"]);
+            $date = $date->getTimestamp();
+            $dateShift = date('M j (D) ', $date);
+            $shift = $arrayShift["shift"];
+            switch (intval(date('w', $date))) {
+                case 0:
+                    echo strtr('
                         <td class="text-danger">$dateShift</td>
-                        ', array('$dateShift'=>$dateShift));
-                        break;
-                    case 6:
-                        echo strtr('
+                        ', array('$dateShift' => $dateShift));
+                    break;
+                case 6:
+                    echo strtr('
                         <td class="text-primary">$dateShift</td>
-                        ', array('$dateShift'=>$dateShift));
-                        break;
-                    default:
-                        echo "
+                        ', array('$dateShift' => $dateShift));
+                    break;
+                default:
+                    echo "
                         <td>$dateShift</td>
                         ";
-                        break;
-                }
-                echo "
+                    break;
+            }
+            echo "
                         <td>$shift</td>
                 ";
-                echo '
+            echo '
                         <td>
                             <div class="dropdown">
                                 <a href="#" data-toggle="dropdown"><i class="fas fa-ellipsis-h"></i></a>
@@ -80,11 +82,10 @@ $arrayShifts = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                         </td>
                 ';
-                echo '
+            echo '
                     </tr>
-                ';   
-            }
-                ?>
-        </tbody>
-    </table>
-</div>
+                ';
+        }
+        ?>
+    </tbody>
+</table>
