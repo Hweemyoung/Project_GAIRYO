@@ -14,7 +14,9 @@ require 'check_session.php';
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./css/shifts.css">
     <link rel="stylesheet" href="./css/custom_schedule.css">
+    <link rel="stylesheet" href="./css/submitform.css">
 </head>
+<body>
 <?php
 require './shifts_header.php';
 if (!$signedin) {
@@ -26,4 +28,5 @@ if (!$signedin) {
 }
 require './common_footer.php';
 ?>
+</body>
 

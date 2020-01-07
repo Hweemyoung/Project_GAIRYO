@@ -1,6 +1,15 @@
-// Toggle only following variables
-const thisMonth = 12;
-const thisYear = 2020;
+function loadRecords(arrayRecords) {
+    for (name in arrayRecords) {
+        if (arrayRecords[name] === '0') {
+            continue;
+        } else {
+            // console.log(name);
+            checkLabels($('#form-application label').filter(function () {
+                return $(this).attr('for') == name;
+            }));
+        }
+    }
+}
 
 var listShifts = ['A', 'B', 'H', 'C', 'D', 'O']
 var weekdays = new Array(7);
@@ -25,12 +34,11 @@ months[9] = "Oct";
 months[10] = "Nov";
 months[11] = "Dec";
 
-const monthShift = months[thisMonth - 1] + ' ' + String(thisYear); // String('Dec 2020')
+const monthShift = months[submitMonth - 1] + ' ' + String(submitYear); // String('Dec 2020')
 var d = new Date('15 ' + monthShift);
 
 // Clone .form-check-inline
 const checkboxFrame = $('#div-form form>.row table tbody tr td .form-group .form-check-inline').clone();
-console.log(checkboxFrame);
 // Remove .form-group
 $('#div-form form>.row table tbody tr td .form-group').remove();
 // Clone raw row w/o .form-group
@@ -141,17 +149,16 @@ $('#btn-clear').click(function (event) {
 
 // btn-comfirm
 // Complete modal body
-lastMonth
 $('#btn-confirm').click(function (event) {
-    $('#div-form table tbody tr').clone().filter(function () {
+    var $trs = $('#div-form table tbody tr').clone().filter(function () {
         return $(this).find('td:last-child input').is(':checked')
     }).map(function () {
         // For each tr
-        $(this).find('td:first-child').each(function(){
+        $(this).find('td:first-child').each(function () {
             // For each td:first-child
-            if (parseInt($(this).text()) < 16){
+            if (parseInt($(this).text()) < 16) {
                 $(this).prepend(document.createTextNode(' '));
-                $(this).prepend(months[thisMonth - 1]);
+                $(this).prepend(months[submitMonth - 1]);
             } else {
                 $(this).prepend(document.createTextNode(' '));
                 $(this).prepend(months[lastMonth.getMonth()] + ' ');
@@ -167,7 +174,7 @@ $('#btn-confirm').click(function (event) {
                 return this.nextSibling.nextSibling
             });
             $td.empty();
-            texts.each(function(){
+            texts.each(function () {
                 $('<kbd></kbd>').append(this).appendTo($td);
                 // $td.append(this)
                 $td.append(document.createTextNode(' '));
@@ -183,13 +190,21 @@ $('#btn-confirm').click(function (event) {
             // }
         });
         return this
-    }).appendTo('#modal-confirm .modal-body tbody');
+    });
+    if ($trs.length !== 0) {
+        $trs.appendTo('#modal-confirm .modal-body tbody');
+    } else {
+        $('<tr><td colspan=3>None</td></tr>').appendTo('#modal-confirm .modal-body tbody');
+    }
     $('#modal-confirm').modal('show');
 });
 // Clear modal body
 $('#modal-confirm').on('hidden.bs.modal', function (event) {
     $('#modal-confirm .modal-body tbody').empty();
 })
+
+// Load records
+loadRecords(arrayRecords);
 
 
 // $('#div-form table tbody tr form-group form-check-inline').filter(function () {

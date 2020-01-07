@@ -54,7 +54,7 @@ $dateStart = getDateTimeOfDayFromWeek($Y, $currentPage, 'Mon')->format('Y-m-d');
 // var_dump($dateStart);OK
 $dateEnd = getDateTimeOfDayFromWeek($Y, $currentPage, 'Sun')->format('Y-m-d');
 // var_dump($dateEnd);OK
-$sql = 'SELECT date_shift, id_user, shift FROM shifts_assigned WHERE date_shift >= ? AND date_shift <= ? ORDER BY date_shift DESC';
+$sql = 'SELECT date_shift, id_user, shift FROM shifts_assigned WHERE date_shift >= ? AND date_shift <= ? ORDER BY date_shift ASC';
 $stmt = $dbh->prepare($sql);
 $stmt->execute(array($dateStart, $dateEnd));
 // var_dump($stmt->errorInfo());OK
@@ -193,14 +193,22 @@ function echoAccordion($arrayShiftsByDate)
         $currentDateTime = new DateTime($date);
         // var_dump($currentDateTime);
         $headerTitle = $currentDateTime->format('M j (D)');
+        if (!isset($_GET["date"])){
+            $show = '';
+        } else if($_GET["date"] !== $date){
+            $show = '';
+        } else {
+            $show = 'show';
+        }
+        $w = $currentDateTime->format('w');
         echo '
             <div class="card">
         ';
         echo strtr('
-                <div class="card-header"><a href="$date" class="card-link" data-toggle="collapse">$headerTitle</a></div>
-        ', array('$date' => $date, '$headerTitle' => $headerTitle));
+                <div class="card-header"><a href="#day$w" class="card-link" data-toggle="collapse">$headerTitle</a></div>
+        ', array('$w' => $w, '$headerTitle' => $headerTitle));
         echo strtr('
-                <div class="collapse show" data-parent="#accordion" id="$date">
+                <div class="collapse $show" data-parent="#accordion" id="day$w">
                     <div class="card-body">
                         <div class="row no-gutters">
                             <!-- col left -->
@@ -212,7 +220,7 @@ function echoAccordion($arrayShiftsByDate)
                                         </ul>
                                     </div>
                                     <div class="div-columns">
-            ', array('$date' => $date));
+            ', array('$w' => $w, '$show'=> $show));
         $matchShiftsAndColumns = array(array('A', 'C'), array('H', 'D'), array('B'));
         for ($i = 0; $i < count($matchShiftsAndColumns); $i++) {
             echo '
@@ -259,15 +267,17 @@ function echoAccordion($arrayShiftsByDate)
             foreach ($arrayShiftsByDate[$date][$shift] as $arrayShift) {
                 if ($id_user !== $arrayShift["id_user"]) {
                     $nickname = $arrayMembersByIdUser[$arrayShift["id_user"]]["nickname"];
+                    $active = '';
                 } else {
                     $nickname = 'YOU';
+                    $active = 'active';
                 }
                 echo '
-                                                <li class="list-group-item">
+                                                <li class="list-group-item $active">
                                                     <div class="dropdown">';
                 echo strtr('
                                                         <a data-toggle="dropdown">$nickname</a>
-                ', array('$nickname' => $nickname));
+                ', array('$active' => $active, '$nickname' => $nickname));
                 echo strtr('
                                                         <div class="dropdown-menu dropdown-menu-right">
                                                             <div class="dropdown-header">$nickname</div>

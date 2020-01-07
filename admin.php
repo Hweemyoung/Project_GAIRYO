@@ -14,6 +14,7 @@ require 'check_session.php';
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./css/admin.css">
 </head>
+<body>
 <?php
 require './admin_header.php';
 if (!$signedin) {
@@ -25,6 +26,7 @@ if (!$signedin) {
 }
 require './common_footer.php';
 ?>
+</body>
 
 <body>
     <?php
