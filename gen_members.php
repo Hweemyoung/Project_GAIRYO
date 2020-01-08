@@ -114,7 +114,7 @@ $host = 'localhost';
 $DBName = 'gairyo';
 $userName = 'root';
 $pw = '111111';
-$dbh = new PDO(strtr('mysql:host=	$host;dbname=$DBName', '$userName', '$pw', array('$host'=>$host, '$DBName'=>$DBName, '$userName'=>$userName, '$pw'=>$pw)), array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+$dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
 // generateRandomMembers($dbh, $num_members, $nationalities, $start, $end);
 // for ($i = 0; $i < 11; $i++) {
 //     $sql = 'UPDATE members SET nickname = :nickname WHERE id_user=:id_user';
