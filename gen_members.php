@@ -34,6 +34,19 @@ function generateRandomString($maxlength = 20, $stopprop = .5)
     return $randomString;
 }
 
+function generateTableMembers($arrayLanguages){
+    global $dbh, $DBName;
+    $sql = "CREATE TABLE `$DBName`.`members` ( `id_google` CHAR(21) NOT NULL , `id_user` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT , `nickname` VARCHAR(30) NOT NULL , `first_name` VARCHAR(30) NOT NULL , `middle_name` VARCHAR(30) NULL DEFAULT NULL , `last_name` VARCHAR(30) NOT NULL , `date_sign_up` DATE NOT NULL";
+    foreach($arrayLanguages as $lang){
+        $sql = $sql . " , `$lang`" . ' BOOLEAN NOT NULL DEFAULT FALSE';
+    }
+    $sql = $sql . " , PRIMARY KEY (`id_user`)) ENGINE = MyISAM;";
+    // echo $sql;
+    $stmt = $dbh->prepare($sql);
+    $stmt->execute();
+    var_dump($stmt->errorInfo());
+}
+
 function generateRandomMembers($dbh, $num_members, $nationalities, $start, $end)
 {
     for ($i = 0; $i < $num_members; $i++) {
@@ -91,10 +104,18 @@ function generateRandomMembers($dbh, $num_members, $nationalities, $start, $end)
 $num_members = 10;
 $start = new DateTime('2019-10-03');
 $end = new DateTime();
-$nationalities = ['jp', 'cn', 'tw', 'kr', 'th', 'my', 'ru', 'other'];
+$arrayLanguages = ['cn', 'tw', 'kr', 'th', 'my', 'ru', 'other'];
 
-$dbh = new PDO('mysql:host=localhost;dbname=gairyo', 'root', '111111', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-generateRandomMembers($dbh, $num_members, $nationalities, $start, $end);
+// $host = 'sql304.epizy.com';
+// $DBName = 'epiz_24956964_gairyo';
+// $userName = 'epiz_24956964';
+// $pw = 'STZDGxr4iOPDhv';
+$host = 'localhost';
+$DBName = 'gairyo';
+$userName = 'root';
+$pw = '111111';
+$dbh = new PDO(strtr('mysql:host=	$host;dbname=$DBName', '$userName', '$pw', array('$host'=>$host, '$DBName'=>$DBName, '$userName'=>$userName, '$pw'=>$pw)), array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+// generateRandomMembers($dbh, $num_members, $nationalities, $start, $end);
 // for ($i = 0; $i < 11; $i++) {
 //     $sql = 'UPDATE members SET nickname = :nickname WHERE id_user=:id_user';
 //     $stmt = $dbh->prepare($sql);
@@ -106,3 +127,4 @@ generateRandomMembers($dbh, $num_members, $nationalities, $start, $end);
 //     echo $stmt->errorInfo();
 //     echo '<br>';
 // }
+generateTableMembers($arrayLanguages);

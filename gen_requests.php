@@ -18,7 +18,15 @@ $end = new DateTime('2020-01-15');
 $shifts = ['A', 'B', 'H', 'C', 'D'];
 $num_shifts = 30;
 
-$dbh = new PDO('mysql:host=localhost;dbname=gairyo', 'root', '111111', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+// $host = 'sql304.epizy.com';
+// $DBName = 'epiz_24956964_gairyo';
+// $userName = 'epiz_24956964';
+// $pw = 'STZDGxr4iOPDhv';
+$host = 'localhost';
+$DBName = 'gairyo';
+$userName = 'root';
+$pw = '111111';
+$dbh = new PDO(strtr('mysql:host=	$host;dbname=$DBName', '$userName', '$pw', array('$host'=>$host, '$DBName'=>$DBName, '$userName'=>$userName, '$pw'=>$pw)), array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
 for ($i = 0; $i < $num_shifts; $i++) {
     $date = randomDateInRange($start, $end);
     $time_created = randomDateTimeInRange($start, new DateTime($date));

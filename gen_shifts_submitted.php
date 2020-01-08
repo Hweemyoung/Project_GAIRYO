@@ -2,7 +2,15 @@
 $arrayShifts = array('O', 'A', 'B', 'H', 'C');
 $arrayDates = range(1, 31);
 
-$dbh = new PDO('mysql:host=localhost;dbname=gairyo', 'root', '111111', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+// $host = 'sql304.epizy.com';
+// $DBName = 'epiz_24956964_gairyo';
+// $userName = 'epiz_24956964';
+// $pw = 'STZDGxr4iOPDhv';
+$host = 'localhost';
+$DBName = 'gairyo';
+$userName = 'root';
+$pw = '111111';
+$dbh = new PDO(strtr('mysql:host=	$host;dbname=$DBName', '$userName', '$pw', array('$host'=>$host, '$DBName'=>$DBName, '$userName'=>$userName, '$pw'=>$pw)), array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
 function randFloat(){
     return mt_rand(0, mt_getrandmax() - 1) / mt_getrandmax();
 }
