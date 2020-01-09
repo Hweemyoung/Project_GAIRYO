@@ -45,7 +45,7 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
     <div class="container px-1">
         <hr>
         <section>
-            <form action="" method="POST">
+            <form action="./upload_transaction.php" method="POST">
                 <input id="input-ids" type="hidden" name="formIDs" value="1">
                 <div class="form-item" id="1">
                     <div class="row no-gutters">

@@ -79,7 +79,7 @@ function updateOptions(idx, $selects) {
     if (idx == 1) {
         // Currently at Month
         for (Ym in window.arrayShiftsByIdUser[selectIdFrom.value]) {
-            var $option = $('<option></option>').attr('value', new Date(Ym).getMonth() + 1);
+            var $option = $('<option></option>').attr('value', Ym);
             $option.text(Ym);
             $option.appendTo($select);
         }
@@ -88,19 +88,21 @@ function updateOptions(idx, $selects) {
     var selectMonth = $selects[1];
     if (idx == 2) {
         // Currently at Day
-        var YM = $(selectMonth).children(`option[value=${selectMonth.value}]`).text()
+        var YM = selectMonth.value;
         for (d in window.arrayShiftsByIdUser[selectIdFrom.value][YM]) {
             var $option = $('<option></option>').attr('value', d);
             var weekday = weekdays[new Date(YM + ` ${d}`).getDay()];
             $option.text(d + ` (${weekday})`);
             $option.appendTo($select);
         }
+        // Set input-year
+
         return
     }
     var selectDay = $selects[2];
     if (idx == 3) {
         // Currently at Shift
-        for (shift in window.arrayShiftsByIdUser[selectIdFrom.value][$(selectMonth).children(`option[value=${selectMonth.value}]`).text()][selectDay.value]) {
+        for (shift in window.arrayShiftsByIdUser[selectIdFrom.value][selectMonth.value][selectDay.value]) {
             var $option = $('<option></option>').attr('value', shift);
             $option.text(shift);
             $option.appendTo($select);
@@ -115,7 +117,7 @@ function updateOptions(idx, $selects) {
             if (idUser === selectIdFrom.value){
                 continue
             }
-            var days = window.arrayShiftsByIdUser[idUser][$(selectMonth).children(`option[value=${selectMonth.value}]`).text()];
+            var days = window.arrayShiftsByIdUser[idUser][selectMonth.value];
             if (days) {
                 var shifts = days[selectDay.value];
                 if (shifts) {
@@ -210,6 +212,7 @@ function addFormID($formItem) {
         var newName = $(this).attr('name') + '_' + String(window.formID);
         $(this).attr('name', newName);
     });
+    $formItem.find('input.input-year').attr('name', 'year_' + window.formID);
 }
 
 function addEvents($formItem) {
