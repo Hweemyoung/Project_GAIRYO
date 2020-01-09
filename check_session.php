@@ -89,7 +89,7 @@ session_start();
 $host = 'localhost';
 $DBName = 'gairyo';
 $userName = 'root';
-$pw = '9957';
+$pw = '111111';
 $dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
 // $signedin = check_signedin();
 $signedin = true;

@@ -1,3 +1,12 @@
+<?php
+// Hparams
+$enableSubmit = 1;
+$Y = '2020';
+$m = '02';
+$message = 'シフト希望は2020年2月2日から受け付けます';
+
+
+?>
 <main>
     <div class="container px-1">
         <section id="section-main">
@@ -16,7 +25,22 @@
             <div class="tab-content">
                 <div class="tab-pane fade <?php if(!isset($_GET["page"])){echo 'active show';}?>" id="tab-content1"><?php require './tab_my_shifts.php';?></div>
                 <div class="tab-pane fade <?php if(isset($_GET["page"])){echo 'active show';}?>" id="tab-content2"><?php require './tab_daily_members.php';?></div>
-                <div class="tab-pane fade" id="tab-content3"><?php require './tab_submit_shifts.php';?></div>
+                <div class="tab-pane fade" id="tab-content3">
+                <?php if ($enableSubmit) {
+                    echo strtr('
+                    <script>
+                        const submitMonth = $m;
+                        const submitYear = $Y;
+                    </script>
+                    ', array('$m'=>intval($m), '$Y'=>intval($Y)));
+                    require './tab_submit_shifts.php';
+                    } else {
+                        echo "
+                    <p>$message</p>
+                        ";
+                    }
+                ?>
+                </div>    
             </div>
         </section>
     </div>

@@ -4,9 +4,7 @@ function loadRecords(arrayRecords) {
             continue;
         } else {
             // console.log(name);
-            checkLabels($('#form-application label').filter(function () {
-                return $(this).attr('for') == name;
-            }));
+            checkLabels($(`#form-application label[for=${name}]`))
         }
     }
 }

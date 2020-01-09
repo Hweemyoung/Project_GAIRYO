@@ -1,7 +1,4 @@
 <?php
-// Hparams
-$Y = '2020';
-$m = '02';
 
 function getArrayRecords($Y, $m)
 {
@@ -101,8 +98,6 @@ $arrayRecords = getArrayRecords($Y, $m);
     <button id="btn-confirm" class="btn btn-primary" title="Final check" data-toggle="modal"><i class="fas fa-check"></i></button>
 </div>
 <script>
-    const submitMonth = <?= intval($m) ?>;
-    const submitYear = <?= intval($Y) ?>;
-    var arrayRecords = <?= json_encode($arrayRecords); ?>
+    var arrayRecords = <?=json_encode($arrayRecords)?>;
 </script>
 <script src="./js/submitform.js"></script>
