@@ -113,7 +113,7 @@ function updateOptions(idx, $selects) {
     if (idx == 4) {
         shiftSelected = selectShift.value;
         for (idUser in window.arrayShiftsByIdUser) {
-            // From == To
+            // From == To: this condition is not required but can save calculation.
             if (idUser === selectIdFrom.value){
                 continue
             }

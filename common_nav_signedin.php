@@ -1,36 +1,45 @@
 <?php
 class userOrientedRequest
 {
-    public function __construct($id_user, $arrayRequest)
+    public function __construct($id_user, $arrayRequest, $arrayMembersByIdUser, $dbh)
     {
-        $this->id_user = $id_user;
+        $this->idUser = $id_user;
         $this->arrayRequest = $arrayRequest;
-        $this->id_transaction = $arrayRequest["id_transaction"];
-        $this->time_proceeded = $arrayRequest["time_proceeded"];
-        global $arrayMembersByIdUser;
-        global $dbh;
+        $this->idTrans = $arrayRequest["id_transaction"];
+        $this->timeProceeded = $arrayRequest["time_proceeded"];
+        $this->nicknameFrom = $arrayMembersByIdUser[$arrayRequest["id_from"]]["nickname"];
+        $this->nicknameTo = $arrayMembersByIdUser[$arrayRequest["id_to"]]["nickname"];
+        $this->nicknameCreated = $arrayMembersByIdUser[$arrayRequest["id_created"]]["nickname"];
         $sql = 'SELECT date_shift, shift FROM shifts_assigned WHERE id_shift=:id_shift';
-        $id_shift = $arrayRequest["id_shift"];
+        $this->idShift = $arrayRequest["id_shift"];
+        $idShift = $this->idShift;
         $stmt = $dbh->prepare($sql);
-        $stmt->bindParam(':id_shift', $id_shift, PDO::PARAM_INT);
+        $stmt->bindParam(':id_shift', $idShift, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetchAll();
+        $this->dateShift = $result[0]["date_shift"];
+        $this->shift = $result[0]["shift"];
+        $this->status = $arrayRequest["status"];
         if ($arrayRequest["id_from"] === $id_user) {
             $this->position = 'from';
-            $this->agreed_user = $arrayRequest["agreed_from"];
-            $this->checked_user = $arrayRequest["checked_from"];
-            $this->counterpart = $arrayMembersByIdUser[intval($arrayRequest["id_to"])];
-            $this->script = 'Your ' . $result[0]["date_shift"] . ' ' . $result[0]["shift"] . ' to ' . $this->counterpart["nickname"];
-        } else {
+            $this->agreedUser = $arrayRequest["agreed_from"];
+            $this->checkedUser = $arrayRequest["checked_from"];
+            $this->script = 'Your ' . $this->dateShift . ' ' . $this->shift . ' to ' . $this->nicknameTo;
+        } else if ($arrayRequest["id_to"] === $id_user){
             $this->position = 'to';
-            $this->agreed_user = $arrayRequest["agreed_to"];
-            $this->checked_user = $arrayRequest["checked_to"];
-            $this->counterpart = $arrayMembersByIdUser[intval($arrayRequest["id_from"])];
-            $this->script = $this->counterpart["nickname"] . '\'s ' . $result[0]["date_shift"] . ' ' . $result[0]["shift"] . ' to you';
+            $this->agreedUser = $arrayRequest["agreed_to"];
+            $this->checkedUser = $arrayRequest["checked_to"];
+            $this->script = $this->nicknameFrom . '\'s ' . $this->dateShift . ' ' . $this->shift . ' to you';
+        } else {
+            $this->position = '3rd';
+            $this->agreedUser = NULL;
+            $this->checkedUser = NULL;
+            $this->counterpart = NULL;
+            $this->script = NULL;
         }
 
         // Notification script
-        switch ($arrayRequest["status"]) {
+        switch ($this->status) {
             case '0':
                 $this->scriptNotice = 'Denied: ' . $this->script;
                 break;
@@ -45,7 +54,7 @@ class userOrientedRequest
 }
 
 // Get requests
-$sql = 'SELECT * FROM requests_pending WHERE id_from=:id_user OR id_to=:id_user ORDER BY time_proceeded DESC LIMIT 5';
+$sql = 'SELECT id_transaction, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE id_from=:id_user OR id_to=:id_user ORDER BY time_proceeded DESC LIMIT 5';
 $stmt = $dbh->prepare($sql);
 $stmt->bindParam(':id_user', $id_user);
 $stmt->execute();
@@ -55,7 +64,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 for ($i = 0; $i < count($requests); $i++) {
     // var_dump($requests[$i]);
-    $requests[$i] = new userOrientedRequest($id_user, $requests[$i]);
+    $requests[$i] = new userOrientedRequest($id_user, $requests[$i], $arrayMembersByIdUser, $dbh);
 }
 // echo '$requests = ';
 // echo var_dump($requests);
@@ -82,7 +91,7 @@ for ($i = 0; $i < count($requests); $i++) {
                     <?php
                     $numNew = 0;
                     for ($i = 0; $i < count($requests); $i++) {
-                        if (!intval($requests[$i]->checked_user)) {
+                        if (!intval($requests[$i]->checkedUser)) {
                             $numNew++;
                         }
                     }
@@ -94,7 +103,7 @@ for ($i = 0; $i < count($requests); $i++) {
                     <?php
                     for ($i = 0; $i < count($requests); $i++) {
                         $request = $requests[$i];
-                        echo '<a href="./logs.php?id_transaction="' . $request->id_transaction . '" class="dropdown-item">' . $requests[$i]->scriptNotice . '</a>';
+                        echo '<a href="./logs.php?id_transaction="' . $request->idTrans . '" class="dropdown-item">' . $requests[$i]->scriptNotice . '</a>';
                     }
                     ?>
                     <!-- Like <a href="./transactions.php?id_transaction=3" class="dropdown-item">Request 1</a> -->
