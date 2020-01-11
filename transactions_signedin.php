@@ -1,25 +1,35 @@
 <?php
-class hrefGenerator{
+class hrefGenerator
+{
     public function __construct($idUser, $idTrans)
     {
         $this->idUser = $idUser;
         $this->idTrans = $idTrans;
     }
-    function getHref($mode){
+    function getHref($mode)
+    {
         return strtr('
-        ./register_agree.php?mode=decline&id_user=$idUser&id_transaction=$idTrans
-        ',array('$idUser'=>$this->idUser, '$idTrans'=>$this->idTrans));
+        ./register_agree.php?mode=$mode&id_user=$idUser&id_transaction=$idTrans
+        ', array('$mode' => $mode, '$idUser' => $this->idUser, '$idTrans' => $this->idTrans));
     }
 }
 
-function prepArrayIdShiftsByIdTrans($id_user, $arrayRequestsByIdTrans)
+function prepArrayIdShiftsByIdTrans($id_user, $arrayRequestsByIdTrans, $arrayMembersByIdUser, $dbh)
 {
     foreach (array_keys($arrayRequestsByIdTrans) as $idTrans) {
         for ($i = 0; $i < count($arrayRequestsByIdTrans[$idTrans]); $i++) {
-            $arrayRequestsByIdTrans[$idTrans][$i] = new userOrientedRequest($id_user, $arrayRequestsByIdTrans[$idTrans][$i]);
+            $arrayRequestsByIdTrans[$idTrans][$i] = new userOrientedRequest($id_user, $arrayRequestsByIdTrans[$idTrans][$i], $arrayMembersByIdUser, $dbh);
         }
     }
     return $arrayRequestsByIdTrans;
+}
+
+function genSqlConditions($arrayIdTrans)
+{
+    for ($i = 0; $i < count($arrayIdTrans); $i++) {
+        $arrayIdTrans[$i] = 'id_transaction=' . $arrayIdTrans[$i];
+    }
+    return '(' . implode(' OR ', $arrayIdTrans) . ') AND `status`=2;';
 }
 
 function echoTrsTrans($arrayRequestsByIdTrans)
@@ -27,23 +37,29 @@ function echoTrsTrans($arrayRequestsByIdTrans)
     foreach (array_keys($arrayRequestsByIdTrans) as $idTrans) {
         $numRequests = count($arrayRequestsByIdTrans[$idTrans]);
         for ($i = 0; $i < $numRequests; $i++) {
+            $requestObject = $arrayRequestsByIdTrans[$idTrans][$i];
+            if ($requestObject->position === '3rd') {
+                $classBgWarning = '';
+            } else {
+                $classBgWarning = 'class="bg-warning"';
+            }
             echo "
         <tr>";
-            if ($i === 0){
+            if ($i === 0) {
                 echo "
             <td rowspan='$numRequests'>$idTrans</td>";
             }
-            $requestObject = $arrayRequestsByIdTrans[$idTrans][$i];
+
             $nicknameFrom = $requestObject->nicknameFrom;
             $nicknameTo = $requestObject->nicknameTo;
             $dateShift = $requestObject->dateShift;
             $shift = $requestObject->shift;
             $idUser = $requestObject->idUser;
             echo "
-            <td>$nicknameFrom</td>
-            <td>$dateShift</td>
-            <td>$shift</td>
-            <td>$nicknameTo</td>";
+            <td $classBgWarning>$nicknameFrom</td>
+            <td $classBgWarning>$dateShift</td>
+            <td $classBgWarning>$shift</td>
+            <td $classBgWarning>$nicknameTo</td>";
             if ($i === 0) {
                 $hrefGen = new hrefGenerator($idUser, $idTrans);
                 $hrefDecline = $hrefGen->getHref('decline');
@@ -56,7 +72,7 @@ function echoTrsTrans($arrayRequestsByIdTrans)
                 </div>
             </td>
                 ";
-            echo "
+                echo "
         </tr>
             ";
             }
@@ -64,12 +80,17 @@ function echoTrsTrans($arrayRequestsByIdTrans)
     }
 }
 
-$sql = "SELECT id_transaction, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE id_from=$id_user OR id_to=$id_user;";
+$sql = "SELECT id_transaction FROM requests_pending WHERE id_from=$id_user OR id_to=$id_user;";
 $stmt = $dbh->prepare($sql);
 $stmt->execute();
-$arrayRequestsByIdTrans = $stmt->fetchAll(PDO::FETCH_GROUP);
+$sqlConditions = genSqlConditions($stmt->fetchAll(PDO::FETCH_COLUMN));
+$sql = "SELECT id_transaction, id_transaction, id_from, id_to, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE " . $sqlConditions;
+// echo $sql;OK
+$stmt = $dbh->prepare($sql);
+$stmt->execute();
+$arrayRequestsByIdTrans = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
 // Every arrayRequest to Object
-$arrayRequestsByIdTrans = prepArrayIdShiftsByIdTrans($id_user, $arrayRequestsByIdTrans);
+$arrayRequestsByIdTrans = prepArrayIdShiftsByIdTrans($id_user, $arrayRequestsByIdTrans, $arrayMembersByIdUser, $dbh);
 
 ?>
 

@@ -3,6 +3,11 @@ require './check_session.php';
 
 class requestsHandler
 {
+    private $mode;
+    private $idUser;
+    private $idTrans;
+    private $dbh;
+    private $arrayRequestsInTransaction;
     public function __construct($mode, $idUser, $idTrans, $dbh)
     {
         $this->mode = $mode;
@@ -28,42 +33,33 @@ class requestsHandler
         $sql = strtr('SELECT `status`, id_request, id_from, id_to, id_shift FROM requests_pending WHERE id_transaction=$idTrans;', array('$idTrans' => $this->idTrans));
         $stmt = ($this->dbh)->prepare($sql);
         $stmt->execute();
-        var_dump($stmt->errorInfo());
-        $results = $stmt->fetchAll(PDO::FETCH_GROUP);
-        if (in_array('0', array_keys($results)) || in_array('1', array_keys($results))) {
-            // Raise Error
+        $this->arrayRequestsInTransaction = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
+        if (in_array('0', array_keys($this->arrayRequestsInTransaction)) || in_array('1', array_keys($this->arrayRequestsInTransaction))) {
             echo "Fatal Error - Some requests had already been closed:<br>";
-            var_dump($results);
+            // var_dump($results);OK
             exit;
         }
         return true;
     }
 
-    function validateDecline()
+    private function decline()
     {
-        $sql = strtr('SELECT id_request, `status` FROM requests_pending WHERE id_transaction=$idTrans;', array('$idTrans' => $this->idTrans));
-        $stmt = ($this->dbh)->prepare($sql);
-        $stmt->execute();
-        var_dump($stmt->errorInfo());
-        $arrayStatus = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($arrayStatus as $array) {
-            $status = $array["status"];
-            if ($status == '0' || $status == '1') {
-                array_push($array["id_request"], $this->arrayErrors);
-            }
-        }
-        if (count($this->arrayErrors)) {
-            echo "
-            Fatal Error - Some requests had already been declined.<br>Request Id:";
-            var_dump($this->arrayErrors);
-            exit;
-        }
-
         $sql = strtr('UPDATE requests_pending SET `status`=0 WHERE id_transaction=$idTrans;', array('$idTrans' => $this->idTrans));
         $this->SQLS = ($this->SQLS) . $sql;
     }
 
-    function validateAgreement()
+    private function invalidateAllRequests()
+    {
+        $sqlConditions = [];
+        foreach ($this->arrayRequestsInTransaction['2'] as $request) {
+            array_push($sqlConditions, 'id_shift=' . $request['id_shift']);
+        }
+        $sql = strtr('UPDATE requests_pending SET `status`=0 WHERE `status`=2 AND ' . '(' . implode(' OR ', $sqlConditions) . ');', array('$idShift' => $request['id_shift']));
+        echo $sql . '<br>';
+        $this->SQLS = ($this->SQLS) . $sql;
+    }
+
+    private function agree()
     {
         foreach ($this->positions as $position) {
             $sql = strtr('SELECT id_request, agreed_$position FROM requests_pending WHERE id_transaction=$idTrans AND id_$position=$idUser;', array('$idTrans' => $this->idTrans, '$idUser' => $this->idUser, '$position' => $position));
@@ -86,22 +82,21 @@ class requestsHandler
             var_dump($this->arrayErrors);
             exit;
         }
-        $sql = strtr('UPDATE requests_pending SET `status`=0 WHERE id_transaction=$idTrans;', array('$idTrans' => $this->idTrans));
-        $this->SQLS = ($this->SQLS) . $sql;
     }
 
     function execute()
     {
         if ($this->mode === 'decline') {
-            $this->validateDecline();
+            $this->decline();
         } else if ($this->mode === 'agree') {
-            $this->validateAgreement();
+            $this->agree();
         } else {
             echo "Error - mode NOT understood<br>mode:";
             echo $this->mode;
             exit;
         }
         $stmt = ($this->dbh)->prepare($this->SQLS);
+        echo $this->SQLS;
         $stmt->execute();
         var_dump($stmt->errorInfo());
     }
@@ -110,6 +105,7 @@ class requestsHandler
     {
         $sql = strtr('SELECT id_shift, id_to FROM requests_pending WHERE id_transaction=$idTrans AND agreed_from=1 AND agreed_to=1;', array('$idTrans' => $this->idTrans));
         $stmt = ($this->dbh)->prepare($sql);
+        echo $sql . '<br>';
         $stmt->execute();
         var_dump($stmt->errorInfo());
         $arrayRequests = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -117,15 +113,26 @@ class requestsHandler
         $stmt = ($this->dbh)->prepare($sql);
         $stmt->execute();
         var_dump($stmt->errorInfo());
-        if (count($arrayRequests) == $stmt->fetchAll(PDO::FETCH_COLUMN)[0]) {
+        if (count($arrayRequests) === intval($stmt->fetchAll(PDO::FETCH_COLUMN)[0])) { // '2'
+            // Execute
+            // Firstly, invalidate all pending(i.e. status=2) requests surrounding these shifts
+            $this->invalidateAllRequests();
+            // Next, update status of requests
+            $sql = strtr('UPDATE requests_pending SET `status`=1 WHERE id_transaction=$idTrans;' , array('$idTrans' => $this->idTrans));
+            echo $sql; // HERE!
+
+            $this->SQLS = $this->SQLS . $sql;
+            // Next, update shifts assigned
             foreach ($arrayRequests as $arrayRequest) {
-                // Execute transaction
+                // Execute every request
                 $sql = strtr(
-                    'UPDATE shifts_assigned SET id_user=$idUser WHERE id_shift=`$idShift`;',
+                    'UPDATE shifts_assigned SET id_user=$idUser, under_request=0 WHERE id_shift=$idShift;',
                     array('$idUser' => $arrayRequest["id_to"], '$idShift' => $arrayRequest["id_shift"])
                 );
+                echo $sql . '<br>';
                 $this->SQLS = ($this->SQLS) . $sql;
             }
+            echo $this->SQLS;
             $stmt = ($this->dbh)->prepare($this->SQLS);
             $stmt->execute();
             var_dump($stmt->errorInfo());
@@ -137,7 +144,9 @@ class requestsHandler
     }
 }
 $handler = new requestsHandler($_GET["mode"], $_GET["id_user"], $_GET["id_transaction"], $dbh);
+var_dump($handler);
 $handler->validateUser($id_user);
 $handler->validateAction();
 $handler->execute();
 $handler->executeTransaction();
+// $handler->test();

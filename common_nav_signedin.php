@@ -22,11 +22,13 @@ class userOrientedRequest
         $this->status = $arrayRequest["status"];
         if ($arrayRequest["id_from"] === $id_user) {
             $this->position = 'from';
+            $this->nicknameFrom = 'YOU';
             $this->agreedUser = $arrayRequest["agreed_from"];
             $this->checkedUser = $arrayRequest["checked_from"];
             $this->script = 'Your ' . $this->dateShift . ' ' . $this->shift . ' to ' . $this->nicknameTo;
         } else if ($arrayRequest["id_to"] === $id_user){
             $this->position = 'to';
+            $this->nicknameTo = 'YOU';
             $this->agreedUser = $arrayRequest["agreed_to"];
             $this->checkedUser = $arrayRequest["checked_to"];
             $this->script = $this->nicknameFrom . '\'s ' . $this->dateShift . ' ' . $this->shift . ' to you';
@@ -54,7 +56,7 @@ class userOrientedRequest
 }
 
 // Get requests
-$sql = 'SELECT id_transaction, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE id_from=:id_user OR id_to=:id_user ORDER BY time_proceeded DESC LIMIT 5';
+$sql = 'SELECT id_transaction, id_from, id_to, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE id_from=:id_user OR id_to=:id_user ORDER BY time_proceeded DESC LIMIT 5';
 $stmt = $dbh->prepare($sql);
 $stmt->bindParam(':id_user', $id_user);
 $stmt->execute();

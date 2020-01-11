@@ -5,11 +5,11 @@ $arrayNames = array('id_from', 'month', 'day', 'shift', 'id_to');
 $arrayFormIds = explode(',', $_POST["formIDs"]);
 // var_dump($arrayFormIds);OK
 $SQLS = '';
-$sql = "SELECT id_transaction FROM requests_pending ORDER BY id_transaction DESC LIMIT 1";
+$sql = "SELECT id_transaction FROM requests_pending ORDER BY id_transaction DESC LIMIT 1;";
 $stmt = $dbh->prepare($sql);
 $stmt->execute();
 // Set next id_transaction
-$id_transaction = intval(($stmt->fetchAll())[0]["id_transaction"]) + 1;
+$id_transaction = intval(($stmt->fetchAll())[0]['id_transaction']) + 1;
 // For every formId
 foreach ($arrayFormIds as $formId) {
     // For every name in formId

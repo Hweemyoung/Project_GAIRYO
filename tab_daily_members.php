@@ -58,7 +58,7 @@ $sql = 'SELECT date_shift, id_user, shift FROM shifts_assigned WHERE date_shift 
 $stmt = $dbh->prepare($sql);
 $stmt->execute(array($dateStart, $dateEnd));
 // var_dump($stmt->errorInfo());OK
-$arrayShiftsByDate = $stmt->fetchAll(PDO::FETCH_GROUP);
+$arrayShiftsByDate = $stmt->fetchAll(PDO::FETCH_ASSOC|PDO::FETCH_GROUP);
 // var_dump($arrayShiftsByDate);OK
 foreach (array_keys($arrayShiftsByDate) as $date) {
     $arrayShiftsByDate[$date] = groupArrayByKey($arrayShiftsByDate[$date], "shift");

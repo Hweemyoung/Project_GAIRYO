@@ -115,26 +115,21 @@ function updateOptions(idx, $selects) {
         for (idUser in window.arrayShiftsByIdUser) {
             // From == To: this condition is not required but can save calculation.
             if (idUser === selectIdFrom.value){
+                console.log('skipping!');
                 continue
             }
-            var days = window.arrayShiftsByIdUser[idUser][selectMonth.value];
-            if (days) {
-                var shifts = days[selectDay.value];
-                if (shifts) {
-                    var able = 1;
-                    for (shift in shifts) {
-                        if (!(shiftsPart1.includes(shift) ^ shiftsPart1.includes(shiftSelected))) {
-                            able = 0;
-                            break
-                        }
-                    }
-                    if (!able){
-                        continue
-                    }
+            var $option = $select.closest('.form-item').find(`.select-id-from option[value=${idUser}]`).clone();
+            for (shift in window.arrayShiftsByIdUser[idUser][selectMonth.value][selectDay.value]){
+                console.log('Now:', idUser, shift);
+                var shiftSelectedInShiftsPart = shiftsPart1.includes(shiftSelected);
+                if (!(shiftsPart1.includes(shift) ^ shiftSelectedInShiftsPart)) {
+                    $option.addClass('text-warning');
+                    break;
                 }
             }
-            $select.closest('.form-item').find(`.select-id-from option[value=${idUser}]`).clone().appendTo($select);
+            $option.appendTo($select);
         }
+        return
     }
 }
 

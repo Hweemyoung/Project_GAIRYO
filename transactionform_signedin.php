@@ -12,13 +12,13 @@ $sql = "SELECT date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE d
 $stmt = $dbh->prepare($sql);
 $stmt->execute();
 // var_dump($stmt->errorInfo());OK
-$arrayShiftsByDate = $stmt->fetchAll(PDO::FETCH_GROUP);
+$arrayShiftsByDate = $stmt->fetchAll(PDO::FETCH_ASSOC|PDO::FETCH_GROUP);
 ksort($arrayShiftsByDate);
 $sql = "SELECT id_user, date_shift, shift FROM shifts_assigned WHERE done = 0";
 $stmt = $dbh->prepare($sql);
 $stmt->execute();
 // var_dump($stmt->errorInfo());OK
-$arrayShiftsByIdUser = $stmt->fetchAll(PDO::FETCH_GROUP);
+$arrayShiftsByIdUser = $stmt->fetchAll(PDO::FETCH_ASSOC|PDO::FETCH_GROUP);
 ksort($arrayShiftsByIdUser);
 // foreach(array_keys($arrayShiftsByIdUser) as $idUser){
     // $arrayShiftsByIdUser[$idUser] = groupArrayByKey($arrayShiftsByIdUser[$idUser], 'date_shift');
