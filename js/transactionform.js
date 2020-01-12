@@ -1,3 +1,4 @@
+const shiftsPart1 = ["C", "D"];
 var weekdays = new Array(7);
 weekdays[0] = "Sun";
 weekdays[1] = "Mon";
@@ -63,8 +64,7 @@ function test(idx) {
     }
 }
 
-function updateOptions(idx, $selects) {
-    const shiftsPart1 = ["C", "D"];
+function updateOptions(idx, $selects, shiftsPart1) {
     $select = $($selects[idx]);
     // console.log(idx);
     // console.log($selects);
@@ -114,16 +114,14 @@ function updateOptions(idx, $selects) {
         shiftSelected = selectShift.value;
         for (idUser in window.arrayShiftsByIdUser) {
             // From == To: this condition is not required but can save calculation.
-            if (idUser === selectIdFrom.value){
-                console.log('skipping!');
+            if (idUser === selectIdFrom.value) {
                 continue
             }
             var $option = $select.closest('.form-item').find(`.select-id-from option[value=${idUser}]`).clone();
-            for (shift in window.arrayShiftsByIdUser[idUser][selectMonth.value][selectDay.value]){
-                console.log('Now:', idUser, shift);
+            for (shift in window.arrayShiftsByIdUser[idUser][selectMonth.value][selectDay.value]) {
                 var shiftSelectedInShiftsPart = shiftsPart1.includes(shiftSelected);
                 if (!(shiftsPart1.includes(shift) ^ shiftSelectedInShiftsPart)) {
-                    $option.addClass('text-warning');
+                    $option.addClass('text-warning option-warning');
                     break;
                 }
             }
@@ -145,13 +143,38 @@ function disableNoneOption(event) {
 
 function checkConfirmable() {
     var enable = 1;
-    $selects = $('select');
-    for (i = 0; i < $selects.length; i++) {
-        if ($selects[i].value == 0 || $(this).attr('disabled') == 'disabled') {
-            enable = 0;
-            break;
-        }
-    }
+    var $formItems = $('.form-item');
+    $formItems.each(function (idxFormItem) {
+        var $formItem = $(this);
+        var $selectsInFormItem = $formItem.find('select');
+        $.each($selectsInFormItem, function (idxSelect) {
+            if (this.value == 0 || this.getAttribute('disabled')) {
+                return false
+            }
+            if (idxSelect === 4 && $(this).children(`option[value="${this.value}"]`).hasClass('option-warning')) {
+                var found = 0;
+                $.each($formItems, function (index) {
+                    if (index === idxSelect) {
+                        // Continue
+                        return true
+                    }
+                    $selects = $(this).find('select');
+                    if ($selects[0].value === $selectsInFormItem[4].value
+                        && $selects[1].value === $selectsInFormItem[1].value
+                        && $selects[2].value === $selectsInFormItem[2].value
+                        && !(shiftsPart1.includes($selects[3].value) ^ shiftsPart1.includes($selectsInFormItem[3]))) {
+                        found = 1;
+                        // Break
+                        return false
+                    }
+                });
+                if (!found){
+                    enable = 0;
+                    return false
+                }
+            }
+        })
+    });
     if (enable === 0) {
         $('#btn-confirm').addClass('disabled');
     } else {
@@ -244,9 +267,9 @@ function loadTransactions(event) {
     })
 }
 
-function setFormIds(event){
+function setFormIds(event) {
     var valueString = new String();
-    $('.form-item').each(function(){
+    $('.form-item').each(function () {
         if (valueString.length) {
             valueString += ',';
         }
