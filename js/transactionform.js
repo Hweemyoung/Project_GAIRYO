@@ -1,3 +1,55 @@
+class FormHandler {
+    constructor(arrayShiftsByIdUser) {
+        this.arrayShiftsByIdUser = arrayShiftsByIdUser;
+        this.defaultForm = $('.form-item').clone();
+        this.numItem = 1;
+        this.formID = 1;
+    }
+    
+    init() {
+        $('.form-item .btn-delete').attr('disabled', true);
+        addFormID($('.form-item'));
+        // Actions for selecting an option: Enable/disable selects
+        $('.form-item select').on('change', changeSelects).on('change', disableNoneOption);
+        // Actions for selecting an option: Enable/disable confirm button
+        $('select.select-id-to').on('change', checkConfirmable);
+        // Actions for clicking delete icon
+        // $('.btn-delete').click(deleteItem);
+        // Actions for clicking add icon
+        $('#btn-add-item').click(addFormItem);
+        // Actions for clicking confirm icon: Load details to modal body
+        $('#btn-confirm').click(loadTransactions).click(setFormIds);
+        // Actions for closing modal: Empty table body
+        $('#modal-confirm').on('hidden.bs.modal', function (event) {
+            $(event.target).find('.modal-body table tbody').empty();
+        });
+    }
+
+    prepArrayShiftsByIdUser(arrayShiftsByIdUser) {
+        for (idUser in arrayShiftsByIdUser) {
+            for (i in arrayShiftsByIdUser[idUser]) {
+                // arrayShiftsByIdUser[idUser][i]['date_shift'] = new Date(arrayShiftsByIdUser[idUser][i]['date_shift']);
+                var date = new Date(arrayShiftsByIdUser[idUser][i]['date_shift']);
+                arrayShiftsByIdUser[idUser][i]["Ym"] = String(date.getFullYear()) + ' ' + months[date.getMonth()]; // '2020 Jan'
+                arrayShiftsByIdUser[idUser][i]["d"] = String(date.getDate()); // '20'
+                // arrayShiftsByIdUser[idUser][i] = groupBy(arrayShiftsByIdUser[idUser][i], "d");
+            }
+            arrayShiftsByIdUser[idUser] = groupBy(arrayShiftsByIdUser[idUser], "Ym");
+            for (Ym in arrayShiftsByIdUser[idUser]) {
+                arrayShiftsByIdUser[idUser][Ym] = groupBy(arrayShiftsByIdUser[idUser][Ym], "d");
+                for (d in arrayShiftsByIdUser[idUser][Ym]) {
+                    for (key in arrayShiftsByIdUser[idUser][Ym][d]) {
+                        var shift = arrayShiftsByIdUser[idUser][Ym][d][key]["shift"];
+                        arrayShiftsByIdUser[idUser][Ym][d][shift] = arrayShiftsByIdUser[idUser][Ym][d][key]
+                        delete arrayShiftsByIdUser[idUser][Ym][d][key];
+                    }
+                }
+            }
+        }
+        return arrayShiftsByIdUser
+    }
+}
+
 const shiftsPart1 = ["C", "D"];
 var weekdays = new Array(7);
 weekdays[0] = "Sun";
@@ -168,7 +220,7 @@ function checkConfirmable() {
                         return false
                     }
                 });
-                if (!found){
+                if (!found) {
                     enable = 0;
                     return false
                 }
