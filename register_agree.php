@@ -19,16 +19,16 @@ class requestsHandler
         $this->arrayErrors = [];
     }
 
-    function validateUser($id_user)
+    public function validateUser($id_user)
     {
         if ($this->idUser !== $id_user) {
             // Raise Error and exit
             echo 'Error - No permission';
-            exit;
+            header('Location: ' . './transactions.php?e=0');
         }
     }
 
-    function validateAction()
+    public function validateAction()
     {
         $sql = strtr('SELECT `status`, id_request, id_from, id_to, id_shift FROM requests_pending WHERE id_transaction=$idTrans;', array('$idTrans' => $this->idTrans));
         $stmt = ($this->dbh)->prepare($sql);
@@ -37,7 +37,8 @@ class requestsHandler
         if (in_array('0', array_keys($this->arrayRequestsInTransaction)) || in_array('1', array_keys($this->arrayRequestsInTransaction))) {
             echo "Fatal Error - Some requests had already been closed:<br>";
             // var_dump($results);OK
-            exit;
+            // exit;
+            header('Location: ' . './transactions.php?e=1');
         }
         return true;
     }
@@ -50,12 +51,20 @@ class requestsHandler
 
     private function invalidateAllRequests()
     {
+        // Select pending id_transactions surrounding the shifts
         $sqlConditions = [];
         foreach ($this->arrayRequestsInTransaction['2'] as $request) {
             array_push($sqlConditions, 'id_shift=' . $request['id_shift']);
         }
-        $sql = strtr('UPDATE requests_pending SET `status`=0 WHERE `status`=2 AND ' . '(' . implode(' OR ', $sqlConditions) . ');', array('$idShift' => $request['id_shift']));
-        echo $sql . '<br>';
+        $sql = 'SELECT id_transaction FROM requests_pending WHERE `status`=2 AND ' . '(' . implode(' OR ', $sqlConditions) . ');';
+        $stmt = ($this->dbh)->prepare($sql);
+        $stmt->execute();
+        // Invalidate transactions
+        $sqlConditions = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_COLUMN) as $idTrans) {
+            array_push($sqlConditions, 'id_transaction=' . $idTrans);
+        }
+        $sql = 'UPDATE requests_pending SET `status`=0 WHERE `status`=2 AND ' . '(' . implode(' OR ', $sqlConditions) . ');';
         $this->SQLS = ($this->SQLS) . $sql;
     }
 
@@ -80,11 +89,12 @@ class requestsHandler
         if (count($this->arrayErrors)) {
             echo "Fatal Error - The request had already been agreed with by the user.<br>Request ID:";
             var_dump($this->arrayErrors);
-            exit;
+            // exit;
+            header('Location: ' . './transactions.php?e=2');
         }
     }
 
-    function execute()
+    public function execute()
     {
         if ($this->mode === 'decline') {
             $this->decline();
@@ -93,7 +103,8 @@ class requestsHandler
         } else {
             echo "Error - mode NOT understood<br>mode:";
             echo $this->mode;
-            exit;
+            // exit;
+            header('Location: ' . './transactions.php?e=3');
         }
         $stmt = ($this->dbh)->prepare($this->SQLS);
         echo $this->SQLS;
@@ -101,7 +112,7 @@ class requestsHandler
         var_dump($stmt->errorInfo());
     }
 
-    function executeTransaction()
+    public function executeTransaction()
     {
         $sql = strtr('SELECT id_shift, id_to FROM requests_pending WHERE id_transaction=$idTrans AND agreed_from=1 AND agreed_to=1;', array('$idTrans' => $this->idTrans));
         $stmt = ($this->dbh)->prepare($sql);
@@ -115,10 +126,10 @@ class requestsHandler
         var_dump($stmt->errorInfo());
         if (count($arrayRequests) === intval($stmt->fetchAll(PDO::FETCH_COLUMN)[0])) { // '2'
             // Execute
-            // Firstly, invalidate all pending(i.e. status=2) requests surrounding these shifts
+            // Firstly, invalidate all pending(i.e. status=2) transactions surrounding these shifts
             $this->invalidateAllRequests();
             // Next, update status of requests
-            $sql = strtr('UPDATE requests_pending SET `status`=1 WHERE id_transaction=$idTrans;' , array('$idTrans' => $this->idTrans));
+            $sql = strtr('UPDATE requests_pending SET `status`=1 WHERE id_transaction=$idTrans;', array('$idTrans' => $this->idTrans));
             echo $sql; // HERE!
 
             $this->SQLS = $this->SQLS . $sql;
@@ -136,17 +147,22 @@ class requestsHandler
             $stmt = ($this->dbh)->prepare($this->SQLS);
             $stmt->execute();
             var_dump($stmt->errorInfo());
+            header('Location: ' . './transactions.php?s=1');
         } else {
             echo "
             Awaiting agreements from other members.
             ";
+            header('Location: ' . './transactions.php?s=0');
         }
+    }
+    public function process($id_user)
+    {
+        $this->validateUser($id_user);
+        $this->validateAction();
+        $this->execute();
+        $this->executeTransaction();
     }
 }
 $handler = new requestsHandler($_GET["mode"], $_GET["id_user"], $_GET["id_transaction"], $dbh);
 var_dump($handler);
-$handler->validateUser($id_user);
-$handler->validateAction();
-$handler->execute();
-$handler->executeTransaction();
-// $handler->test();
+$handler->process($id_user);

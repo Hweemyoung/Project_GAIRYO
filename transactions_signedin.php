@@ -35,6 +35,13 @@ function genSqlConditions($arrayIdTrans)
 function echoTrsTrans($arrayRequestsByIdTrans)
 {
     foreach (array_keys($arrayRequestsByIdTrans) as $idTrans) {
+        $disabled = '';
+        foreach($arrayRequestsByIdTrans[$idTrans] as $requestObject){
+            if ($requestObject->agreedUser){
+                $disabled = 'disabled';
+                break;
+            }
+        }
         $numRequests = count($arrayRequestsByIdTrans[$idTrans]);
         for ($i = 0; $i < $numRequests; $i++) {
             $requestObject = $arrayRequestsByIdTrans[$idTrans][$i];
@@ -68,7 +75,7 @@ function echoTrsTrans($arrayRequestsByIdTrans)
             <td rowspan='$numRequests'>
                 <div class='div-buttons'>
                     <a href=$hrefDecline class='btn btn-danger' title='Decline'><i class='fas fa-ban'></i></a>
-                    <a href=$hrefAgree class='btn btn-success' title='Agree'><i class='fas fa-handshake'></i></a>
+                    <a href=$hrefAgree class='btn btn-success $disabled' title='Agree'><i class='fas fa-handshake'></i></a>
                 </div>
             </td>
                 ";

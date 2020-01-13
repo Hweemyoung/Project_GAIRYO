@@ -31,7 +31,7 @@ foreach ($arrayFormIds as $formId) {
     if (!$result) {
         $nickname = $arrayMembersByIdUser[$id_from]["nickname"];
         echo "ERROR - Shift NOT Found: $nickname $dateShift $shift";
-        exit;
+        header(`Location: ' . './transactions.php?f=2&e=0&nick=$nickname&date=$dateShift&shift=$shift`);
     } else {
         $id_shift = $result[0]["id_shift"];
         // Check if there is the same request already
@@ -46,7 +46,7 @@ foreach ($arrayFormIds as $formId) {
             $nickname_from = $arrayMembersByIdUser[$id_from]["nickname"];
             $nickname_to = $arrayMembersByIdUser[$id_to]["nickname"];
             echo "ERROR - Request already exists.<br>Request ID = $id_request<br>Transaction ID = $id_transaction<br>$nickname_from's $dateShift $shift to $nickname_to";
-            exit;
+            header(`Location: ' . './transactions.php?f=2&e=1&nickfrom=$nickname&nickto=$nickname_to&date=$dateShift&shift=$shift&idrequest=$id_request&idtrans=$id_transaction`);
         }
         // shifts_assigned: Update under_request
         $sql = "UPDATE shifts_assigned SET under_request=1 WHERE id_user=$id_from AND shift='$shift' AND date_shift='$dateShift';";
@@ -74,4 +74,9 @@ echo $SQLS;
 
 $stmt = $dbh->prepare($SQLS);
 $stmt->execute();
-// var_dump($stmt->errorInfo());
+// If NULL
+if (!$stmt->errorInfo()[2]){
+    header('Location: ' . './transactions.php?f=2&s=0');
+} else {
+    echo $stmt->errorInfo()[2];
+}
