@@ -340,8 +340,6 @@ class FormHandler {
     }
 }
 
-var formHandler = new FormHandler(arrayShiftsByIdUser);
-
 // const shiftsPart1 = ["C", "D"];
 // var weekdays = new Array(7);
 // weekdays[0] = "Sun";

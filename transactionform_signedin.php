@@ -167,7 +167,8 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
     </div>
 </main>
 <footer></footer>
-<script>
-    const arrayShiftsByIdUser = <?= json_encode($arrayShiftsByIdUser) ?>;
-</script>
 <script src="./js/transactionform.js"></script>
+<script>
+    const formHandler = new FormHandler(<?= json_encode($arrayShiftsByIdUser) ?>);
+    // const arrayShiftsByIdUser = <?= json_encode($arrayShiftsByIdUser) ?>;
+</script>
