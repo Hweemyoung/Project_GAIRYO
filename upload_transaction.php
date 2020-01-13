@@ -1,15 +1,21 @@
 <?php
 require './check_session.php';
-
+// var_dump($_POST);
 $arrayNames = array('id_from', 'month', 'day', 'shift', 'id_to');
 $arrayFormIds = explode(',', $_POST["formIDs"]);
-// var_dump($arrayFormIds);OK
+// var_dump($arrayFormIds);
 $SQLS = '';
 $sql = "SELECT id_transaction FROM requests_pending ORDER BY id_transaction DESC LIMIT 1;";
 $stmt = $dbh->prepare($sql);
 $stmt->execute();
 // Set next id_transaction
-$id_transaction = intval(($stmt->fetchAll())[0]['id_transaction']) + 1;
+$arrayIdtrans = $stmt->fetchAll(PDO::FETCH_COLUMN);
+if (count($arrayIdtrans) != 0){
+    $id_transaction = intval($arrayIdtrans[0]) + 1;
+} else {
+    $id_transaction = 1;
+}
+echo $id_transaction;
 // For every formId
 foreach ($arrayFormIds as $formId) {
     // For every name in formId

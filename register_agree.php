@@ -24,7 +24,7 @@ class requestsHandler
         if ($this->idUser !== $id_user) {
             // Raise Error and exit
             echo 'Error - No permission';
-            header('Location: ' . './transactions.php?e=0');
+            header('Location: ' . './transactions.php?f=1&e=0');
         }
     }
 
@@ -38,15 +38,17 @@ class requestsHandler
             echo "Fatal Error - Some requests had already been closed:<br>";
             // var_dump($results);OK
             // exit;
-            header('Location: ' . './transactions.php?e=1');
+            header('Location: ' . './transactions.php?f=1&e=1');
         }
         return true;
     }
 
-    private function decline()
+    private function decline($arrayCondsIdTrans)
     {
-        $sql = strtr('UPDATE requests_pending SET `status`=0 WHERE id_transaction=$idTrans;', array('$idTrans' => $this->idTrans));
+        $sql = 'UPDATE requests_pending SET `status`=0 WHERE `status`=2 AND ' . '(' . implode(' OR ', $arrayCondsIdTrans) . ');';
         $this->SQLS = ($this->SQLS) . $sql;
+        // For every shift in declined transaction, check if there is any other requests surrounding it and update under_request.
+        $this->updateUnderRequest($arrayCondsIdTrans);
     }
 
     private function invalidateAllRequests()
@@ -59,12 +61,31 @@ class requestsHandler
         $sql = 'SELECT id_transaction FROM requests_pending WHERE `status`=2 AND ' . '(' . implode(' OR ', $sqlConditions) . ');';
         $stmt = ($this->dbh)->prepare($sql);
         $stmt->execute();
+        $arrayByIdTrans = $stmt->fetchAll(PDO::FETCH_GROUP);
         // Invalidate transactions
         $sqlConditions = [];
-        foreach ($stmt->fetchAll(PDO::FETCH_COLUMN) as $idTrans) {
+        foreach (array_keys($arrayByIdTrans) as $idTrans) {
             array_push($sqlConditions, 'id_transaction=' . $idTrans);
         }
-        $sql = 'UPDATE requests_pending SET `status`=0 WHERE `status`=2 AND ' . '(' . implode(' OR ', $sqlConditions) . ');';
+        $this->decline($sqlConditions);
+    }
+
+    private function updateUnderRequest($arrayCondsIdTrans){
+        // For every shift in invalidated transactions, check if there is any other requests surrounding it and update under_request.
+        $sql = 'SELECT id_shift FROM requests_pending WHERE ' . '(' . implode(' OR ', $arrayCondsIdTrans) . ');';
+        $stmt = ($this->dbh)->prepare($sql);
+        $stmt->execute();
+        $sqlConditions = [];
+        foreach(array_keys($stmt->fetchAll(PDO::FETCH_GROUP)) as $idShift){
+            $sql = "SELECT COUNT(*) FROM requests_pending WHERE `status`=2 AND id_shift=$idShift;";
+            $arrayCount = $this->dbh->query($sql)->fetchAll(PDO::FETCH_COLUMN);
+            var_dump($arrayCount);
+            if (intval($arrayCount[0])){
+                array_push($sqlConditions, 'id_shift=' . $idShift);
+            }
+        }
+        $sql = "UPDATE shifts_assigned SET under_request=0 WHERE " . '(' . implode(' OR ', $sqlConditions) . ');';
+        echo $sql;
         $this->SQLS = ($this->SQLS) . $sql;
     }
 
@@ -72,9 +93,10 @@ class requestsHandler
     {
         foreach ($this->positions as $position) {
             $sql = strtr('SELECT id_request, agreed_$position FROM requests_pending WHERE id_transaction=$idTrans AND id_$position=$idUser;', array('$idTrans' => $this->idTrans, '$idUser' => $this->idUser, '$position' => $position));
+            echo $sql . '<br>';
             $stmt = ($this->dbh)->prepare($sql);
             $stmt->execute();
-            var_dump($stmt->errorInfo());
+            
             $arrayIdRequests = $stmt->fetchAll(PDO::FETCH_ASSOC);
             foreach ($arrayIdRequests as $arrayIdRequest) {
                 $idRequest = $arrayIdRequest["id_request"];
@@ -90,26 +112,37 @@ class requestsHandler
             echo "Fatal Error - The request had already been agreed with by the user.<br>Request ID:";
             var_dump($this->arrayErrors);
             // exit;
-            header('Location: ' . './transactions.php?e=2');
+            header('Location: ' . './transactions.php?f=1&e=2');
         }
     }
 
     public function execute()
     {
         if ($this->mode === 'decline') {
-            $this->decline();
+            var_dump([$this->idTrans]);
+            echo '<br>';
+            $this->decline([$this->idTrans]);
         } else if ($this->mode === 'agree') {
             $this->agree();
         } else {
             echo "Error - mode NOT understood<br>mode:";
             echo $this->mode;
             // exit;
-            header('Location: ' . './transactions.php?e=3');
+            header('Location: ' . './transactions.php?f=1&e=3');
         }
         $stmt = ($this->dbh)->prepare($this->SQLS);
         echo $this->SQLS;
         $stmt->execute();
         var_dump($stmt->errorInfo());
+        if (($stmt->errorInfo())[2]){
+            echo ($stmt->errorInfo())[2];
+            exit;
+        }
+        if ($this->mode === 'decline'){
+            exit;
+            header('Location: ' . './transactions.php?f=1&s=2');
+        }
+        $this->SQLS = '';
     }
 
     public function executeTransaction()
@@ -135,7 +168,7 @@ class requestsHandler
             $this->SQLS = $this->SQLS . $sql;
             // Next, update shifts assigned
             foreach ($arrayRequests as $arrayRequest) {
-                // Execute every request
+                // Execute every request: update id_user and under_request=0
                 $sql = strtr(
                     'UPDATE shifts_assigned SET id_user=$idUser, under_request=0 WHERE id_shift=$idShift;',
                     array('$idUser' => $arrayRequest["id_to"], '$idShift' => $arrayRequest["id_shift"])
@@ -145,14 +178,14 @@ class requestsHandler
             }
             echo $this->SQLS;
             $stmt = ($this->dbh)->prepare($this->SQLS);
-            $stmt->execute();
-            var_dump($stmt->errorInfo());
-            header('Location: ' . './transactions.php?s=1');
+            // $stmt->execute();
+            // var_dump($stmt->errorInfo());
+            // header('Location: ' . './transactions.php?f=1&s=1');
         } else {
             echo "
             Awaiting agreements from other members.
             ";
-            header('Location: ' . './transactions.php?s=0');
+            // header('Location: ' . './transactions.php?f=1&s=0');
         }
     }
     public function process($id_user)
@@ -164,5 +197,5 @@ class requestsHandler
     }
 }
 $handler = new requestsHandler($_GET["mode"], $_GET["id_user"], $_GET["id_transaction"], $dbh);
-var_dump($handler);
+// var_dump($handler);
 $handler->process($id_user);

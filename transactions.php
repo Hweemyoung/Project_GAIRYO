@@ -49,10 +49,10 @@ class AlertHandler
                         $this->alertStrong = 'Failed!';
                         switch ($this->_value) {
                             case 0:
-                                $this->alertMsg = 'No permission';
+                                $this->alertMsg = 'No permission.';
                                 break;
                             case 1:
-                                $this->alertMsg = 'Some requests had already been closed';
+                                $this->alertMsg = 'Some requests had already been closed.';
                                 break;
                             case 2:
                                 $this->alertMsg = 'The request had already been agreed with by the user.';
@@ -69,6 +69,9 @@ class AlertHandler
                             case 1:
                                 $this->alertMsg = 'Transaction successfully executed.<br>Your Shifts have been UPDATED!';
                                 break;
+                            case 2:
+                                $this->alertMsg = 'Transaction successfully declined and no longer valid.';
+                                break;
                         }
                         break;
                 }
@@ -84,7 +87,7 @@ class AlertHandler
                                 $nick = $_GET["nick"];
                                 $dateShift = $_GET["date"];
                                 $shift = $_GET["shift"];
-                                $this->alertMsg = "Shift NOT Found: $nick's $dateShift $shift";
+                                $this->alertMsg = "Shift doesn't exist!: $nick's $dateShift $shift";
                                 break;
                             case 1:
                                 $id_request = $_GET["idrequest"];
@@ -93,14 +96,14 @@ class AlertHandler
                                 $dateShift = $_GET["date"];
                                 $shift = $_GET["shift"];
                                 $nickname_to = $_GET["nickto"];
-                                $this->alertMsg = "Request already exists.<br>Request ID = $id_request / Transaction ID = $id_transaction<br>$nickname_from's $dateShift $shift to $nickname_to";
+                                $this->alertMsg = "Request already exists.<br>Request#$id_request in Transaction#$id_transaction: $nickname_from's $dateShift $shift to $nickname_to";
                                 break;
                         }
                         break;
                     case 1:
                         switch ($this->_value) {
                             case 0:
-                                $this->alertMsg = 'Transaction successfully uploaded.';
+                                $this->alertMsg = 'Transaction successfully created.';
                                 break;
                         }
                 }

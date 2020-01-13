@@ -39,7 +39,7 @@ class FormHandler {
             for (var i in arrayShiftsByIdUser[_idUser]) {
                 // arrayShiftsByIdUser[_idUser][i]['date_shift'] = new Date(arrayShiftsByIdUser[_idUser][i]['date_shift']);
                 var date = new Date(arrayShiftsByIdUser[_idUser][i]['date_shift']);
-                arrayShiftsByIdUser[_idUser][i]["Ym"] = String(date.getFullYear()) + ' ' + months[date.getMonth()]; // '2020 Jan'
+                arrayShiftsByIdUser[_idUser][i]["Ym"] = String(date.getFullYear()) + ' ' + this._months[date.getMonth()]; // '2020 Jan'
                 arrayShiftsByIdUser[_idUser][i]["d"] = String(date.getDate()); // '20'
                 // arrayShiftsByIdUser[_idUser][i] = groupBy(arrayShiftsByIdUser[_idUser][i], "d");
             }
@@ -165,8 +165,9 @@ class FormHandler {
                         if ($selects[0].value === $selectsInFormItem[4].value
                             && $selects[1].value === $selectsInFormItem[1].value
                             && $selects[2].value === $selectsInFormItem[2].value
-                            && !(handler._shiftsPart1.includes($selects[3].value) ^ handler._shiftsPart1.includes($selectsInFormItem[3]))) {
+                            && !(handler._shiftsPart1.includes($selects[3].value) ^ handler._shiftsPart1.includes($selectsInFormItem[3].value))) {
                             found = true;
+                            console.log('Found!', index);
                             return false
                         }
                     });
@@ -185,7 +186,7 @@ class FormHandler {
                         }
                     });
                     // Check if a shift is transferred to multiple targets
-                    $.each(handler._$formItems, function (index){
+                    $.each(handler._$formItems, function (index) {
                         if (index === idxFormItem) {
                             return true
                         }
@@ -198,13 +199,13 @@ class FormHandler {
                             return false
                         }
                     });
-                    if (!found){
+                    if (!found) {
                         handler._$iNotFound.attr('title', `${$(this).children(`option[value="${this.value}"]`).html()}がもともと持っているシフトとかぶります`).removeClass('invisible');
                     }
-                    if (targetOverlap){
+                    if (targetOverlap) {
                         handler._$iTargetOverlap.attr('title', `${$(this).children(`option[value="${this.value}"]`).html()}に２つ以上のかぶるシフトを与えています`).removeClass('invisible');
                     }
-                    if (shiftOverlap){
+                    if (shiftOverlap) {
                         handler._$iShiftOverlap.attr('title', `${$($selectsInFormItem[0]).children(`option[value="${this.value}"]`).html()}の${$selectsInFormItem[1].value} ${$selectsInFormItem[2].value} ${$selectsInFormItem[3].value}を複数人に与えています`).removeClass('invisible');
                     }
                     if (!found || targetOverlap || shiftOverlap) {
@@ -263,17 +264,18 @@ class FormHandler {
     }
 
     addFormID($formItem) {
-        $formItem.prepend($('<input type="hidden">').attr('name', String(this._formID)))
-        $formItem.attr('id', this._formID);
+        var handler = this;
+        $formItem.prepend($('<input type="hidden">').attr('name', String(handler._formID)))
+        $formItem.attr('id', handler._formID);
         $formItem.find('label').each(function () {
-            var newFor = $(this).attr('for') + '_' + String(this._formID);
+            var newFor = $(this).attr('for') + '_' + String(handler._formID);
             $(this).attr('for', newFor);
         });
         $formItem.find('select').each(function () {
-            var newName = $(this).attr('name') + '_' + String(this._formID);
+            var newName = $(this).attr('name') + '_' + String(handler._formID);
             $(this).attr('name', newName);
         });
-        $formItem.find('input.input-year').attr('name', 'year_' + this._formID);
+        $formItem.find('input.input-year').attr('name', 'year_' + handler._formID);
     }
 
     addEvents($formItem) {
@@ -340,6 +342,13 @@ class FormHandler {
     }
 }
 
+function groupBy(xs, key) {
+    return xs.reduce(function (rv, x) {
+        (rv[x[key]] = rv[x[key]] || []).push(x);
+        return rv;
+    }, {});
+};
+
 // const shiftsPart1 = ["C", "D"];
 // var weekdays = new Array(7);
 // weekdays[0] = "Sun";
@@ -363,12 +372,7 @@ class FormHandler {
 // months[10] = "Nov";
 // months[11] = "Dec";
 
-// function groupBy(xs, key) {
-//     return xs.reduce(function (rv, x) {
-//         (rv[x[key]] = rv[x[key]] || []).push(x);
-//         return rv;
-//     }, {});
-// };
+
 
 // function prepArrayShiftsByIdUser(arrayShiftsByIdUser) {
 //     // Convert values of 'date_shift' from String to Date Object
