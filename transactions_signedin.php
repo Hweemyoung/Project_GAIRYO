@@ -34,6 +34,11 @@ function genSqlConditions($arrayIdTrans)
 
 function echoTrsTrans($arrayRequestsByIdTrans)
 {
+    if (count($arrayRequestsByIdTrans === 0)){
+        echo "
+        <tr><td colspan=6>No Transactions Found</td></tr>
+        ";
+    }
     foreach (array_keys($arrayRequestsByIdTrans) as $idTrans) {
         $disabled = '';
         foreach($arrayRequestsByIdTrans[$idTrans] as $requestObject){
@@ -105,11 +110,11 @@ $arrayRequestsByIdTrans = prepArrayIdShiftsByIdTrans($id_user, $arrayRequestsByI
     <div class="container px-1">
         <section id="section-form-choices">
             <div class="row text-center">
-                <div class="col-6">
-                    <a href="./transactionform.php" class="btn btn-primary">Create Requests</a>
+                <div class="col-md-6 my-1">
+                    <a href="./transactionform.php" class="btn btn-primary d-block"><i class="fas fa-plus-square"> Create Transaction</i></a>
                 </div>
-                <div class="col-6">
-                    <a href="./marketplace.php" class="btn btn-primary">Marketplace</a>
+                <div class="col-md-6 my-1">
+                    <a href="./marketplace.php" class="btn btn-primary d-block"><i class="fas fa-search-dollar"> Marketplace</i></a>
                 </div>
             </div>
         </section>
