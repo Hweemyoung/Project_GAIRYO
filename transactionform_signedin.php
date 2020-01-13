@@ -157,8 +157,9 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
                 </div>
             </form>
             <div id="div-buttons" class="text-right">
-                <i id="i-not-found" class="fas fa-exclamation-triangle text-warning invisible"></i>
-                <i id="i-overlap" class="fas fa-exclamation-triangle text-danger invisible"></i>
+                <i id="i-not-found" class="fas fa-clone text-warning invisible"></i>
+                <i id="i-target-overlap" class="fas fa-compress-alt text-danger invisible"></i>
+                <i id="i-not-found" class="fas fa-share-alt-square text-info invisible"></i>
                 <button id="btn-add-item" class="btn btn-primary" title="Add"><i class="fas fa-plus"></i></button>
                 <a id="btn-confirm" class="btn btn-primary disabled" href="#modal-confirm" data-toggle="modal" title="Final Check"><i class="fas fa-check"></i></a>
             </div>
