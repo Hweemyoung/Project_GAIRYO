@@ -12,16 +12,16 @@ $sql = "SELECT date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE d
 $stmt = $dbh->prepare($sql);
 $stmt->execute();
 // var_dump($stmt->errorInfo());OK
-$arrayShiftsByDate = $stmt->fetchAll(PDO::FETCH_ASSOC|PDO::FETCH_GROUP);
+$arrayShiftsByDate = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
 ksort($arrayShiftsByDate);
 $sql = "SELECT id_user, date_shift, shift FROM shifts_assigned WHERE done = 0";
 $stmt = $dbh->prepare($sql);
 $stmt->execute();
 // var_dump($stmt->errorInfo());OK
-$arrayShiftsByIdUser = $stmt->fetchAll(PDO::FETCH_ASSOC|PDO::FETCH_GROUP);
+$arrayShiftsByIdUser = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
 ksort($arrayShiftsByIdUser);
 // foreach(array_keys($arrayShiftsByIdUser) as $idUser){
-    // $arrayShiftsByIdUser[$idUser] = groupArrayByKey($arrayShiftsByIdUser[$idUser], 'date_shift');
+// $arrayShiftsByIdUser[$idUser] = groupArrayByKey($arrayShiftsByIdUser[$idUser], 'date_shift');
 // }
 
 $arrayMonths = array();
@@ -155,9 +155,10 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
                         </div>
                     </div>
                 </div>
-
             </form>
-            <div id="buttons" class="text-right">
+            <div id="div-buttons" class="text-right">
+                <i id="i-not-found" class="fas fa-exclamation-triangle text-warning invisible"></i>
+                <i id="i-overlap" class="fas fa-exclamation-triangle text-danger invisible"></i>
                 <button id="btn-add-item" class="btn btn-primary" title="Add"><i class="fas fa-plus"></i></button>
                 <a id="btn-confirm" class="btn btn-primary disabled" href="#modal-confirm" data-toggle="modal" title="Final Check"><i class="fas fa-check"></i></a>
             </div>
@@ -166,6 +167,6 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
 </main>
 <footer></footer>
 <script>
-    window.arrayShiftsByIdUser = <?= json_encode($arrayShiftsByIdUser) ?>;
+    const arrayShiftsByIdUser = <?= json_encode($arrayShiftsByIdUser) ?>;
 </script>
 <script src="./js/transactionform.js"></script>

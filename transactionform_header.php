@@ -1,1 +1,1 @@
-<header><p>Here comes transactionsform_header.php</p></header>
+<header><div class="container"><h2>Create Transaction</h2></div></header>
