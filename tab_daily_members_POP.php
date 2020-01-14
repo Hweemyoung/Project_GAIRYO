@@ -371,10 +371,9 @@ function echoAccordion($arrayShiftsByDate)
                                     </div>';
         }
         echo '
-                                </div>
-                                <div class="div-langs"';
+                                </div>';
 
-        '
+        echo '
                             </div>
                         </div>
                     </div>
