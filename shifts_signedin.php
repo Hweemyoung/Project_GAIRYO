@@ -1,6 +1,6 @@
 <?php
 // Hparams
-$enableSubmit = 1;
+$enableSubmit = 0;
 $Y = '2020';
 $m = '02';
 $message = 'シフト希望は2020年2月2日から受け付けます';
