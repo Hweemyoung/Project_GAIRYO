@@ -33,11 +33,7 @@ class userOrientedRequest
             $this->nicknameFrom = 'YOU';
             $this->agreedUser = $arrayRequest["agreed_from"];
             $this->checkedUser = $arrayRequest["checked_from"];
-<<<<<<< HEAD
             $this->script = 'Your ' . $this->dateTime->format('M j (D)') . ' ' . $this->shift . ' to ' . $this->nicknameTo;
-=======
-            $this->script = 'Your ' . $this->dateShift . ' ' . $this->shift . ' to ' . $this->nicknameTo;
->>>>>>> 11457de41c1f83c1d3e2ab794d06f3f650c1fc8f
         } else if ($arrayRequest["id_to"] === $id_user) {
             $this->position = 'to';
             $this->nicknameTo = 'YOU';
