@@ -1,4 +1,14 @@
 <?php
+
+namespace utils;
+
+function customVarDump(string $varName)
+{
+    echo ($varName) . PHP_EOL;
+    global $$varName;
+    var_dump($$varName) . PHP_EOL;
+}
+
 function groupArrayByKey($array, $key)
 {
     $arrayGrouped = array();
@@ -7,5 +17,19 @@ function groupArrayByKey($array, $key)
         $arrayGrouped[$element[$key]][] = $element;
     }
     return $arrayGrouped;
+}
+
+function genHref(string $url, array $query){
+    if (count($query)){
+        for($i=0;$i<count($query);$i++){
+            if ($i === 0){
+                $seperator = '?';
+            } else {
+                $seperator = '&';
+            }
+            $url = $url . $seperator . array_keys($query)[$i] . '=' . $query[array_keys($query)[$i]];
+        }
+    }
+    return $url;
 }
 ?>

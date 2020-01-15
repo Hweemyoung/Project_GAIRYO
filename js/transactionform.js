@@ -138,6 +138,7 @@ class FormHandler {
         this._$iTargetOverlap.addClass('invisible');
         this._$iShiftOverlap.addClass('invisible');
         var _confirmable = true;
+        this._$formItems.find('i').addClass('d-none');
         this._$formItems.each(function (idxFormItem) {
             var error = false;
             var $formItem = $(this);
@@ -200,12 +201,15 @@ class FormHandler {
                         }
                     });
                     if (!found) {
+                        $formItem.find('i.i-not-found').removeClass('d-none');
                         handler._$iNotFound.attr('title', `${$(this).children(`option[value="${this.value}"]`).html()}がもともと持っているシフトとかぶります`).removeClass('invisible');
                     }
                     if (targetOverlap) {
+                        $formItem.find('i.i-target-overlap').removeClass('d-none');
                         handler._$iTargetOverlap.attr('title', `${$(this).children(`option[value="${this.value}"]`).html()}に２つ以上のかぶるシフトを与えています`).removeClass('invisible');
                     }
                     if (shiftOverlap) {
+                        $formItem.find('i.i-shift-overlap').removeClass('d-none');
                         handler._$iShiftOverlap.attr('title', `${$($selectsInFormItem[0]).children(`option[value="${this.value}"]`).html()}の${$selectsInFormItem[1].value} ${$selectsInFormItem[2].value} ${$selectsInFormItem[3].value}を複数人に与えています`).removeClass('invisible');
                     }
                     if (!found || targetOverlap || shiftOverlap) {

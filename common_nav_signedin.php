@@ -1,6 +1,7 @@
 <?php
 class userOrientedRequest
 {
+    // This object is not for market item i.e. id_to cannot be NULL.
     public function __construct($id_user, $arrayRequest, $arrayMembersByIdUser, $dbh)
     {
         $this->idUser = $id_user;
@@ -26,7 +27,7 @@ class userOrientedRequest
             $this->agreedUser = $arrayRequest["agreed_from"];
             $this->checkedUser = $arrayRequest["checked_from"];
             $this->script = 'Your ' . $this->dateShift . ' ' . $this->shift . ' to ' . $this->nicknameTo;
-        } else if ($arrayRequest["id_to"] === $id_user){
+        } else if ($arrayRequest["id_to"] === $id_user) {
             $this->position = 'to';
             $this->nicknameTo = 'YOU';
             $this->agreedUser = $arrayRequest["agreed_to"];
