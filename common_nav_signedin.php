@@ -3,20 +3,20 @@
 class userOrientedRequest
 {
     // This object is not for market item i.e. id_to cannot be NULL.
-    public function __construct($id_user, $arrayRequest, $arrayMembersByIdUser, $dbh)
+    public function __construct($id_user, $arrayRequest, $arrayMemberObjectsByIdUser, $dbh)
     {
         $this->idUser = $id_user;
         $this->arrayRequest = $arrayRequest;
         $this->idTrans = $arrayRequest["id_transaction"];
         $this->idRequest = $arrayRequest["id_request"];
-        $this->nicknameCreated = $arrayMembersByIdUser[$arrayRequest["id_created"]]["nickname"];
+        $this->nicknameCreated = $arrayMemberObjectsByIdUser[$arrayRequest["id_created"]]->nickname;
         $this->timeProceeded = $arrayRequest["time_proceeded"];
-        $this->nicknameFrom = $arrayMembersByIdUser[$arrayRequest["id_from"]]["nickname"];
-        $this->nicknameTo = $arrayMembersByIdUser[$arrayRequest["id_to"]]["nickname"];
+        $this->nicknameFrom = $arrayMemberObjectsByIdUser[$arrayRequest["id_from"]]->nickname;
+        $this->nicknameTo = $arrayMemberObjectsByIdUser[$arrayRequest["id_to"]]->nickname;
         if ($arrayRequest["id_created"] === $id_user){
             $this->nicknameCreated = 'YOU';
         } else {
-            $this->nicknameCreated = $arrayMembersByIdUser[$arrayRequest["id_created"]]["nickname"];
+            $this->nicknameCreated = $arrayMemberObjectsByIdUser[$arrayRequest["id_created"]]->nickname;
         }
         $sql = 'SELECT date_shift, shift FROM shifts_assigned WHERE id_shift=:id_shift';
         $this->idShift = $arrayRequest["id_shift"];
@@ -90,7 +90,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 for ($i = 0; $i < count($requests); $i++) {
     // var_dump($requests[$i]);
-    $requests[$i] = new userOrientedRequest($id_user, $requests[$i], $arrayMembersByIdUser, $dbh);
+    $requests[$i] = new userOrientedRequest($id_user, $requests[$i], $arrayMemberObjectsByIdUser, $dbh);
 }
 // echo '$requests = ';
 // echo var_dump($requests);

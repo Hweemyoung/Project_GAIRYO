@@ -1,6 +1,7 @@
 <?php
 session_name('sess_gairyo');
 session_start();
+require_once './class/class_date_object.php';
 
 class Overloading
 {
@@ -46,7 +47,7 @@ class Overloading
 
 class MasterHandler
 {
-    public $mode;
+    public $test;
     public $dbh;
     public $signedin;
     public $id_google;
@@ -55,10 +56,8 @@ class MasterHandler
     public function __construct($test, $host, $DBName, $userName, $pw)
     {
         $this->dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-        $this->dbh->query('START TRANSACTION;');
         $this->test = $test;
         $this->init();
-        $this->dbh->query('COMMIT;');
     }
     
     private function init(){
@@ -139,12 +138,13 @@ $test = true;
 $host = 'localhost';
 $DBName = 'gairyo';
 $userName = 'root';
-$pw = '9957';
+$pw = '111111';
 $master_handler = new MasterHandler($test, $host, $DBName, $userName, $pw);
+$dbh = $master_handler->dbh;
 $signedin = $master_handler->signedin;
 $id_google = $master_handler->id_google;
-$arrayMembersByIdGoogle = $master_handler->arrayMembersByIdGoogle;
-$arrayMembersByIdUser = $master_handler->arrayMembersByIdUser;
+$arrayMemberObjectsByIdGoogle = $master_handler->arrayMemberObjectsByIdGoogle;
+$arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
 $id_user = $master_handler->id_user;
 
 

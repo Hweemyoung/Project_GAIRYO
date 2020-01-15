@@ -14,11 +14,11 @@ class hrefGenerator
     }
 }
 
-function prepArrayIdShiftsByIdTrans($id_user, $arrayRequestsByIdTrans, $arrayMembersByIdUser, $dbh)
+function prepArrayIdShiftsByIdTrans($id_user, $arrayRequestsByIdTrans, $arrayMemberObjectsByIdUser, $dbh)
 {
     foreach (array_keys($arrayRequestsByIdTrans) as $idTrans) {
         for ($i = 0; $i < count($arrayRequestsByIdTrans[$idTrans]); $i++) {
-            $arrayRequestsByIdTrans[$idTrans][$i] = new userOrientedRequest($id_user, $arrayRequestsByIdTrans[$idTrans][$i], $arrayMembersByIdUser, $dbh);
+            $arrayRequestsByIdTrans[$idTrans][$i] = new userOrientedRequest($id_user, $arrayRequestsByIdTrans[$idTrans][$i], $arrayMemberObjectsByIdUser, $dbh);
         }
     }
     return $arrayRequestsByIdTrans;
@@ -117,7 +117,7 @@ $stmt = $dbh->prepare($sql);
 $stmt->execute();
 $arrayRequestsByIdTrans = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
 // Every arrayRequest to Object
-$arrayRequestsByIdTrans = prepArrayIdShiftsByIdTrans($id_user, $arrayRequestsByIdTrans, $arrayMembersByIdUser, $dbh);
+$arrayRequestsByIdTrans = prepArrayIdShiftsByIdTrans($id_user, $arrayRequestsByIdTrans, $arrayMemberObjectsByIdUser, $dbh);
 
 ?>
 

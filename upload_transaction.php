@@ -33,9 +33,10 @@ foreach ($arrayFormIds as $formId) {
     $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
     if (!$result) {
         $nickname = $arrayMembersByIdUser[$id_from]["nickname"];
+        echo '1';
         header(`Location: ' . './transactions.php?f=2&e=0&nick=$nickname&date=$dateShift&shift=$shift`);
     } else {
-        // $id_shift = $result[0]["id_shift"];
+        $id_shift = $result[0];
         // Check if there is the same request already
         // $sql = "SELECT id_request, id_transaction FROM requests_pending WHERE id_shift=$id_shift AND id_to=$id_to AND `status`=2;";
         // $stmt = $master_handler->dbh->prepare($sql);
@@ -48,7 +49,8 @@ foreach ($arrayFormIds as $formId) {
             // $nickname_from = $arrayMembersByIdUser[$id_from]["nickname"];
             // $nickname_to = $arrayMembersByIdUser[$id_to]["nickname"];
             // echo "ERROR - Request already exists.<br>Request ID = $id_request<br>Transaction ID = $id_transaction<br>$nickname_from's $dateShift $shift to $nickname_to";
-            // header(`Location: ' . './transactions.php?f=2&e=1&nickfrom=$nickname&nickto=$nickname_to&date=$dateShift&shift=$shift&idrequest=$id_request&idtrans=$id_transaction`);
+            echo '2';
+            header(`Location: ' . './transactions.php?f=2&e=1&nickfrom=$nickname&nickto=$nickname_to&date=$dateShift&shift=$shift&idrequest=$id_request&idtrans=$id_transaction`);
         // }
         // shifts_assigned: Update under_request
         $sql = "UPDATE shifts_assigned SET under_request=1 WHERE id_user=$id_from AND shift='$shift' AND date_shift='$dateShift';";
@@ -72,11 +74,11 @@ foreach ($arrayFormIds as $formId) {
         $SQLS = $SQLS . $sql;
     }
 }
-
 $master_handler->dbh->query($SQLS);
 $master_handler->dbh->query('COMMIT;');
 // If NULL
 if (!$stmt->errorInfo()[2]){
+    echo '3';
     header('Location: ' . './transactions.php?f=2&s=0');
 } else {
     echo $stmt->errorInfo()[2];

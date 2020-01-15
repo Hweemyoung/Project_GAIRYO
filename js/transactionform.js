@@ -138,7 +138,7 @@ class FormHandler {
         this._$iTargetOverlap.addClass('invisible');
         this._$iShiftOverlap.addClass('invisible');
         var _confirmable = true;
-        this._$formItems.find('i').addClass('d-none');
+        this._$formItems.find('.div-form-icons i').addClass('d-none');
         this._$formItems.each(function (idxFormItem) {
             var error = false;
             var $formItem = $(this);

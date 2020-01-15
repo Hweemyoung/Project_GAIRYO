@@ -59,7 +59,7 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
                                         <option value="0">Member</option>
                                         <?php
                                         foreach (array_keys($arrayShiftsByIdUser) as $idUser) {
-                                            $nickname = $arrayMembersByIdUser[$idUser]["nickname"];
+                                            $nickname = $arrayMemberObjectsByIdUser[$idUser]->nickname;
                                             echo "
                                         <option value='$idUser'>$idUser $nickname</option>
                                             ";
@@ -106,7 +106,7 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
                                         <option value="0">Member</option>
                                         <?php
                                         foreach (array_keys($arrayShiftsByIdUser) as $idUser) {
-                                            $nickname = $arrayMembersByIdUser[$idUser]["nickname"];
+                                            $nickname = $arrayMemberObjectsByIdUser[$idUser]->nickname;
                                             echo "
                                         <option value='$idUser'>$idUser $nickname</option>
                                             ";
@@ -114,12 +114,12 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
                                         ?>
                                     </select>
                                 </div>
-                                <div class="col-3 d-flex">
-                                    <div>
-                                        <i class="i-not-found fas fa-clone text-warning d-none px-1"></i>
-                                        <i class="i-target-overlap fas fa-compress-arrows-alt text-danger d-none px-1"></i>
-                                        <i class="i-shift-overlap fas fa-share-alt-square text-info d-none px-1"></i>
-                                    </div>
+                                <div class="col-1 d-flex flex-column div-form-icons">
+                                        <i class="i-not-found fas fa-clone text-warning mx-auto d-none"></i>
+                                        <i class="i-target-overlap fas fa-compress-arrows-alt text-danger mx-auto d-none"></i>
+                                        <i class="i-shift-overlap fas fa-share-alt-square text-info mx-auto d-none"></i>
+                                </div>
+                                <div class="col-2">
                                     <button class="btn btn-danger btn-delete ml-auto align-middle" title="Delete transaction"><i class="fas fa-minus"></i></button>
                                 </div>
                             </div>
@@ -175,5 +175,5 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
 <script src="./js/transactionform.js"></script>
 <script>
     const formHandler = new FormHandler(<?= json_encode($arrayShiftsByIdUser) ?>);
-    // const arrayShiftsByIdUser = <?= json_encode($arrayShiftsByIdUser) ?>;
+    // const arrayShiftsByIdUser =;
 </script>
