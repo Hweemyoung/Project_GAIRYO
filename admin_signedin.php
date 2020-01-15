@@ -154,9 +154,9 @@ function echoRequestsList($requests)
     foreach ($requests as $request) {
         // $request: userOrientedRequest
         $scriptNotice = $request->scriptNotice;
-        $timeProceeded = date('j M Y', strtotime($request->time_proceeded));
+        $timeProceeded = date('j M Y', strtotime($request->timeProceeded));
         
-        if (!$request->checked_user) {
+        if (!$request->checkedUser) {
             echo '
             <a href="#" class="list-group-item list-group-item-action list-group-item-info">';
         } else {
@@ -167,7 +167,7 @@ function echoRequestsList($requests)
             <span>$scriptNotice</span>',
             array('$scriptNotice' => $scriptNotice));
         
-        // if (!$request->checked_user) {
+        // if (!$request->checkedUser) {
             // echo '
             // <div class="badge badge-sm badge-primary">new</div>
             // ';
@@ -220,7 +220,7 @@ function echoBoardList($arrayBoardItems)
             <span>$title</span>',
             array('$title' => $title));
         
-        // if (!$request->checked_user) {
+        // if (!$request->checkedUser) {
             // echo '
             // <div class="badge badge-sm badge-primary">new</div>
             // ';

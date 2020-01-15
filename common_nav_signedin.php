@@ -1,4 +1,5 @@
 <?php
+
 class userOrientedRequest
 {
     public function __construct($id_user, $arrayRequest, $arrayMembersByIdUser, $dbh)
@@ -6,10 +7,16 @@ class userOrientedRequest
         $this->idUser = $id_user;
         $this->arrayRequest = $arrayRequest;
         $this->idTrans = $arrayRequest["id_transaction"];
+        $this->idRequest = $arrayRequest["id_request"];
+        $this->nicknameCreated = $arrayMembersByIdUser[$arrayRequest["id_created"]]["nickname"];
         $this->timeProceeded = $arrayRequest["time_proceeded"];
         $this->nicknameFrom = $arrayMembersByIdUser[$arrayRequest["id_from"]]["nickname"];
         $this->nicknameTo = $arrayMembersByIdUser[$arrayRequest["id_to"]]["nickname"];
-        $this->nicknameCreated = $arrayMembersByIdUser[$arrayRequest["id_created"]]["nickname"];
+        if ($arrayRequest["id_created"] === $id_user){
+            $this->nicknameCreated = 'YOU';
+        } else {
+            $this->nicknameCreated = $arrayMembersByIdUser[$arrayRequest["id_created"]]["nickname"];
+        }
         $sql = 'SELECT date_shift, shift FROM shifts_assigned WHERE id_shift=:id_shift';
         $this->idShift = $arrayRequest["id_shift"];
         $idShift = $this->idShift;
@@ -17,7 +24,7 @@ class userOrientedRequest
         $stmt->bindParam(':id_shift', $idShift, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetchAll();
-        $this->dateShift = $result[0]["date_shift"];
+        $this->dateTime = DateTime::createFromFormat('Y-m-d', $result[0]["date_shift"]);
         $this->shift = $result[0]["shift"];
         $this->status = $arrayRequest["status"];
         if ($arrayRequest["id_from"] === $id_user) {
@@ -25,13 +32,13 @@ class userOrientedRequest
             $this->nicknameFrom = 'YOU';
             $this->agreedUser = $arrayRequest["agreed_from"];
             $this->checkedUser = $arrayRequest["checked_from"];
-            $this->script = 'Your ' . $this->dateShift . ' ' . $this->shift . ' to ' . $this->nicknameTo;
-        } else if ($arrayRequest["id_to"] === $id_user){
+            $this->script = 'Your ' . $this->dateTime->format('M j (D)') . ' ' . $this->shift . ' to ' . $this->nicknameTo;
+        } else if ($arrayRequest["id_to"] === $id_user) {
             $this->position = 'to';
             $this->nicknameTo = 'YOU';
             $this->agreedUser = $arrayRequest["agreed_to"];
             $this->checkedUser = $arrayRequest["checked_to"];
-            $this->script = $this->nicknameFrom . '\'s ' . $this->dateShift . ' ' . $this->shift . ' to you';
+            $this->script = $this->nicknameFrom . '\'s ' . $this->dateTime->format('M j (D)') . ' ' . $this->shift . ' to you';
         } else {
             $this->position = '3rd';
             $this->agreedUser = NULL;
@@ -55,8 +62,24 @@ class userOrientedRequest
     }
 }
 
+class CommonNavHandler
+{
+    function genHref(array $params){
+        if ($params['status'] == 2){
+            return strtr('
+            ./transactions.php#$idTrans', array('$idTrans'=>$params['idTrans']));
+        } elseif($params['status'] == 1) {
+            return strtr('./shifts.php#$idRequest', array('$idRequest'=>$params['idRequest']));
+        } else {
+            return '';
+        }
+    }
+}
+
+$common_nav_handler = new CommonNavHandler();
+
 // Get requests
-$sql = 'SELECT id_transaction, id_from, id_to, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE id_from=:id_user OR id_to=:id_user ORDER BY time_proceeded DESC LIMIT 5';
+$sql = 'SELECT id_transaction, id_request, id_from, id_to, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE id_from=:id_user OR id_to=:id_user ORDER BY time_proceeded DESC LIMIT 5';
 $stmt = $dbh->prepare($sql);
 $stmt->bindParam(':id_user', $id_user);
 $stmt->execute();
@@ -105,7 +128,8 @@ for ($i = 0; $i < count($requests); $i++) {
                     <?php
                     for ($i = 0; $i < count($requests); $i++) {
                         $request = $requests[$i];
-                        echo '<a href="./logs.php?id_transaction="' . $request->idTrans . '" class="dropdown-item">' . $requests[$i]->scriptNotice . '</a>';
+                        $href = $common_nav_handler->genHref(array('status'=>$request->status, 'idTrans'=>$request->idTrans, 'idRequest'=>$request->idRequest));
+                        echo strtr('<a href="$href" class="dropdown-item">$scriptNotice</a>', array('$href' => $href, '$scriptNotice'=>$requests[$i]->scriptNotice));
                     }
                     ?>
                     <!-- Like <a href="./transactions.php?id_transaction=3" class="dropdown-item">Request 1</a> -->
