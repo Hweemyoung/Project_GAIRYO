@@ -56,7 +56,7 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
                                 </div>
                                 <div class="col-9">
                                     <select name="id_from" class="form-control select-id-from">
-                                        <option value="0">Whom?</option>
+                                        <option value="0">Member</option>
                                         <?php
                                         foreach (array_keys($arrayShiftsByIdUser) as $idUser) {
                                             $nickname = $arrayMembersByIdUser[$idUser]["nickname"];
@@ -101,9 +101,9 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
                                 <div class="col-2 text-center">
                                     <label for="id_to">To</label>
                                 </div>
-                                <div class="col-8">
+                                <div class="col-7">
                                     <select name="id_to" class="form-control select-id-to" disabled>
-                                        <option value="0">Whom?</option>
+                                        <option value="0">Member</option>
                                         <?php
                                         foreach (array_keys($arrayShiftsByIdUser) as $idUser) {
                                             $nickname = $arrayMembersByIdUser[$idUser]["nickname"];
@@ -114,8 +114,13 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
                                         ?>
                                     </select>
                                 </div>
-                                <div class="col-2 d-flex flex-row-reverse">
-                                    <button class="btn btn-danger btn-delete" title="Delete transaction"><i class="fas fa-minus"></i></button>
+                                <div class="col-3 d-flex">
+                                    <div>
+                                        <i class="i-not-found fas fa-clone text-warning d-none px-1"></i>
+                                        <i class="i-target-overlap fas fa-compress-arrows-alt text-danger d-none px-1"></i>
+                                        <i class="i-shift-overlap fas fa-share-alt-square text-info d-none px-1"></i>
+                                    </div>
+                                    <button class="btn btn-danger btn-delete ml-auto align-middle" title="Delete transaction"><i class="fas fa-minus"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -158,8 +163,8 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
             </form>
             <div id="div-buttons" class="text-right">
                 <i id="i-not-found" class="fas fa-clone text-warning invisible"></i>
-                <i id="i-target-overlap" class="fas fa-compress-alt text-danger invisible"></i>
-                <i id="i-not-found" class="fas fa-share-alt-square text-info invisible"></i>
+                <i id="i-target-overlap" class="fas fa-compress-arrows-altt-danger invisible"></i>
+                <i id="i-shift-overlap" class="fas fa-share-alt-square text-info invisible"></i>
                 <button id="btn-add-item" class="btn btn-primary" title="Add"><i class="fas fa-plus"></i></button>
                 <a id="btn-confirm" class="btn btn-primary disabled" href="#modal-confirm" data-toggle="modal" title="Final Check"><i class="fas fa-check"></i></a>
             </div>
