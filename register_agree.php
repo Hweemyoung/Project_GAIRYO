@@ -7,6 +7,7 @@ class RequestsHandler
     private $idUser;
     private $idTrans;
     private $dbh;
+    private $timeProceeded;
     private $arrayRequestsInTransaction;
     private $url = './transactions.php';
     public function __construct($mode, $idUser, $idTrans, $master_handler)
@@ -15,6 +16,7 @@ class RequestsHandler
         $this->idUser = $idUser;
         $this->idTrans = $idTrans;
         $this->dbh = $master_handler->dbh;
+        $this->timeProceeded = date('Y-m-d H:i:s');
         $this->positions = ['from', 'to'];
         $this->SQLS = '';
         $this->arrayErrors = [];
@@ -45,7 +47,7 @@ class RequestsHandler
 
     private function decline($arrayCondsIdTrans)
     {
-        $sql = 'UPDATE requests_pending SET `status`=0 WHERE `status`=2 AND ' . '(' . implode(' OR ', $arrayCondsIdTrans) . ');';
+        $sql = "UPDATE requests_pending SET `status`=0, time_proceeded='$this->timeProceeded' WHERE `status`=2 AND " . '(' . implode(' OR ', $arrayCondsIdTrans) . ');';
         $this->SQLS = ($this->SQLS) . $sql;
         // For every shift in declined transaction, check if there is any other requests surrounding it and update under_request.
         $this->updateUnderRequest($arrayCondsIdTrans);
@@ -100,7 +102,7 @@ class RequestsHandler
                 if ($arrayIdRequest["agreed_$position"] == 1) {
                     array_push($this->arrayErrors, $idRequest);
                 } else {
-                    $sql = "UPDATE requests_pending SET agreed_$position=1 WHERE id_request=$idRequest;";
+                    $sql = "UPDATE requests_pending SET agreed_$position=1, time_proceeded='$this->timeProceeded' WHERE id_request=$idRequest;";
                     $this->SQLS = ($this->SQLS) . $sql;
                 }
             }
@@ -118,9 +120,7 @@ class RequestsHandler
         $this->validateUser($id_user);
         $this->validateAction();
         if ($this->mode === 'decline') {
-            var_dump([$this->idTrans]);
-            echo '<br>';
-            $this->decline([$this->idTrans]);
+            $this->decline(['id_transaction=' .$this->idTrans]);
         } else if ($this->mode === 'agree') {
             $this->agree();
         } else {
@@ -157,7 +157,7 @@ class RequestsHandler
             // Firstly, invalidate all pending(i.e. status=2) transactions surrounding these shifts
             $this->invalidateAllRequests();
             // Next, update status of requests
-            $sql = strtr('UPDATE requests_pending SET `status`=1 WHERE id_transaction=$idTrans;', array('$idTrans' => $this->idTrans));
+            $sql = "UPDATE requests_pending SET `status`=1, time_proceeded='$this->timeProceeded' WHERE id_transaction=$this->idTrans;";
             $this->SQLS = $this->SQLS . $sql;
             // Next, update shifts assigned
             foreach ($arrayRequests as $arrayRequest) {
@@ -171,7 +171,13 @@ class RequestsHandler
             }
             echo $this->SQLS;
             $stmt = ($this->dbh)->prepare($this->SQLS);
-            $this->redirect(true, $this->url, ['f' => 1, 's' => 1]);
+            $stmt->execute();
+            if (($stmt->errorInfo())[2] !== NULL){
+                $this->redirect(true, $this->url, ['f' => 1, 's' => 1]);
+            } else {
+                var_dump($stmt->errorInfo());
+                exit;
+            }
         } else {
             // echo "Awaiting agreements from other members.";
             $this->redirect(true, $this->url, ['f' => 1, 's' => 0]);

@@ -30,7 +30,7 @@ foreach ($arrayFormIds as $formId) {
     $stmt = $master_handler->dbh->prepare($sql);
     $stmt->execute();
     // var_dump($stmt->errorInfo());OK
-    $result = $stmt->fetchAll();
+    $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
     if (!$result) {
         $nickname = $arrayMembersByIdUser[$id_from]["nickname"];
         header(`Location: ' . './transactions.php?f=2&e=0&nick=$nickname&date=$dateShift&shift=$shift`);

@@ -1,4 +1,13 @@
 <?php
-echo $_SERVER['REQUEST_URI'] . PHP_EOL;
-var_dump($_SERVER);
+class O{
+    private $prop = 'asd';
+    private $sql;
+    function sql(){
+        $this->sql = "$this->prop";
+        var_dump($this->sql);
+    }
+}
+
+$inst = new O();
+$inst->sql();
 ?>
