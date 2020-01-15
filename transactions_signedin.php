@@ -34,70 +34,85 @@ function genSqlConditions($arrayIdTrans)
 
 function echoTrsTrans($arrayRequestsByIdTrans)
 {
-    if (count($arrayRequestsByIdTrans === 0)){
+    if (count($arrayRequestsByIdTrans) === 0) {
         echo "
-        <tr><td colspan=6>No Transactions Found</td></tr>
+        <tr><td class='align-middle' colspan=7>No Transactions Found</td></tr>
         ";
-    }
-    foreach (array_keys($arrayRequestsByIdTrans) as $idTrans) {
-        $disabled = '';
-        foreach($arrayRequestsByIdTrans[$idTrans] as $requestObject){
-            if ($requestObject->agreedUser){
-                $disabled = 'disabled';
-                break;
+    } else {
+        foreach (array_keys($arrayRequestsByIdTrans) as $idTrans) {
+            $disabled = '';
+            foreach ($arrayRequestsByIdTrans[$idTrans] as $requestObject) {
+                if ($requestObject->agreedUser) {
+                    $disabled = 'disabled';
+                    break;
+                }
             }
-        }
-        $numRequests = count($arrayRequestsByIdTrans[$idTrans]);
-        for ($i = 0; $i < $numRequests; $i++) {
-            $requestObject = $arrayRequestsByIdTrans[$idTrans][$i];
-            if ($requestObject->position === '3rd') {
-                $classBgWarning = '';
-            } else {
-                $classBgWarning = 'class="bg-warning"';
-            }
-            echo "
-        <tr>";
-            if ($i === 0) {
+            $numRequests = count($arrayRequestsByIdTrans[$idTrans]);
+            for ($i = 0; $i < $numRequests; $i++) {
+                $requestObject = $arrayRequestsByIdTrans[$idTrans][$i];
+                if ($requestObject->position === '3rd') {
+                    $classBg = '';
+                } else {
+                    // $classBg = 'font-weight-bold';
+                    $classBg = 'mark';
+                }
+                switch($requestObject->dateTime->format('w')){
+                    case '0':
+                        // Sun
+                        $classText = 'text-danger';
+                        break;
+                    case '6':
+                        // Sat
+                        $classText = 'text-primary';
+                        break;
+                    default:
+                        $classText = '';
+                }
                 echo "
-            <td rowspan='$numRequests'>$idTrans</td>";
-            }
+        <tr id='{$requestObject->idTrans}'>";
+                if ($i === 0) {
+                    echo "
+            <td class='align-middle' rowspan='$numRequests'>$idTrans</td>";
+                }
 
-            $nicknameFrom = $requestObject->nicknameFrom;
-            $nicknameTo = $requestObject->nicknameTo;
-            $dateShift = $requestObject->dateShift;
-            $shift = $requestObject->shift;
-            $idUser = $requestObject->idUser;
-            echo "
-            <td $classBgWarning>$nicknameFrom</td>
-            <td $classBgWarning>$dateShift</td>
-            <td $classBgWarning>$shift</td>
-            <td $classBgWarning>$nicknameTo</td>";
-            if ($i === 0) {
-                $hrefGen = new hrefGenerator($idUser, $idTrans);
-                $hrefDecline = $hrefGen->getHref('decline');
-                $hrefAgree = $hrefGen->getHref('agree');
+                $nicknameFrom = $requestObject->nicknameFrom;
+                $nicknameTo = $requestObject->nicknameTo;
+                $dateShift = $requestObject->dateTime->format('M j (D)');
+                $shift = $requestObject->shift;
+                $nicknameCreated = $requestObject->nicknameCreated;
+                $idUser = $requestObject->idUser;
                 echo "
-            <td rowspan='$numRequests'>
+            <td class='align-middle $classBg'>$nicknameFrom</td>
+            <td class='align-middle $classBg $classText'>$dateShift</td>
+            <td class='align-middle $classBg'>$shift</td>
+            <td class='align-middle $classBg'>$nicknameTo</td>";
+                if ($i === 0) {
+                    $hrefGen = new hrefGenerator($idUser, $idTrans);
+                    $hrefDecline = $hrefGen->getHref('decline');
+                    $hrefAgree = $hrefGen->getHref('agree');
+                    echo "
+            <td class='align-middle' rowspan='$numRequests'>$nicknameCreated</td>
+            <td class='align-middle' rowspan='$numRequests'>
                 <div class='div-buttons'>
                     <a href=$hrefDecline class='btn btn-danger' title='Decline'><i class='fas fa-ban'></i></a>
                     <a href=$hrefAgree class='btn btn-success $disabled' title='Agree'><i class='fas fa-handshake'></i></a>
                 </div>
             </td>
                 ";
-                echo "
+                    echo "
         </tr>
             ";
+                }
             }
         }
     }
 }
 
-$sql = "SELECT id_transaction FROM requests_pending WHERE id_from=$id_user OR id_to=$id_user;";
+$sql = "SELECT id_transaction FROM requests_pending WHERE `status`=2 AND (id_from=$id_user OR id_to=$id_user);";
 $stmt = $dbh->prepare($sql);
 $stmt->execute();
-$sqlConditions = genSqlConditions($stmt->fetchAll(PDO::FETCH_COLUMN));
-$sql = "SELECT id_transaction, id_transaction, id_from, id_to, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE " . $sqlConditions;
-// echo $sql;OK
+$sqlConditions = genSqlConditions(array_keys($stmt->fetchAll(PDO::FETCH_GROUP)));
+$sql = "SELECT id_transaction, id_transaction, id_request, id_from, id_to, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE " . $sqlConditions;
 $stmt = $dbh->prepare($sql);
 $stmt->execute();
 $arrayRequestsByIdTrans = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
@@ -129,6 +144,7 @@ $arrayRequestsByIdTrans = prepArrayIdShiftsByIdTrans($id_user, $arrayRequestsByI
                         <th>Date</th>
                         <th>Shift</th>
                         <th>To</th>
+                        <th>Creater</th>
                         <th>Answer</th>
                     </tr>
                 </thead>
