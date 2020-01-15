@@ -16,9 +16,9 @@ function randomDateTimeInRange(DateTime $start, DateTime $end)
 
 $arrayNumShifts = array('A' => 1, 'B' => 3, 'H' => 2, 'C' => 2, 'D' => 3);
 
-$dateTimeStart = new Datetime('2020-01-12');
+$dateTimeStart = new Datetime('2019-12-25');
 $arrayIdUser = range(1, 24);
-$days = 10;
+$days = 30;
 
 $timeNow = $dateTimeStart->getTimestamp();
 // $host = 'sql304.epizy.com';

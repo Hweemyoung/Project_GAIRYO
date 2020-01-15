@@ -10,7 +10,7 @@ $arrayShiftTimes = array('A' => $shiftA, 'B' => $shiftB, 'H' => $shiftH, 'C' => 
 // Hyperparameters
 $arrayHparams = array('YLowerBound' => 2020, 'dayStart' => 'Mon', 'dayEnd' => 'Sun', 'arrayShiftTimes' => $arrayShiftTimes);
 
-require('./class/class_date_object.php');
+require_once './class/class_date_object.php';
 
 class DailyMembersHandler
 {
@@ -26,13 +26,13 @@ class DailyMembersHandler
     public $dateEnd;
     public $arrayDateObjects;
 
-    public function __construct($master_handler, $arrayHparams)
+    public function __construct($master_handler, $arrayShiftTimes)
     {
         $this->id_user = $master_handler->id_user;
         $this->dbh = $master_handler->dbh;
         $this->arrayDateObjects = [];
-        // $this->set_all($arrayHparams);
-        $this->arrayShiftTimes = $arrayHparams;
+        // $this->set_all($arrayShiftTimes);
+        $this->arrayShiftTimes = $arrayShiftTimes;
         $this->setProps();
     }
 
@@ -384,7 +384,7 @@ class DailyMembersHandler
     }
 }
 
-$daily_member_handler = new DailyMembersHandler($id_user, $dbh, $arrayShiftTimes);
+$daily_member_handler = new DailyMembersHandler($master_handler, $arrayShiftTimes);
 // var_dump(get_object_vars($daily_member_handler));
 ?>
 

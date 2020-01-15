@@ -5,6 +5,7 @@ class userOrientedRequest
     // This object is not for market item i.e. id_to cannot be NULL.
     public function __construct($id_user, $arrayRequest, $arrayMemberObjectsByIdUser, $dbh)
     {
+        $this->dbh = $dbh;
         $this->idUser = $id_user;
         $this->arrayRequest = $arrayRequest;
         $this->idTrans = $arrayRequest["id_transaction"];
@@ -18,14 +19,15 @@ class userOrientedRequest
         } else {
             $this->nicknameCreated = $arrayMemberObjectsByIdUser[$arrayRequest["id_created"]]->nickname;
         }
-        $sql = 'SELECT date_shift, shift FROM shifts_assigned WHERE id_shift=:id_shift';
         $this->idShift = $arrayRequest["id_shift"];
-        $idShift = $this->idShift;
-        $stmt = $dbh->prepare($sql);
-        $stmt->bindParam(':id_shift', $idShift, PDO::PARAM_INT);
+        $sql = "SELECT date_shift, shift FROM shifts_assigned WHERE id_shift=$this->idShift;";
+        // echo $sql;
+        // var_dump($this->dbh->query($sql)->errorInfo());
+        $stmt = $this->dbh->prepare($sql);
         $stmt->execute();
-        $result = $stmt->fetchAll();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $this->dateTime = DateTime::createFromFormat('Y-m-d', $result[0]["date_shift"]);
+        // var_dump($this->dateTime->format('M j (D)'));
         $this->shift = $result[0]["shift"];
         $this->status = $arrayRequest["status"];
         if ($arrayRequest["id_from"] === $id_user) {
@@ -60,6 +62,7 @@ class userOrientedRequest
                 $this->scriptNotice = 'Awaiting: ' . $this->script;
                 break;
         }
+        $this->dbh = NULL;
     }
 }
 
@@ -89,7 +92,6 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // From array to object
 
 for ($i = 0; $i < count($requests); $i++) {
-    // var_dump($requests[$i]);
     $requests[$i] = new userOrientedRequest($id_user, $requests[$i], $arrayMemberObjectsByIdUser, $dbh);
 }
 // echo '$requests = ';

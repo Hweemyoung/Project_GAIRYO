@@ -24,12 +24,15 @@ function prepArrayIdShiftsByIdTrans($id_user, $arrayRequestsByIdTrans, $arrayMem
     return $arrayRequestsByIdTrans;
 }
 
-function genSqlConditions($arrayIdTrans)
+function genSqlConditions($arrayFieldValues, $colName)
 {
-    for ($i = 0; $i < count($arrayIdTrans); $i++) {
-        $arrayIdTrans[$i] = 'id_transaction=' . $arrayIdTrans[$i];
-    }
-    return '(' . implode(' OR ', $arrayIdTrans) . ') AND `status`=2;';
+    if (count($arrayFieldValues) === 0){
+        $arrayFieldValues = [1];
+    } else {
+    for ($i = 0; $i < count($arrayFieldValues); $i++) {
+        $arrayFieldValues[$i] = $colName .'=' . $arrayFieldValues[$i];
+    }}
+    return '(' . implode(' OR ', $arrayFieldValues) . ')';
 }
 
 function echoTrsTrans($arrayRequestsByIdTrans)
@@ -109,15 +112,15 @@ function echoTrsTrans($arrayRequestsByIdTrans)
 }
 
 $sql = "SELECT id_transaction FROM requests_pending WHERE `status`=2 AND (id_from=$id_user OR id_to=$id_user);";
-$stmt = $dbh->prepare($sql);
-$stmt->execute();
-$sqlConditions = genSqlConditions(array_keys($stmt->fetchAll(PDO::FETCH_GROUP)));
-$sql = "SELECT id_transaction, id_transaction, id_request, id_from, id_to, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE " . $sqlConditions;
-$stmt = $dbh->prepare($sql);
+$results = $dbh->query($sql)->fetchAll(PDO::FETCH_GROUP);
+$sqlConditions = genSqlConditions(array_keys($results), 'id_transaction');
+$sql = "SELECT id_transaction, id_transaction, id_request, id_from, id_to, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE " . $sqlConditions . 'AND `status`=2';
+$stmt = $master_handler->dbh->prepare($sql);
 $stmt->execute();
 $arrayRequestsByIdTrans = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
+$stmt->closeCursor();
 // Every arrayRequest to Object
-$arrayRequestsByIdTrans = prepArrayIdShiftsByIdTrans($id_user, $arrayRequestsByIdTrans, $arrayMemberObjectsByIdUser, $dbh);
+$arrayRequestsByIdTrans = prepArrayIdShiftsByIdTrans($master_handler->id_user, $arrayRequestsByIdTrans, $master_handler->arrayMemberObjectsByIdUser, $master_handler->dbh);
 
 ?>
 

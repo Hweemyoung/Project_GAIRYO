@@ -5,11 +5,13 @@ require_once './class/class_db_handler.php';
 class TransactionUploader extends DBHandler
 {
     private $arrayFormIds;
+    private $idUser;
     private static $arrayNames = array('id_from', 'month', 'day', 'shift', 'id_to');
 
     public function __construct($master_handler)
     {
         $this->dbh = $master_handler->dbh;
+        $this->idUser = $master_handler->id_user;
         $this->SQLS = '';
         $this->url = './transactions.php';
         $this->sleepSeconds = 2;
@@ -17,13 +19,15 @@ class TransactionUploader extends DBHandler
         $this->process();
     }
 
-    private function process()
+    public function process()
     {
         $this->dbh->query('START TRANSACTION;');
+        var_dump($_POST);
         $sql = "SELECT id_transaction FROM requests_pending ORDER BY id_transaction DESC LIMIT 1;";
         $stmt = $this->executeSql($sql);
         // Set next id_transaction
         $arrayIdtrans = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $stmt->closeCursor();
         if (count($arrayIdtrans) != 0) {
             $id_transaction = intval($arrayIdtrans[0]) + 1;
         } else {
@@ -32,48 +36,59 @@ class TransactionUploader extends DBHandler
         // For every formId
         foreach ($this->arrayFormIds as $formId) {
             // For every name in formId
-            foreach ($this->arrayNames as $name) {
+            foreach ($this::$arrayNames as $name) {
                 // Create variables: $id_from, $month, ...
                 $$name = $_POST[$name . '_' . $formId];
             }
             $month = explode(' ', $month);
             $Y = $month[0];
             $M = $month[1];
-            $dateShift = date('Y-m-d', strtotime("$Y-$M-$day")); // new DateTime(strtotime('2020 Jan 20'))
+            $dateTime = DateTime::createFromFormat('Y-M-j', "$Y-$M-$day");
+            $dateShift = $dateTime->format('Y-m-d');
+            echo $dateShift;
             // Check if there is such a shift
             $sql = "SELECT id_shift FROM shifts_assigned WHERE id_user=$id_from AND shift='$shift' AND date_shift='$dateShift' AND done=0 FOR UPDATE;";
+            echo $sql;
             // echo $sql;
             $stmt = $this->executeSql($sql);
             // var_dump($stmt->errorInfo());OK
             $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            var_dump($stmt->errorInfo());
+            var_dump($result);
+            $stmt->closeCursor();
             if (count($result) === 0) {
+                echo 'here!';
+                // exit;
                 $this->redirect(false, $this->url, ['f' => 2, 'e' => 0, 'nick' => $arrayMemberObjectsByIdUser[$id_from]->nickname, 'date' => $dateShift, 'shift' => $shift]);
             } else {
                 $id_shift = $result[0];
                 // shifts_assigned: Update under_request
                 $sql = "UPDATE shifts_assigned SET under_request=1 WHERE id_user=$id_from AND shift='$shift' AND date_shift='$dateShift';";
-                $SQLS = $SQLS . $sql;
+                $this->SQLS = $this->SQLS . $sql;
                 // requests_pending: Insert new request
-                $id_created = $id_user;
                 $time_created = date('Y-m-d H:i:s');
                 $agreed_from = 0;
                 $agreed_to = 0;
                 $checked_from = 0;
                 $checked_to = 0;
-                if ($id_user === $id_from) {
+                if ($this->idUser === $id_from) {
                     $agreed_from = 1;
                     $checked_from = 1;
-                } else if ($id_user === $id_to) {
+                } else if ($this->idUser === $id_to) {
                     $agreed_to = 1;
                     $checked_to = 1;
                 }
-                $sql = "INSERT INTO requests_pending (id_shift, id_from, id_to, id_created, time_created, `status`, time_proceeded, id_transaction, agreed_from, agreed_to, checked_from, checked_to) VALUES ($id_shift, $id_from, $id_to, $id_created, '$time_created', 2, '$time_created', $id_transaction, $agreed_from, $agreed_to, $checked_from, $checked_to);";
-                $SQLS = $SQLS . $sql;
+                $sql = "INSERT INTO requests_pending (id_shift, id_from, id_to, id_created, time_created, `status`, time_proceeded, id_transaction, agreed_from, agreed_to, checked_from, checked_to) VALUES ($id_shift, $id_from, $id_to, $this->idUser, '$time_created', 2, '$time_created', $id_transaction, $agreed_from, $agreed_to, $checked_from, $checked_to);";
+                $this->SQLS = $this->SQLS . $sql;
             }
         }
+        // echo $this->SQLS;
         $stmt = $this->executeSql($this->SQLS);
+        $stmt->closeCursor();
         // If NULL
         if ($stmt->errorInfo()[0] !== NULL) {
+            echo $this->SQLS . '<br>';
+            // exit;
             $this->redirect(true, $this->url, ['f' => 2, 's' => 0]);
         } else {
             echo $stmt->errorInfo()[2];

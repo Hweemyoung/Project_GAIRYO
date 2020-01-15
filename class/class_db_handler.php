@@ -1,12 +1,12 @@
 <?php
-require_once '../utils.php';
+require_once './utils.php';
 
 class DBHandler
 {
-    private $dbh;
-    private $SQLS;
-    private $url;
-    private $sleepSeconds;
+    public $dbh;
+    public $SQLS;
+    public $url;
+    public $sleepSeconds;
 
     public function __construct($master_handler)
     {
@@ -14,10 +14,10 @@ class DBHandler
         $this->SQLS = '';
     }
 
-    private function process(){
+    public function process(){
     }
 
-    private function redirect($commit, string $url, array $query)
+    public function redirect($commit, string $url, array $query)
     {
         if ($commit) {
             $this->dbh->query('COMMIT;');
@@ -29,7 +29,7 @@ class DBHandler
         header('Location: ' . $url);
     }
 
-    private function executeSql($sql)
+    public function executeSql($sql)
     {
         $stmt = $this->dbh->prepare($sql);
         $stmt->execute();

@@ -23,11 +23,11 @@ class AlertHandler
     private function setStatus()
     {
         if ($this->_from) {
-            if (isset($_GET["m"])) {
+            if (isset($_GET["e"])) {
                 $this->_status = 0;
                 $this->alertMode = 'alert-danger';
                 $this->alertStrong = 'Failed!';
-                $this->_value = $_GET["m"];
+                $this->_value = $_GET["e"];
             } else if (isset($_GET["s"])) {
                 $this->_status = 1;
                 $this->_value = $_GET["s"];

@@ -49,6 +49,10 @@ class RequestsHandler extends DBHandler
 
     private function decline($arrayCondsIdTrans)
     {
+        var_dump($arrayCondsIdTrans);
+        if (count($arrayCondsIdTrans) === 0) {
+            exit;
+        }
         $sql = "UPDATE requests_pending SET `status`=0, time_proceeded='$this->timeProceeded' WHERE `status`=2 AND " . '(' . implode(' OR ', $arrayCondsIdTrans) . ');';
         $this->SQLS = ($this->SQLS) . $sql;
         // For every shift in declined transaction, check if there is any other requests surrounding it and update under_request.
@@ -76,22 +80,26 @@ class RequestsHandler extends DBHandler
 
     private function updateUnderRequest($arrayCondsIdTrans)
     {
+        var_dump($arrayCondsIdTrans);
         // For every shift in invalidated transactions, check if there is any other requests surrounding it and update under_request.
         $sql = 'SELECT id_shift FROM requests_pending WHERE ' . '(' . implode(' OR ', $arrayCondsIdTrans) . ')';
         // Lock
         $this->executeSql('SELECT id_shift FROM shifts_assigned WHERE id_shift in (' . $sql . ') FOR UPDATE;');
         // Get id_shifts
         $arrayByIdShift = $this->executeSql($sql)->fetchAll(PDO::FETCH_GROUP);
+        var_dump($arrayByIdShift);
         $sqlConditions = [];
         foreach (array_keys($arrayByIdShift) as $idShift) {
-            $sql = "SELECT COUNT(*) FROM requests_pending WHERE `status`=2 AND id_shift=$idShift;";
-            $arrayCount = $this->executeSql($sql)->fetchAll(PDO::FETCH_COLUMN);
-            if (intval($arrayCount[0]) === 0) {
+            $sql = "SELECT EXISTS (SELECT 1 FROM requests_pending WHERE`status`=2 AND id_shift=$idShift LIMIT 1;)";
+            $exists = $this->executeSql($sql)->fetch();
+            if (!$exists) {
                 array_push($sqlConditions, 'id_shift=' . $idShift);
             }
         }
-        $sql = "UPDATE shifts_assigned SET under_request=0 WHERE " . '(' . implode(' OR ', $sqlConditions) . ');';
-        $this->SQLS = ($this->SQLS) . $sql;
+        if (count($sqlConditions)) {
+            $sql = "UPDATE shifts_assigned SET under_request=0 WHERE " . '(' . implode(' OR ', $sqlConditions) . ');';
+            $this->SQLS = ($this->SQLS) . $sql;
+        }
     }
 
     private function agree()
@@ -118,10 +126,10 @@ class RequestsHandler extends DBHandler
 
     public function execute()
     {
-        
         $this->validateAction();
         if ($this->mode === 'decline') {
-            $this->decline(['id_transaction=' .$this->idTrans]);
+            echo $this->idTrans;
+            $this->decline(['id_transaction=' . $this->idTrans]);
         } else if ($this->mode === 'agree') {
             $this->agree();
         } else {
@@ -134,7 +142,9 @@ class RequestsHandler extends DBHandler
             echo ($stmt->errorInfo())[2];
             exit;
         }
+        $stmt->closeCursor();
         if ($this->mode === 'decline') {
+            // exit;
             $this->redirect(true, $this->url, ['f' => 1, 's' => 2]);
         }
         $this->SQLS = '';
@@ -162,13 +172,14 @@ class RequestsHandler extends DBHandler
                 // Execute every request: update id_user and under_request=0
                 $sql = strtr(
                     'UPDATE shifts_assigned SET id_user=$idUser, under_request=0 WHERE id_shift=$idShift;',
-                    array('$idUser' => $arrayRequest["id_to"], '$idShift' => $arrayRequest["id_shift"]));
+                    array('$idUser' => $arrayRequest["id_to"], '$idShift' => $arrayRequest["id_shift"])
+                );
                 echo $sql . '<br>';
                 $this->SQLS = ($this->SQLS) . $sql;
             }
             echo $this->SQLS;
             $stmt = $this->executeSql($this->SQLS);
-            if (($stmt->errorInfo())[2] !== NULL){
+            if (($stmt->errorInfo())[2] === NULL) {
                 $this->redirect(true, $this->url, ['f' => 1, 's' => 1]);
             } else {
                 var_dump($stmt->errorInfo());

@@ -6,7 +6,7 @@ $shiftC = array('time-start' => '12:30', 'time-end' => '18:00');
 $shiftD = array('time-start' => '13:30', 'time-end' => '18:00');
 $shifts = array('A' => $shiftA, 'B' => $shiftB, 'H' => $shiftH, 'C' => $shiftC, 'D' => $shiftD);
 
-function getNicksAndAd($nextShift, $arrayMembersByIdUser)
+function getNicksAndAd($nextShift, $arrayMemberObjectsByIdUser)
 {
     global $dbh;
     if ($nextShift[0]["under_request"] == '1') {
@@ -26,7 +26,7 @@ function getNicksAndAd($nextShift, $arrayMembersByIdUser)
             if ($id_to == NULL) {
                 $advertising = true;
             } else {
-                array_push($arrayNicknamesTo, $arrayMembersByIdUser[$id_to]["nickname"]);
+                array_push($arrayNicknamesTo, $arrayMemberObjectsByIdUser[$id_to]->nickname);
             }
         }
         // $arrayNicknamesTo = array('0'=>'nickname0', '1'=>'nickname1', ...)
@@ -101,7 +101,7 @@ function echoAdvertisingWarning($nicksAndAd)
     }
 }
 
-function echoShiftMemberElements($arrayMembersByIdUser, $arrayShiftMembers)
+function echoShiftMemberElements($arrayMemberObjectsByIdUser, $arrayShiftMembers)
 {
     foreach (array_keys($arrayShiftMembers) as $shift) {
         echo strtr(
@@ -116,7 +116,7 @@ function echoShiftMemberElements($arrayMembersByIdUser, $arrayShiftMembers)
         );
         foreach ($arrayShiftMembers[$shift] as $member) {
             // var_dump(intval($member["id_user"]));
-            $nickname = $arrayMembersByIdUser[intval($member["id_user"])]["nickname"];
+            $nickname = $arrayMemberObjectsByIdUser[intval($member["id_user"])]->nickname;
             echo strtr(
                 '
                     <li class="list-group-item">
@@ -262,7 +262,7 @@ $nextShift = $stmt->fetchAll();
 
 // Get requests and advertisement
 // var_dump($nextShift); OK
-$nicksAndAd = getNicksAndAd($nextShift, $arrayMembersByIdUser);
+$nicksAndAd = getNicksAndAd($nextShift, $master_handler->arrayMemberObjectsByIdUser);
 // var_dump($nicksAndAd); OK
 
 // Get Shift members
@@ -344,14 +344,14 @@ $arrayBoardItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <div class="row">
                                         <div class="col-md-6">
                                             <?php
-                                            // var_dump($arrayMembersByIdUser);
-                                            echoShiftMemberElements($arrayMembersByIdUser, array_slice($arrayShiftMembers, 0, 3));
+                                            // var_dump($master_handler->arrayMemberObjectsByIdUser);
+                                            echoShiftMemberElements($master_handler->arrayMemberObjectsByIdUser, array_slice($arrayShiftMembers, 0, 3));
                                             // 'A', 'H', 'B'
                                             ?>
                                         </div>
                                         <div class="col-md-6">
                                             <?php
-                                            echoShiftMemberElements($arrayMembersByIdUser, array_slice($arrayShiftMembers, 3));
+                                            echoShiftMemberElements($master_handler->arrayMemberObjectsByIdUser, array_slice($arrayShiftMembers, 3));
                                             // 'C', 'D'
                                             ?>
                                         </div>
