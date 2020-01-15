@@ -1,26 +1,28 @@
 <?php
 require './check_session.php';
-require './utils.php';
-class RequestsHandler
+require_once './class/class_db_handler.php';
+
+class RequestsHandler extends DBHandler
 {
     private $mode;
     private $idUser;
     private $idTrans;
-    private $dbh;
     private $timeProceeded;
     private $arrayRequestsInTransaction;
-    private $url = './transactions.php';
     public function __construct($mode, $idUser, $idTrans, $master_handler)
     {
         $this->mode = $mode;
         $this->idUser = $idUser;
         $this->idTrans = $idTrans;
         $this->dbh = $master_handler->dbh;
+        $this->url = './transactions.php';
+        $this->sleepSeconds = 2;
         $this->timeProceeded = date('Y-m-d H:i:s');
         $this->positions = ['from', 'to'];
         $this->SQLS = '';
         $this->arrayErrors = [];
-        $this->process($master_handler->id_user);
+        $this->validateUser($master_handler->id_user);
+        $this->process();
     }
 
     public function validateUser($id_user)
@@ -77,13 +79,13 @@ class RequestsHandler
         // For every shift in invalidated transactions, check if there is any other requests surrounding it and update under_request.
         $sql = 'SELECT id_shift FROM requests_pending WHERE ' . '(' . implode(' OR ', $arrayCondsIdTrans) . ')';
         // Lock
-        $this->dbh->query('SELECT id_shift FROM shifts_assigned WHERE id_shift in (' . $sql . ') FOR UPDATE;');
+        $this->executeSql('SELECT id_shift FROM shifts_assigned WHERE id_shift in (' . $sql . ') FOR UPDATE;');
         // Get id_shifts
-        $arrayByIdShift = $this->dbh->query($sql)->fetchAll(PDO::FETCH_GROUP);
+        $arrayByIdShift = $this->executeSql($sql)->fetchAll(PDO::FETCH_GROUP);
         $sqlConditions = [];
         foreach (array_keys($arrayByIdShift) as $idShift) {
             $sql = "SELECT COUNT(*) FROM requests_pending WHERE `status`=2 AND id_shift=$idShift;";
-            $arrayCount = $this->dbh->query($sql)->fetchAll(PDO::FETCH_COLUMN);
+            $arrayCount = $this->executeSql($sql)->fetchAll(PDO::FETCH_COLUMN);
             if (intval($arrayCount[0]) === 0) {
                 array_push($sqlConditions, 'id_shift=' . $idShift);
             }
@@ -96,7 +98,7 @@ class RequestsHandler
     {
         foreach ($this->positions as $position) {
             $sql = strtr('SELECT id_request, agreed_$position FROM requests_pending WHERE id_transaction=$idTrans AND id_$position=$idUser FOR UPDATE;', array('$idTrans' => $this->idTrans, '$idUser' => $this->idUser, '$position' => $position));
-            $arrayIdRequests = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+            $arrayIdRequests = $this->executeSql($sql)->fetchAll(PDO::FETCH_ASSOC);
             foreach ($arrayIdRequests as $arrayIdRequest) {
                 $idRequest = $arrayIdRequest["id_request"];
                 if ($arrayIdRequest["agreed_$position"] == 1) {
@@ -108,16 +110,15 @@ class RequestsHandler
             }
         }
         if (count($this->arrayErrors)) {
-            echo "Fatal Error - The request had already been agreed with by the user.<br>Request ID:";
-            var_dump($this->arrayErrors);
+            // echo "Fatal Error - The request had already been agreed with by the user.<br>Request ID:";
             // exit;
             $this->redirect(false, $this->url, array('f' => 1, 'e' => 2));
         }
     }
 
-    public function execute($id_user)
+    public function execute()
     {
-        $this->validateUser($id_user);
+        
         $this->validateAction();
         if ($this->mode === 'decline') {
             $this->decline(['id_transaction=' .$this->idTrans]);
@@ -127,11 +128,9 @@ class RequestsHandler
             // echo "Error - mode NOT understood<br>mode:";
             $this->redirect(false, $this->url, ['f' => 1, 'e' => 3]);
         }
-        $stmt = ($this->dbh)->prepare($this->SQLS);
         echo $this->SQLS;
-        $stmt->execute();
-        var_dump($stmt->errorInfo());
-        if (($stmt->errorInfo())[2]) {
+        $stmt = $this->executeSql($this->SQLS);
+        if (($stmt->errorInfo())[2] !== NULL) {
             echo ($stmt->errorInfo())[2];
             exit;
         }
@@ -145,14 +144,13 @@ class RequestsHandler
     {
         // Lock shifts_assigned
         $sql = 'SELECT id_shift FROM shifts_assigned WHERE under_request=1 FOR UPDATE;';
-        $this->dbh->query($sql);
+        $this->executeSql($sql);
 
         $sql = strtr('SELECT COUNT(*) FROM requests_pending WHERE id_transaction=$idTrans FOR UPDATE;', array('$idTrans' => $this->idTrans));
-        $stmt = ($this->dbh)->prepare($sql);
-        $stmt->execute();
+        $stmt = $this->executeSql($sql);
         $sql = strtr('SELECT id_shift, id_to FROM requests_pending WHERE id_transaction=$idTrans AND agreed_from=1 AND agreed_to=1 FOR UPDATE;', array('$idTrans' => $this->idTrans));
-        $arrayRequests = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-        if (count($arrayRequests) === intval($stmt->fetchAll(PDO::FETCH_COLUMN)[0])) { // '2'
+        $arrayRequests = $this->executeSql($sql)->fetchAll(PDO::FETCH_ASSOC);
+        if (count($arrayRequests) === intval($stmt->fetchAll(PDO::FETCH_COLUMN)[0])) { // intval('2')
             // Execute
             // Firstly, invalidate all pending(i.e. status=2) transactions surrounding these shifts
             $this->invalidateAllRequests();
@@ -164,14 +162,12 @@ class RequestsHandler
                 // Execute every request: update id_user and under_request=0
                 $sql = strtr(
                     'UPDATE shifts_assigned SET id_user=$idUser, under_request=0 WHERE id_shift=$idShift;',
-                    array('$idUser' => $arrayRequest["id_to"], '$idShift' => $arrayRequest["id_shift"])
-                );
+                    array('$idUser' => $arrayRequest["id_to"], '$idShift' => $arrayRequest["id_shift"]));
                 echo $sql . '<br>';
                 $this->SQLS = ($this->SQLS) . $sql;
             }
             echo $this->SQLS;
-            $stmt = ($this->dbh)->prepare($this->SQLS);
-            $stmt->execute();
+            $stmt = $this->executeSql($this->SQLS);
             if (($stmt->errorInfo())[2] !== NULL){
                 $this->redirect(true, $this->url, ['f' => 1, 's' => 1]);
             } else {
@@ -184,22 +180,10 @@ class RequestsHandler
         }
     }
 
-    private function redirect($commit, string $url, array $query)
-    {
-        if ($commit) {
-            $this->dbh->query('COMMIT;');
-        } else {
-            $this->dbh->query('ROLLBACK;');
-        }
-        $this->dbh = NULL;
-        $url = utils\genHref($url, $query);
-        header('Location: ' . $url);
-    }
-
-    public function process($id_user)
+    public function process()
     {
         $this->dbh->query('START TRANSACTION;');
-        $this->execute($id_user);
+        $this->execute();
         $this->executeTransaction();
     }
 }

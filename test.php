@@ -1,13 +1,42 @@
 <?php
-class O{
-    private $prop = 'asd';
-    private $sql;
-    function sql(){
-        $this->sql = "$this->prop";
-        var_dump($this->sql);
+require_once './utils.php';
+
+interface DBHandlerInterface
+{
+    public function process();
+    public function redirect();
+    public function executeSql();
+}
+
+class DBHandler implements DBHandlerInterface
+{
+    private $dbh;
+    private $SQLS;
+    private $url;
+
+    public function __construct()
+    {
+    }
+
+    public function process()
+    {
+        
+    }
+
+    public function redirect()
+    {
+    }
+
+    public function executeSql()
+    {
     }
 }
 
-$inst = new O();
-$inst->sql();
+ class asd extends DBHandler{
+    public function process(){
+        echo 'good';
+    }
+ }
+ $ksl = new asd();
+ $ksl->process();
 ?>
