@@ -32,4 +32,10 @@ function genHref(string $url, array $query){
     }
     return $url;
 }
+
+function isAssoc(array $arr)
+{
+    if (array() === $arr) return 2;
+    return array_keys($arr) !== range(0, count($arr) - 1);
+}
 ?>

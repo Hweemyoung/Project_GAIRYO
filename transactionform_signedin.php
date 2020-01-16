@@ -1,21 +1,35 @@
 <?php
-function groupArrayByKey($array, $key)
+require_once './config.php';
+require_once './class/class_date_object.php';
+
+class TransactionFormHandler extends DateObjectsHandler
 {
-    $arrayGrouped = array();
-    foreach ($array as $element) {
-        $arrayGrouped[$element[$key]][] = $element;
+    public function setArrayDateObjects()
+    {
+        $sql = "SELECT date_shift, id_user, shift FROM shifts_assigned WHERE done=0 ORDER BY date_shift ASC";
+        $stmt = $this->dbh->query($sql);
+        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject');
+        $stmt->closeCursor();
+        foreach (array_keys($arrayShiftObjectsByDate) as $date) {
+            foreach ($arrayShiftObjectsByDate[$date] as $shiftObject) {
+                $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
+            }
+            $this->arrayDateObjects[$date] = new DateObject($date, $arrayShiftObjectsByDate[$date]);
+        }
     }
-    return $arrayGrouped;
 }
 
-$sql = "SELECT date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE done = 0";
-$stmt = $dbh->prepare($sql);
-$stmt->execute();
+$transaction_form_handler = new TransactionFormHandler($master_handler, $arrayShirtTimes);
+$transaction_form_handler->setArrayDateObjects();
+
+// $sql = "SELECT date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE done = 0";
+// $stmt = $master_handler->dbh->prepare($sql);
+// $stmt->execute();
 // var_dump($stmt->errorInfo());OK
-$arrayShiftsByDate = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
-ksort($arrayShiftsByDate);
+// $arrayShiftsByDate = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
+// ksort($arrayShiftsByDate);
 $sql = "SELECT id_user, date_shift, shift FROM shifts_assigned WHERE done = 0";
-$stmt = $dbh->prepare($sql);
+$stmt = $master_handler->dbh->prepare($sql);
 $stmt->execute();
 // var_dump($stmt->errorInfo());OK
 $arrayShiftsByIdUser = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
@@ -115,9 +129,9 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
                                     </select>
                                 </div>
                                 <div class="col-1 d-flex flex-column div-form-icons">
-                                        <i class="i-not-found fas fa-clone text-warning mx-auto d-none"></i>
-                                        <i class="i-target-overlap fas fa-compress-arrows-alt text-danger mx-auto d-none"></i>
-                                        <i class="i-shift-overlap fas fa-share-alt-square text-info mx-auto d-none"></i>
+                                    <i class="i-not-found fas fa-clone text-warning mx-auto d-none"></i>
+                                    <i class="i-target-overlap fas fa-compress-arrows-alt text-danger mx-auto d-none"></i>
+                                    <i class="i-shift-overlap fas fa-share-alt-square text-info mx-auto d-none"></i>
                                 </div>
                                 <div class="col-2">
                                     <button class="btn btn-danger btn-delete ml-auto align-middle" title="Delete transaction"><i class="fas fa-minus"></i></button>
@@ -174,6 +188,7 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
 <footer></footer>
 <script src="./js/transactionform.js"></script>
 <script>
-    const formHandler = new FormHandler(<?= json_encode($arrayShiftsByIdUser) ?>);
+    const formHandler = new FormHandler(<?= json_encode($arrayShiftsByIdUser) ?>, <?= json_encode($form_handler->arrayDateObjects) ?>);
+
     // const arrayShiftsByIdUser =;
 </script>

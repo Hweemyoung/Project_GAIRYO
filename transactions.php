@@ -84,19 +84,12 @@ class AlertHandler
                         $this->alertStrong = 'Failed!';
                         switch ($this->_value) {
                             case 0:
+                                $this->alertMsg = 'Invalid form ID. Call for administrator.';
+                            case 1:
                                 $nick = $_GET["nick"];
                                 $dateShift = $_GET["date"];
                                 $shift = $_GET["shift"];
                                 $this->alertMsg = "Shift doesn't exist!: $nick's $dateShift $shift";
-                                break;
-                            case 1:
-                                $id_request = $_GET["idrequest"];
-                                $id_transaction = $_GET["idtrans"];
-                                $nickname_from = $_GET["nickfrom"];
-                                $dateShift = $_GET["date"];
-                                $shift = $_GET["shift"];
-                                $nickname_to = $_GET["nickto"];
-                                $this->alertMsg = "Request already exists.<br>Request#$id_request in Transaction#$id_transaction: $nickname_from's $dateShift $shift to $nickname_to";
                                 break;
                         }
                         break;

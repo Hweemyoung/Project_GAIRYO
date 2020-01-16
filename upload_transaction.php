@@ -12,6 +12,7 @@ class TransactionUploader extends DBHandler
     {
         $this->dbh = $master_handler->dbh;
         $this->idUser = $master_handler->id_user;
+        $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
         $this->SQLS = '';
         $this->url = './transactions.php';
         $this->sleepSeconds = 2;
@@ -38,6 +39,9 @@ class TransactionUploader extends DBHandler
             // For every name in formId
             foreach ($this::$arrayNames as $name) {
                 // Create variables: $id_from, $month, ...
+                if (!isset($_POST[$name . '_' . $formId])){
+                    $this->redirect(false,  $this->url, ['f' => 2, 'e' => 0]);
+                }
                 $$name = $_POST[$name . '_' . $formId];
             }
             $month = explode(' ', $month);
@@ -59,7 +63,7 @@ class TransactionUploader extends DBHandler
             if (count($result) === 0) {
                 echo 'here!';
                 // exit;
-                $this->redirect(false, $this->url, ['f' => 2, 'e' => 0, 'nick' => $arrayMemberObjectsByIdUser[$id_from]->nickname, 'date' => $dateShift, 'shift' => $shift]);
+                $this->redirect(false, $this->url, ['f' => 2, 'e' => 1, 'nick' => $this->arrayMemberObjectsByIdUser[$id_from]->nickname, 'date' => $dateShift, 'shift' => $shift]);
             } else {
                 $id_shift = $result[0];
                 // shifts_assigned: Update under_request

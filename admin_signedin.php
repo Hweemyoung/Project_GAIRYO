@@ -120,10 +120,8 @@ function echoShiftMemberElements($arrayMemberObjectsByIdUser, $arrayShiftMembers
             echo strtr(
                 '
                     <li class="list-group-item">
-                        <div class="dropdown">
-                            <a data-toggle="dropdown">
-                                $nickname
-                            </a>
+                        <div class="dropdown" data-toggle="dropdown">
+                            $nickname
                             <div class="dropdown-menu dropdown-menu-right">
                                 <div class="dropdown-header">$nickname</div>
                                 <a class="dropdown-item" href="#">Call this

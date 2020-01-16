@@ -1,15 +1,5 @@
 <?php
-// Config
-$shiftA = array('time-start' => '07:40', 'time-end' => '12:00', 'btn-color' => 'btn-info');
-$shiftB = array('time-start' => '08:00', 'time-end' => '13:30', 'btn-color' => 'btn-secondary');
-$shiftH = array('time-start' => '08:00', 'time-end' => '13:00', 'btn-color' => 'btn-success');
-$shiftC = array('time-start' => '12:30', 'time-end' => '18:00', 'btn-color' => 'btn-dark text-light');
-$shiftD = array('time-start' => '13:30', 'time-end' => '18:00', 'btn-color' => 'btn-warning');
-$arrayShiftTimes = array('A' => $shiftA, 'B' => $shiftB, 'H' => $shiftH, 'C' => $shiftC, 'D' => $shiftD);
-
-// Hyperparameters
-$arrayHparams = array('YLowerBound' => 2020, 'dayStart' => 'Mon', 'dayEnd' => 'Sun', 'arrayShiftTimes' => $arrayShiftTimes);
-
+require_once './config.php';
 require_once './class/class_date_object.php';
 
 class DailyMembersHandler
@@ -311,9 +301,17 @@ class DailyMembersHandler
                     if (isset($dateObject->arrayShiftObjectsByShift[$shift])) {
                         foreach ($dateObject->arrayShiftObjectsByShift[$shift] as $shiftObject) {
                             // var_dump($arrayShift);
-                            $nickname = $shiftObject->memberObject->nickname;
+                            if ($this->id_user !== $shiftObject->memberObject->id_user) {
+                                $nickname = $shiftObject->memberObject->nickname;
+                                $classTextColor = '';
+                                $classBgColor = '';
+                            } else {
+                                $nickname = 'YOU';
+                                $classTextColor = 'text-light';
+                                $classBgColor = 'bg-primary';
+                            }
                             echo "
-                                                    <li>$nickname</li>";
+                                                    <li class='$classBgColor $classTextColor'>$nickname</li>";
                         }
                     }
                     echo '
@@ -348,15 +346,10 @@ class DailyMembersHandler
                         if ($this->id_user !== $shiftObject->memberObject->id_user) {
                             $nickname = $shiftObject->memberObject->nickname;
                             $active = '';
-                        } else {
-                            $nickname = 'YOU';
-                            $active = 'active';
-                        }
-                        echo strtr('                <li class="list-group-item $active">
-                                                    <div class="dropdown">
-                                                        <a data-toggle="dropdown">$nickname</a>
-                    ', array('$active' => $active, '$nickname' => $nickname));
-                        echo strtr('
+                            echo strtr('
+                                                <li class="list-group-item $active">
+                                                    <div class="dropdown" data-toggle="dropdown">
+                                                        $nickname
                                                         <div class="dropdown-menu dropdown-menu-right">
                                                             <div class="dropdown-header">$nickname</div>
                                                             <a class="dropdown-item" href="#">Call this shift</a>
@@ -364,7 +357,16 @@ class DailyMembersHandler
                                                         </div>
                                                     </div>
                                                 </li>
-                    ', array('$nickname' => $nickname));
+                    ', array('$active' => $active, '$nickname' => $nickname));
+                        } else {
+                            $nickname = 'YOU';
+                            $active = 'active';
+                            echo strtr('
+                                                <li class="list-group-item $active">
+                                                    $nickname
+                                                </li>
+                    ', array('$active' => $active, '$nickname' => $nickname));
+                        }
                     }
                 }
                 echo '
@@ -379,10 +381,15 @@ class DailyMembersHandler
                                 </div>'; // .shift-member-table .col-12 .row
             echo '
                                 <div class="row">
-                                    <div class="col-12">';
+                                    <div class="col-12 d-flex justify-content-center flex-wrap">';
             foreach (array_keys($dateObject->arrayNumLangs) as $lang) {
                 $num = $dateObject->arrayNumLangs[$lang];
-                echo "<img src='./data/png/icon-button-$lang.png'>x$num";
+                echo "
+                                        <div class='div-country-flag m-1'>
+                                            <img src='./data/png/icon-button-$lang.png'>
+                                            <div class='num-lang text-center'>$num</div>
+                                        </div>
+                                            ";
             }
             echo '
                                     </div>
