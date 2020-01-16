@@ -2,7 +2,7 @@
 class DateObject
 {
     public $date;
-    public static $arrayLangs = ['cn', 'kr', 'th', 'my', 'ru', 'fr', 'de'];
+    public static $arrayLangs = ['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL];
     public $arrayNumLangs;
     public $arrayShiftObjectsByShift;
     function __construct($date, $arrayShiftObjectsOfDate)
@@ -16,8 +16,8 @@ class DateObject
     private function setArrayLangs($arrayShiftObjectsOfDate)
     {
         foreach ($arrayShiftObjectsOfDate as $shiftObject) {
-            foreach (self::$arrayLangs as $lang) {
-                if ($shiftObject->memberObject->$lang) {
+            foreach (array_keys(self::$arrayLangs) as $lang) {
+                if ($shiftObject->memberObject->{$lang}) {
                     if (isset($this->arrayNumLangs[$lang])) {
                         $this->arrayNumLangs[$lang]++;
                     } else {

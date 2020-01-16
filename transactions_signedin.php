@@ -1,4 +1,5 @@
 <?php
+require_once './class/class_user_oriented_request.php';
 class hrefGenerator
 {
     public function __construct($idUser, $idTrans)

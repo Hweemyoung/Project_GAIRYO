@@ -264,6 +264,8 @@ class DailyMembersHandler
         <div id="accordion">';
         // var_dump($this->arrayDateObjects);
         foreach (array_keys($this->arrayDateObjects) as $date) {
+            $dateObject = $this->arrayDateObjects[$date];
+            // var_dump($dateObject->arrayNumLangs);
             $currentDateTime = new DateTime($date);
             // var_dump($currentDateTime);
             $headerTitle = $currentDateTime->format('M j (D)');
@@ -306,8 +308,8 @@ class DailyMembersHandler
                                                 <h5>$shift</h5>
                                                 <ul type="none">
                 ', array('$btnColor' => $this->arrayShiftTimes[$shift]['btn-color'], '$timeStart' => $this->arrayShiftTimes[$shift]['time-start'], '$timeEnd' => $this->arrayShiftTimes[$shift]['time-end'], '$shift' => $shift));
-                    if (isset($this->arrayDateObjects[$date]->arrayShiftObjectsByShift[$shift])) {
-                        foreach ($this->arrayDateObjects[$date]->arrayShiftObjectsByShift[$shift] as $shiftObject) {
+                    if (isset($dateObject->arrayShiftObjectsByShift[$shift])) {
+                        foreach ($dateObject->arrayShiftObjectsByShift[$shift] as $shiftObject) {
                             // var_dump($arrayShift);
                             $nickname = $shiftObject->memberObject->nickname;
                             echo "
@@ -328,6 +330,8 @@ class DailyMembersHandler
             echo '
                             <!-- col right -->
                             <div class="col-md-4">
+                                <div class="row">
+                                <div class="col-12">
                                 <div class="shift-member-table">';
             foreach (array_keys($this->arrayShiftTimes) as $shift) {
                 echo '
@@ -339,8 +343,8 @@ class DailyMembersHandler
                 echo '
                                         <div class="col-10">
                                             <ul class="list-group">';
-                if (isset($this->arrayDateObjects[$date]->arrayShiftObjectsByShift[$shift])) {
-                    foreach ($this->arrayDateObjects[$date]->arrayShiftObjectsByShift[$shift] as $shiftObject) {
+                if (isset($dateObject->arrayShiftObjectsByShift[$shift])) {
+                    foreach ($dateObject->arrayShiftObjectsByShift[$shift] as $shiftObject) {
                         if ($this->id_user !== $shiftObject->memberObject->id_user) {
                             $nickname = $shiftObject->memberObject->nickname;
                             $active = '';
@@ -365,17 +369,31 @@ class DailyMembersHandler
                 }
                 echo '
                                             </ul>
-                                        </div>';
+                                        </div>'; // .col-10
                 echo '
-                                    </div>';
+                                    </div>'; // .row
             }
             echo '
                                 </div>
+                                </div>
+                                </div>'; // .shift-member-table .col-12 .row
+            echo '
+                                <div class="row">
+                                    <div class="col-12">';
+            foreach (array_keys($dateObject->arrayNumLangs) as $lang) {
+                $num = $dateObject->arrayNumLangs[$lang];
+                echo "<img src='./data/png/icon-button-$lang.png'>x$num";
+            }
+            echo '
+                                    </div>
+                                </div>'; // .col-12 .row
+
+            echo '
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>';
+            </div>'; // .col-md-4 .row .card-body .collapse .card
         }
 
         // Close Accordion

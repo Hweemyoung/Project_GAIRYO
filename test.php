@@ -1,4 +1,9 @@
 <?php
-require_once './utils.php';
-var_dump(__DIR__);
+$a = 'sdf';
+class temp {
+    public $sdf = 3;
+}
+
+$s = new temp();
+echo $s->{$a};
 ?>
