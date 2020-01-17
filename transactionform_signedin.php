@@ -34,6 +34,7 @@ $stmt->execute();
 // var_dump($stmt->errorInfo());OK
 $arrayShiftsByIdUser = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
 ksort($arrayShiftsByIdUser);
+
 // foreach(array_keys($arrayShiftsByIdUser) as $idUser){
 // $arrayShiftsByIdUser[$idUser] = groupArrayByKey($arrayShiftsByIdUser[$idUser], 'date_shift');
 // }
@@ -188,5 +189,5 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
 <footer></footer>
 <script src="./js/transactionform.js"></script>
 <script>
-    const formHandler = new FormHandler(<?= json_encode($arrayShiftsByIdUser) ?>, <?= json_encode($transaction_form_handler->arrayDateObjects) ?>);
+    const formHandler = new FormHandler(<?= json_encode($arrayShiftsByIdUser) ?>, <?= json_encode($transaction_form_handler) ?>);
 </script>

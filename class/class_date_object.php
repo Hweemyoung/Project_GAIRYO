@@ -48,8 +48,8 @@ class DateObjectsHandler
 class DateObject
 {
     public $date;
-    public $arrayNumLangsByPart;
     public $arrayShiftObjectsByShift;
+    public $arrayNumLangsByPart;
     public $arrayLangsByPart = [['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL], ['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL]];
     function __construct($date, $arrayShiftObjectsOfDate)
     {
@@ -63,10 +63,10 @@ class DateObject
     {
         foreach ($arrayShiftObjectsOfDate as $shiftObject) {
             foreach (array_keys($this->arrayLangsByPart[0]) as $lang) {
-                if (isset($this->arrayNumLangs[$shiftObject->shiftPart][$lang])) {
-                    $this->arrayNumLangs[$shiftObject->shiftPart][$lang]++;
+                if (isset($this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang])) {
+                    $this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang] += $shiftObject->memberObject->$lang;
                 } else {
-                    $this->arrayNumLangs[$shiftObject->shiftPart][$lang] = 1;
+                    $this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang] = 1;
                 }
             }
         }
@@ -90,7 +90,7 @@ class ShiftObject
     public static $shiftParts = [['A', 'B', 'H'], ['C', 'D']];
     function __construct()
     {
-        $this->setShiftPart();
+        $this->set_shiftPart();
     }
     public function setMemberObj($arrayMemberObjectsByIdUser)
     {
@@ -102,13 +102,20 @@ class ShiftObject
             }
         }
     }
-    public function setShiftPart(){
+    public function set_shiftPart(){
         for($i=0; $i<count(self::$shiftParts); $i++){
             if(in_array($this->shift, self::$shiftParts[$i])){
                 $this->shiftPart = $i;
                 break;
             }
         }
+    }
+    public function set_Ym(){
+        $this->YM = date('Y m', $this->date_shift);
+    }
+
+    public function set_d(){
+        $this->d = date('d', $this->date_shift);
     }
 }
 

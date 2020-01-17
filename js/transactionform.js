@@ -142,8 +142,8 @@ class FormHandler {
 
     checkConfirmable(event) {
         var handler = this;
-        this._clonedArrayDateObjects = JSON.parse(JSON.stringify(handler._transaction_form_handler.arrayDateObjects));
-        // this._clonedArrayDateObjects = Object.assign({}, handler._transaction_form_handler.arrayDateObjects);
+        // this._clonedArrayDateObjects = JSON.parse(JSON.stringify(handler._transaction_form_handler.arrayDateObjects));
+        this._clonedArrayDateObjects = Object.assign({}, handler._transaction_form_handler.arrayDateObjects);
         this._$iNotFound.addClass('invisible');
         this._$iTargetOverlap.addClass('invisible');
         this._$iShiftOverlap.addClass('invisible');
@@ -242,14 +242,17 @@ class FormHandler {
                 }
             }
             var currentDate = new Date(`${$selectsInFormItem[1].value} ${$selectsInFormItem[2].value}`);
+            // console.log(arrayNumLangsByPart);
+            console.log(currentShiftPart);
             console.log(`${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`);
-            var currentArrayNumLangs = this._clonedArrayDateObjects[`${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`].arrayNumLangsByPart[currentShiftPart];
+            var currentArrayNumLangs = handler._clonedArrayDateObjects[`${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`].arrayNumLangsByPart[currentShiftPart];
             for (var lang in currentArrayNumLangs) {
                 // Substract
                 currentArrayNumLangs[lang] -= handler._transaction_form_handler.arrayMemberObjectsByIdUser[$selectsInFormItem[0].value].lang;
                 // Add
                 currentArrayNumLangs[lang] += handler._transaction_form_handler.arrayMemberObjectsByIdUser[$selectsInFormItem[4].value].lang;
             }
+            console.log(currentArrayNumLangs);
         });
 
         // Finally, check if nums of languages are sufficient
@@ -270,7 +273,7 @@ class FormHandler {
             for (var part in dateObject.arrayNumLangsByPart) {
                 var arrayNumLangs = dateObject.arrayNumLangsByPart[part];
                 for (var lang in arrayNumLangs) {
-                    if (arrayNumLangs[lang] !== null && _clonedArrayDateObjects[date].arrayNumLangs[part][lang] < arrayNumLangs[lang]) {
+                    if (arrayNumLangs[lang] !== null && _clonedArrayDateObjects[date].arrayNumLangs[lang] < arrayNumLangs[lang]) {
                         // Insufficient number for this language
                         return false
                     }
