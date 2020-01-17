@@ -19,7 +19,7 @@ class TransactionFormHandler extends DateObjectsHandler
     }
 }
 
-$transaction_form_handler = new TransactionFormHandler($master_handler, $arrayShirtTimes);
+$transaction_form_handler = new TransactionFormHandler($master_handler, $arrayShiftTimes);
 $transaction_form_handler->setArrayDateObjects();
 
 // $sql = "SELECT date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE done = 0";
@@ -188,7 +188,5 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
 <footer></footer>
 <script src="./js/transactionform.js"></script>
 <script>
-    const formHandler = new FormHandler(<?= json_encode($arrayShiftsByIdUser) ?>, <?= json_encode($form_handler->arrayDateObjects) ?>);
-
-    // const arrayShiftsByIdUser =;
+    const formHandler = new FormHandler(<?= json_encode($arrayShiftsByIdUser) ?>, <?= json_encode($transaction_form_handler->arrayDateObjects) ?>);
 </script>
