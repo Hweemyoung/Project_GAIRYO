@@ -1,6 +1,12 @@
 .btn-sky{
-    background-color: #d56ddf;
-    border-color: #d56ddf;
+    background-color: #6ddbdf;
+    border-color: #6ddbdf;
+}
+
+.btn-sky:hover{
+    background-color: #55acaf;
+    border-color: #55acaf;
+    transition: .3s;
 }
 
 #section-main{
@@ -63,9 +69,9 @@
     position: relative;
 }
 
-#accordion .div-country-flag img, #accordion .div-country-flag .num-lang{
-    width: 3rem;
-    height: 3rem;
+#accordion .div-country-flag img, #accordion .div-country-flag .div-num-lang{
+    width: 2.5rem;
+    height: 2.5rem;
     transition: 300ms;
 }
 
@@ -73,20 +79,33 @@
     position: relative;
 }
 
-#accordion .div-country-flag .num-lang{
+#accordion .div-country-flag .div-num-lang{
     position: absolute;
     top: 0;
-    font-size: 2rem;
+    font-size: 1.5rem;
     opacity: 0;
 }
 #accordion .div-country-flag:hover img{
-    opacity: .3;
+    filter: brightness(30%);
     transition: 300ms;
 }
-#accordion .div-country-flag:hover .num-lang{
+#accordion .div-country-flag:hover .div-num-lang{
     opacity: 1;
     transition: 300ms;
 }
+
+#accordion .div-grid-lang{
+    position: relative;
+}
+
+#accordion .div-grid-lang>p {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 
 @media screen and (max-width: 575px){
     .container{
@@ -105,7 +124,11 @@
         font-size: .75rem;
     }
 
-    #accordion .div-country-flag img, #accordion .div-country-flag .num-lang{
+    #accordion .div-grid-lang>p{
+        font-size: .75rem;
+    }
+
+    #accordion .div-country-flag img, #accordion .div-country-flag .div-num-lang{
         width: 1.5rem;
         height: 1.5rem;
         font-size: 1rem;

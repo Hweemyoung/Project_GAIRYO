@@ -37,8 +37,8 @@ for ($i = 0; $i < count($requests); $i++) {
     <nav class="navbar navbar-expand-sm bg-light fixed-top">
         <!-- logo -->
         <a href="#" class="navbar-brand order-sm-1 d-flex">
-            <img class="d-none d-md-block mr-md-4" src="./data/png/logo_travel_color_large.png" alt="imgLogo">
-            <p class="d-none d-sm-block mr-md-4">外国人旅行センター</p>
+            <img class="d-none d-md-block mr-md-3" src="./data/png/logo_travel_color_large.png" alt="imgLogo">
+            <p class="d-none d-sm-block mr-md-2 small">外国人旅行センター</p>
             <p class="d-sm-none">外旅</p>
         </a>
         <!-- Navbar -->
@@ -70,7 +70,7 @@ for ($i = 0; $i < count($requests); $i++) {
                     }
                     ?>
                     <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">More</a>
+                    <a href="./transactions.php" class="dropdown-item">More</a>
                 </div>
             </li>
             <!-- Account -->

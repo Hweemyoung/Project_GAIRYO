@@ -1,5 +1,6 @@
 <?php
 require_once './utils.php';
+require_once 'class_member_object.php';
 
 class DateObjectsHandler
 {
@@ -57,13 +58,14 @@ class DateObject
         $this->arrayNumLangsByPart = [[], []];
         $this->arrayShiftObjectsByShift = [];
         $this->setArrayShiftObjectByShift($arrayShiftObjectsOfDate);
-        $this->setArrayLangs($arrayShiftObjectsOfDate);
+        $this->setNumArrayLangsByPart($arrayShiftObjectsOfDate);
     }
-    private function setArrayLangs($arrayShiftObjectsOfDate)
+    private function setNumArrayLangsByPart($arrayShiftObjectsOfDate)
     {
         foreach ($arrayShiftObjectsOfDate as $shiftObject) {
             foreach (array_keys($this->arrayLangsByPart[0]) as $lang) {
                 if (isset($this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang])) {
+                    
                     $this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang] += $shiftObject->memberObject->$lang;
                 } else {
                     $this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang] = 1;
@@ -90,7 +92,6 @@ class ShiftObject
     public static $shiftParts = [['A', 'B', 'H'], ['C', 'D']];
     function __construct()
     {
-        $this->set_shiftPart();
     }
     public function setMemberObj($arrayMemberObjectsByIdUser)
     {
@@ -102,7 +103,7 @@ class ShiftObject
             }
         }
     }
-    public function set_shiftPart(){
+    public function setShiftPart(){
         for($i=0; $i<count(self::$shiftParts); $i++){
             if(in_array($this->shift, self::$shiftParts[$i])){
                 $this->shiftPart = $i;
@@ -117,8 +118,4 @@ class ShiftObject
     public function set_d(){
         $this->d = date('d', $this->date_shift);
     }
-}
-
-class MemberObject
-{
 }

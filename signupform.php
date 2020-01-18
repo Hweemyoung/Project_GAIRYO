@@ -1,6 +1,6 @@
 <?php
-$signedin = false;
 require './check_session.php';
+$signedin = false;
 ?>
 
 <!DOCTYPE html>
@@ -11,17 +11,18 @@ require './check_session.php';
     require './common_head.php';
     ?>
 </head>
-
+<header>Welcome to Odakyu Gairyo!</header>
 <body>
-    <header>Welcome to Odakyu Gairyo!</header>
     <?php
     if (!$signedin) {
         require './common_nav_signedout.php';
         require './signupform_main.php';
     } else {
-        header('./admin.php');
+        header('Location: ./admin.php');
     }
     require './common_footer.php';
     ?>
+    <!-- Custom JS -->
+    <script src="./js/signupform.js"></script>
 </body>
 </html>

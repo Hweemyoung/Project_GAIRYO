@@ -1,7 +1,13 @@
 <?php
 class ConfigHandler{
-    public $arrayShiftsByPart;
-    public $arrayShiftTimes;
+    // Server
+    public $host = 'sql304.epizy.com';
+    public $DBName = 'epiz_24956964_gairyo';
+    public $userName = 'epiz_24956964';
+    public $pw = 'STZDGxr4iOPDhv';
+
+    // DB
+    public $cols_required_members = ['id_google', 'nickname', 'first_name', 'middle_name', 'last_name'];
     
     // Languages
     public $numLangs = 8; // Includes 'other'
@@ -12,9 +18,22 @@ class ConfigHandler{
     public $numOfShiftsPart = 2;
     public $shiftsPart0 = ['A', 'B', 'H'];
     public $shiftsPart1 = ['C', 'D'];
+    public $arrayPartNames = ['午前', '午後'];
+
+    // ConfigHandler
+    public $sleepSeconds = 2;
+
+    // DailyMembersHandler
+    public $YLowerBound = 2020;
+    public $dayStart = 'Mon';
+    public $dayEnd = 'Sun';
+
+    public $arrayShiftsByPart;
+    public $arrayShiftTimes;
 
     public function __construct() {
-        $this->arrayShiftsByPart = [$this->shiftsPart0, $this->shiftsPart1];
+        $this->setArrayShiftsByPart();
+        $this->setArrayShiftTimes();
     }
 
     public function setArrayShiftsByPart(){

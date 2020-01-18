@@ -1,5 +1,8 @@
 <?php
+require_once './config.php';
 require_once './class/class_user_oriented_request.php';
+require_once './class/class_db_handler.php';
+
 class hrefGenerator
 {
     public function __construct($idUser, $idTrans)
@@ -10,7 +13,7 @@ class hrefGenerator
     function getHref($mode)
     {
         return strtr('
-        ./register_agree.php?mode=$mode&id_user=$idUser&id_transaction=$idTrans
+        ./process/register_agree.php?mode=$mode&id_user=$idUser&id_transaction=$idTrans
         ', array('$mode' => $mode, '$idUser' => $this->idUser, '$idTrans' => $this->idTrans));
     }
 }
@@ -23,17 +26,6 @@ function prepArrayIdShiftsByIdTrans($id_user, $arrayRequestsByIdTrans, $arrayMem
         }
     }
     return $arrayRequestsByIdTrans;
-}
-
-function genSqlConditions($arrayFieldValues, $colName)
-{
-    if (count($arrayFieldValues) === 0){
-        $arrayFieldValues = [1];
-    } else {
-    for ($i = 0; $i < count($arrayFieldValues); $i++) {
-        $arrayFieldValues[$i] = $colName .'=' . $arrayFieldValues[$i];
-    }}
-    return '(' . implode(' OR ', $arrayFieldValues) . ')';
 }
 
 function echoTrsTrans($arrayRequestsByIdTrans)
@@ -98,8 +90,8 @@ function echoTrsTrans($arrayRequestsByIdTrans)
             <td class='align-middle' rowspan='$numRequests'>$nicknameCreated</td>
             <td class='align-middle' rowspan='$numRequests'>
                 <div class='div-buttons'>
-                    <a href=$hrefDecline class='btn btn-danger' title='Decline'><i class='fas fa-ban'></i></a>
-                    <a href=$hrefAgree class='btn btn-success $disabled' title='Agree'><i class='fas fa-handshake'></i></a>
+                    <a href=$hrefDecline class='btn btn-danger m-1' title='Decline'><i class='fas fa-ban'></i></a>
+                    <a href=$hrefAgree class='btn btn-success m-1 $disabled' title='Agree'><i class='fas fa-handshake'></i></a>
                 </div>
             </td>
                 ";
@@ -112,12 +104,15 @@ function echoTrsTrans($arrayRequestsByIdTrans)
     }
 }
 
+$db_handler = new DBHandler($master_handler, $config_handler);
+
 $sql = "SELECT id_transaction FROM requests_pending WHERE `status`=2 AND (id_from=$id_user OR id_to=$id_user);";
-$results = $dbh->query($sql)->fetchAll(PDO::FETCH_GROUP);
-$sqlConditions = genSqlConditions(array_keys($results), 'id_transaction');
-$sql = "SELECT id_transaction, id_transaction, id_request, id_from, id_to, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE " . $sqlConditions . 'AND `status`=2';
-$stmt = $master_handler->dbh->prepare($sql);
-$stmt->execute();
+$stmt = $db_handler->querySql($sql);
+$results = $stmt->fetchAll(PDO::FETCH_GROUP);
+$stmt->closeCursor();
+$sqlConditions = $db_handler->genSqlConditions(array_keys($results), 'id_transaction', 'OR');
+$sql = "SELECT id_transaction, id_transaction, id_request, id_from, id_to, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE " . $sqlConditions . ' AND `status`=2';
+$stmt = $db_handler->querySql($sql);
 $arrayRequestsByIdTrans = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
 $stmt->closeCursor();
 // Every arrayRequest to Object

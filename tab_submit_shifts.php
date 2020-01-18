@@ -24,7 +24,7 @@ $arrayRecords = getArrayRecords($Y, $m);
 
 <div id="div-form">
     <h2 class="my-2"><?php if ($arrayRecords){echo 'Modify Application';} else {echo 'Submit Application';}?></h2>
-    <form action="./submitshifts.php?mode=<?php if ($arrayRecords){echo 'modify';} else {echo 'submit';}?>" method="POST" id="form-application">
+    <form action="./process/submitshifts.php?mode=<?php if ($arrayRecords){echo 'modify';} else {echo 'submit';}?>" method="POST" id="form-application">
         <?php echo strtr('
         <input type="hidden" name="id_user" value="$id_user">
         <input type="hidden" name="Ym" value="$Ym">

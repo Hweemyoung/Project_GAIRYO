@@ -1,12 +1,20 @@
-body * {
+body *{
     margin: 0;
     padding: 0;
 }
 
-.div-schedule {
+.col-left{
     position: relative;
+}
+
+.div-schedule {
+    position: absolute;
     width: 100%;
-    height: 500px;
+    height: 600px;
+    margin: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .div-schedule .timeline {
@@ -15,11 +23,15 @@ body * {
     height: 100%;
 }
 
+.div-schedule .timeline ul{
+    height: 100%
+}
+
 .div-schedule .timeline ul li {
     position: relative;
     font-size: .75rem;
     /* .div-schedule .timeline{height} / Number of timeline_valid */
-    height: calc(500px / 12);
+    height: calc(600px / 12);
 }
 
 .div-schedule .timeline ul li::after {
@@ -67,5 +79,14 @@ body * {
         left: 20px;
         width: calc(100% - 20px);
         display: flex;
+    }
+}
+
+@media screen and (max-width: 767px){
+    .div-schedule {
+        position: static;
+        top: 0;
+        left: 0;
+        transform: none;
     }
 }

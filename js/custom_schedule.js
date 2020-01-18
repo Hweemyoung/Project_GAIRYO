@@ -20,13 +20,16 @@ function resizeColumns() {
         }
     });
 
-    if (window.innerWidth < 768 && !screen_md) {
-        $('.div-schedule').css('height', 500);
+    // if (window.innerWidth < 768 && !screen_md) {
+    if (window.innerWidth < 768) {
+        // $('.div-schedule').css('height', 500);
         screen_md = true;
-    } else if (window.innerWidth >= 768 && screen_md && $('.shift-member-table').height() > 500) {
-        $('.div-schedule').css('height', $('.shift-member-table').height());
+    // } else if (window.innerWidth >= 768 && screen_md && $('.col-right').height() > 500) {
+    } else {
+        // $('.div-schedule').css('height', $('.col-right').height());
         screen_md = false;
     }
+    // $('.div-schedule .timeline ul li').css('height', $('.div-schedule').height() / 12);
 
     resizeButtons();
 }

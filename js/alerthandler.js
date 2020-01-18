@@ -8,7 +8,7 @@ class AlertHandler {
     prependAlert() {
         if (typeof(this._alertArray) != undefined) {
             this._$alert = $('<div></div>').attr('id', 'div-alert').addClass(`alert ${this._alertArray.alertMode} alert-dismissible fade show fixed-bottom`).append($('<strong></strong>').html(this._alertArray.alertStrong)).append($('<p></p>').html(this._alertArray.alertMsg));
-            this._$alert.prependTo('main');
+            this._$alert.prependTo('body');
         }
     }
 

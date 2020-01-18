@@ -12,6 +12,7 @@ class TransactionFormHandler extends DateObjectsHandler
         $stmt->closeCursor();
         foreach (array_keys($arrayShiftObjectsByDate) as $date) {
             foreach ($arrayShiftObjectsByDate[$date] as $shiftObject) {
+                $shiftObject->setShiftPart();
                 $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
             }
             $this->arrayDateObjects[$date] = new DateObject($date, $arrayShiftObjectsByDate[$date]);
@@ -19,8 +20,9 @@ class TransactionFormHandler extends DateObjectsHandler
     }
 }
 
-$transaction_form_handler = new TransactionFormHandler($master_handler, $arrayShiftTimes);
+$transaction_form_handler = new TransactionFormHandler($master_handler, $config_handler->arrayShiftTimes);
 $transaction_form_handler->setArrayDateObjects();
+// var_dump($transaction_form_handler->arrayDateObjects);
 
 // $sql = "SELECT date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE done = 0";
 // $stmt = $master_handler->dbh->prepare($sql);
@@ -60,17 +62,17 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
     <div class="container px-1">
         <hr>
         <section>
-            <form action="./upload_transaction.php" method="POST">
+            <form action="./process/upload_transaction.php" method="POST">
                 <input id="input-ids" type="hidden" name="formIDs" value="1">
                 <div class="form-item" id="1">
                     <div class="row no-gutters">
                         <div class="col-md-4">
                             <div class="form-group row no-gutters">
-                                <div class="col-3 text-center">
+                                <div class="col-3 text-center div-label">
                                     <label for="id_from">From</label>
                                 </div>
                                 <div class="col-9">
-                                    <select name="id_from" class="form-control select-id-from">
+                                    <select name="id_from" class="form-control px-1 select-id-from">
                                         <option value="0">Member</option>
                                         <?php
                                         foreach (array_keys($arrayShiftsByIdUser) as $idUser) {
@@ -87,17 +89,17 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
                         <div class="col-md-4">
                             <div class="form-group row no-gutters">
                                 <div class="col-4">
-                                    <select name="month" class="form-control" disabled>
+                                    <select name="month" class="form-control px-1" disabled>
                                         <option value="0">Month</option>
                                     </select>
                                 </div>
                                 <div class="col-4">
-                                    <select name="day" class="form-control" disabled>
+                                    <select name="day" class="form-control px-1" disabled>
                                         <option value="0">Day</option>
                                     </select>
                                 </div>
                                 <div class="col-4">
-                                    <select name="shift" id="shift" class="form-control" disabled>
+                                    <select name="shift" id="shift" class="form-control px-1" disabled>
                                         <option value="0">Shift</option>
                                         <?php
                                         for ($i = 1; $i <= count($arrayShifts); $i++) {
@@ -113,11 +115,11 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
                         </div>
                         <div class="col-md-4">
                             <div class="form-group row no-gutters">
-                                <div class="col-2 text-center">
+                                <div class="col-1 text-center div-label">
                                     <label for="id_to">To</label>
                                 </div>
                                 <div class="col-7">
-                                    <select name="id_to" class="form-control select-id-to" disabled>
+                                    <select name="id_to" class="form-control px-1 select-id-to" disabled>
                                         <option value="0">Member</option>
                                         <?php
                                         foreach (array_keys($arrayShiftsByIdUser) as $idUser) {
@@ -129,13 +131,14 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
                                         ?>
                                     </select>
                                 </div>
-                                <div class="col-1 d-flex flex-column div-form-icons">
-                                    <i class="i-not-found fas fa-clone text-warning mx-auto d-none"></i>
-                                    <i class="i-target-overlap fas fa-compress-arrows-alt text-danger mx-auto d-none"></i>
-                                    <i class="i-shift-overlap fas fa-share-alt-square text-info mx-auto d-none"></i>
+                                <div class="col-2 d-flex flex-column div-form-icons">
+                                    <i class="i-not-found fas fa-lg fa-clone text-warning mx-auto d-none"></i>
+                                    <i class="i-target-overlap fas fa-lg fa-compress-arrows-alt text-danger mx-auto d-none"></i>
+                                    <i class="i-shift-overlap fas fa-lg fa-share-alt-square text-info mx-auto d-none"></i>
+                                    <i class="i-lang-not-enough fas fa-lg fa-language text-danger mx-auto d-none"></i>
                                 </div>
                                 <div class="col-2">
-                                    <button class="btn btn-danger btn-delete ml-auto align-middle" title="Delete transaction"><i class="fas fa-minus"></i></button>
+                                    <button class="btn btn-danger btn-delete ml-auto" title="Delete transaction"><i class="fas fa-minus"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -177,9 +180,10 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
                 </div>
             </form>
             <div id="div-buttons" class="text-right">
-                <i id="i-not-found" class="fas fa-clone text-warning invisible"></i>
-                <i id="i-target-overlap" class="fas fa-compress-arrows-altt-danger invisible"></i>
-                <i id="i-shift-overlap" class="fas fa-share-alt-square text-info invisible"></i>
+                <i id="i-not-found" class="fas fa-lg fa-clone text-warning invisible"></i>
+                <i id="i-target-overlap" class="fas fa-lg fa-compress-arrows-alt text-danger invisible"></i>
+                <i id="i-shift-overlap" class="fas fa-lg fa-share-alt-square text-info invisible"></i>
+                <i id="i-lang-not-enough" class="fas fa-lg fa-language text-danger invisible"></i>
                 <button id="btn-add-item" class="btn btn-primary" title="Add"><i class="fas fa-plus"></i></button>
                 <a id="btn-confirm" class="btn btn-primary disabled" href="#modal-confirm" data-toggle="modal" title="Final Check"><i class="fas fa-check"></i></a>
             </div>

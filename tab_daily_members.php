@@ -8,21 +8,25 @@ class DailyMembersHandler
     public $dbh;
     public $Y;
     public $currentPage;
-    public $YLowerBound = 2020;
-    public $dayStart = 'Mon';
-    public $dayEnd = 'Sun';
+    public $YLowerBound;
+    public $dayStart;
+    public $dayEnd;
     public $arrayShiftTimes;
     public $dateStart;
     public $dateEnd;
     public $arrayDateObjects;
+    public $arrayPartNames;
 
-    public function __construct($master_handler, $arrayShiftTimes)
+    public function __construct($master_handler, $config_handler)
     {
         $this->id_user = $master_handler->id_user;
         $this->dbh = $master_handler->dbh;
+        $this->YLowerBound = $config_handler->YLowerBound;
+        $this->dayStart = $config_handler->dayStart;
+        $this->dayEnd = $config_handler->dayEnd;
+        $this->arrayShiftTimes = $config_handler->arrayShiftTimes;
+        $this->arrayPartNames = $config_handler->arrayPartNames;
         $this->arrayDateObjects = [];
-        // $this->set_all($arrayShiftTimes);
-        $this->arrayShiftTimes = $arrayShiftTimes;
         $this->setProps();
     }
 
@@ -108,8 +112,9 @@ class DailyMembersHandler
         foreach (array_keys($arrayShiftObjectsByDate) as $date) {
             foreach ($arrayShiftObjectsByDate[$date] as $shiftObject) {
                 $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
+                $shiftObject->setShiftPart();
             }
-            $this->arrayDateObjects[$date] = new DateObject($date, $arrayShiftObjectsByDate[$date]);
+            $this->arrayDateObjects[$date] = new DateObject($date, $arrayShiftObjectsByDate[$date]);;
         }
     }
 
@@ -278,7 +283,7 @@ class DailyMembersHandler
                     <div class="card-body">
                         <div class="row no-gutters">
                             <!-- col left -->
-                            <div class="col-md-8">
+                            <div class="col-md-8 col-left">
                                 <div class="div-schedule">
                                     <!-- timeline -->
                                     <div class="timeline">
@@ -327,7 +332,7 @@ class DailyMembersHandler
                             </div>';
             echo '
                             <!-- col right -->
-                            <div class="col-md-4">
+                            <div class="col-md-4 col-right">
                                 <div class="row">
                                 <div class="col-12">
                                 <div class="shift-member-table">';
@@ -381,15 +386,32 @@ class DailyMembersHandler
                                 </div>'; // .shift-member-table .col-12 .row
             echo '
                                 <div class="row">
-                                    <div class="col-12 d-flex justify-content-center flex-wrap">';
-            foreach (array_keys($dateObject->arrayNumLangs) as $lang) {
-                $num = $dateObject->arrayNumLangs[$lang];
+                                    <div class="col-12">';
+            foreach (array_keys($dateObject->arrayNumLangsByPart) as $idxPart) {
+                // var_dump(array_keys($dateObject->arrayNumLangsByPart));
+                $partName = $this->arrayPartNames[$idxPart];
                 echo "
+                                    <div class='row no-gutters'><div class='div-grid-lang col-2'><p>$partName</p></div><div class='col-10 d-flex justify-content-center flex-wrap'>";
+                foreach (array_keys($dateObject->arrayNumLangsByPart[$idxPart]) as $lang) {
+                    $num = $dateObject->arrayNumLangsByPart[$idxPart][$lang];
+                    $numNeeded = $dateObject->arrayLangsByPart[$idxPart][$lang];
+                    // $numNeeded === NULL doesn't matter
+                    if ($num === $numNeeded) {
+                        $classTextColor = 'text-warning';
+                    } elseif ($num < $numNeeded) {
+                        $classTextColor = 'text-danger';
+                    } else {
+                        $classTextColor = 'text-light';
+                    }
+                    echo "
                                         <div class='div-country-flag m-1'>
                                             <img src='./data/png/icon-button-$lang.png'>
-                                            <div class='num-lang text-center'>$num</div>
+                                            <div class='div-num-lang text-center $classTextColor'>$num</div>
                                         </div>
                                             ";
+                }
+                echo "
+                                    </div></div>"; // .col-10 .row
             }
             echo '
                                     </div>
@@ -409,7 +431,7 @@ class DailyMembersHandler
     }
 }
 
-$daily_member_handler = new DailyMembersHandler($master_handler, $arrayShiftTimes);
+$daily_member_handler = new DailyMembersHandler($master_handler, $config_handler);
 // var_dump(get_object_vars($daily_member_handler));
 ?>
 

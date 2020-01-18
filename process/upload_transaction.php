@@ -1,4 +1,5 @@
 <?php
+require_once './config.php';
 require './check_session.php';
 require_once './class/class_db_handler.php';
 
@@ -8,11 +9,12 @@ class TransactionUploader extends DBHandler
     private $idUser;
     private static $arrayNames = array('id_from', 'month', 'day', 'shift', 'id_to');
 
-    public function __construct($master_handler)
+    public function __construct($master_handler, $config_handler)
     {
         $this->dbh = $master_handler->dbh;
         $this->idUser = $master_handler->id_user;
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
+        $this->sleepSeconds = $config_handler->sleepSeconds;
         $this->SQLS = '';
         $this->url = './transactions.php';
         $this->sleepSeconds = 2;
@@ -25,7 +27,7 @@ class TransactionUploader extends DBHandler
         $this->dbh->query('START TRANSACTION;');
         var_dump($_POST);
         $sql = "SELECT id_transaction FROM requests_pending ORDER BY id_transaction DESC LIMIT 1;";
-        $stmt = $this->executeSql($sql);
+        $stmt = $this->querySql($sql);
         // Set next id_transaction
         $arrayIdtrans = $stmt->fetchAll(PDO::FETCH_COLUMN);
         $stmt->closeCursor();
@@ -54,7 +56,7 @@ class TransactionUploader extends DBHandler
             $sql = "SELECT id_shift FROM shifts_assigned WHERE id_user=$id_from AND shift='$shift' AND date_shift='$dateShift' AND done=0 FOR UPDATE;";
             echo $sql;
             // echo $sql;
-            $stmt = $this->executeSql($sql);
+            $stmt = $this->querySql($sql);
             // var_dump($stmt->errorInfo());OK
             $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
             var_dump($stmt->errorInfo());
@@ -87,7 +89,7 @@ class TransactionUploader extends DBHandler
             }
         }
         // echo $this->SQLS;
-        $stmt = $this->executeSql($this->SQLS);
+        $stmt = $this->querySql($this->SQLS);
         $stmt->closeCursor();
         // If NULL
         if ($stmt->errorInfo()[0] !== NULL) {
@@ -101,13 +103,13 @@ class TransactionUploader extends DBHandler
     }
 }
 
-$transaction_uploader = new TransactionUploader($master_handler);
+$transaction_uploader = new TransactionUploader($master_handler, $config_handler);
 // // $arrayNames = array('id_from', 'month', 'day', 'shift', 'id_to');
 // // $arrayFormIds = explode(',', $_POST["formIDs"]);
 // // $SQLS = '';
 // $master_handler->dbh->query('START TRANSACTION;');
 // $sql = "SELECT id_transaction FROM requests_pending ORDER BY id_transaction DESC LIMIT 1;";
-// $stmt = $this->executeSql($sql);
+// $stmt = $this->querySql($sql);
 // // Set next id_transaction
 // $arrayIdtrans = $stmt->fetchAll(PDO::FETCH_COLUMN);
 // if (count($arrayIdtrans) != 0) {
