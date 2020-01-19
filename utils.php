@@ -21,6 +21,7 @@ function groupArrayByKey($array, $key)
 }
 
 function genHref(string $http_host, string $url, array $query){
+    // $http_host = 'localhost' , $url = 'gairyo_temp/*.php'
     if (count($query)){
         for($i=0;$i<count($query);$i++){
             if ($i === 0){

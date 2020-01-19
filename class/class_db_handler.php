@@ -1,6 +1,7 @@
 <?php
 $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/utils.php";
+require_once "$homedir/config.php";
 
 class DBHandler
 {
@@ -23,18 +24,18 @@ class DBHandler
     public function redirect($commit, string $url, array $query)
     {
         if ($commit) {
-            $this->dbh->query('COMMIT;');
+            $this->dbh->exec('COMMIT;');
         } else {
-            $this->dbh->query('ROLLBACK;');
+            $this->dbh->exec('ROLLBACK;');
         }
         $this->dbh = NULL;
         $url = utils\genHref($this->http_host, $url, $query);
+        echo $url;
         header('Location: ' . $url);
     }
 
     public function querySql($sql)
     {
-        echo $sql;
         $stmt = $this->dbh->prepare($sql);
         $stmt->execute();
         return $this->restartIfErLock($stmt);

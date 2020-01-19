@@ -5,13 +5,26 @@ require_once "$homedir/class/class_member_object.php";
 
 class DateObjectsHandler
 {
-    public function __construct($master_handler, $arrayShiftTimes)
+    public function __construct($master_handler, $config_handler)
     {
         $this->id_user = $master_handler->id_user;
         $this->dbh = $master_handler->dbh;
         $this->arrayDateObjects = [];
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
-        $this->arrayShiftTimes = $arrayShiftTimes;
+        $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
+        $this->arrayShiftTimes = $config_handler->arrayShiftTimes;
+        $this->arrayLangsByPart = $config_handler->arrayLangsByPart;
+    }
+
+    public function setArrayDateObjects($arrayShiftObjectsByDate)
+    {
+        foreach (array_keys($arrayShiftObjectsByDate) as $date) {
+            foreach ($arrayShiftObjectsByDate[$date] as $shiftObject) {
+                $shiftObject->setShiftPart($this->arrayShiftsByPart);
+                $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
+            }
+            $this->arrayDateObjects[$date] = new DateObject($date, $arrayShiftObjectsByDate[$date], $this->arrayLangsByPart);
+        }
     }
 
     public function arrayPushDateObjects(array $params)
@@ -42,9 +55,10 @@ class DateObjectsHandler
             foreach ($arrayShiftObjectsByDate[$date] as $shiftObject) {
                 $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
             }
-            $this->arrayDateObjects[$date] = new DateObject($date, $arrayShiftObjectsByDate[$date]);
+            $this->arrayDateObjects[$date] = new DateObject($date, $arrayShiftObjectsByDate[$date], $this->arrayLangsByPart);
         }
     }
+
 }
 
 class DateObject
@@ -52,7 +66,6 @@ class DateObject
     public $date;
     public $arrayShiftObjectsByShift;
     public $arrayNumLangsByPart;
-    public $arrayLangsByPart = [['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL], ['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL]];
     function __construct($date, $arrayShiftObjectsOfDate, $arrayLangsByPart)
     {
         $this->date = $date;
@@ -89,25 +102,19 @@ class ShiftObject
     public $id_user;
     public $date_shift;
     public $shift;
-    public $shiftPart;
     public $memberObject;
-    public static $shiftParts = [['A', 'B', 'H'], ['C', 'D']];
-    function __construct()
+    public static $arrayShiftsByPart;
+    function __construct($config_handler)
     {
+        self::$arrayShiftsByPart = $config_handler->arrayShiftsByPart;
     }
     public function setMemberObj($arrayMemberObjectsByIdUser)
     {
         $this->memberObject = $arrayMemberObjectsByIdUser[$this->id_user];
-        for($i=0; $i<count(self::$shiftParts); $i++){
-            if(in_array($this->shift, self::$shiftParts)){
-                $this->shiftPart = $i;
-                break;
-            }
-        }
     }
-    public function setShiftPart(){
-        for($i=0; $i<count(self::$shiftParts); $i++){
-            if(in_array($this->shift, self::$shiftParts[$i])){
+    public function setShiftPart($arrayShiftsByPart){
+        for($i=0; $i<count($arrayShiftsByPart); $i++){
+            if(in_array($this->shift, $arrayShiftsByPart[$i])){
                 $this->shiftPart = $i;
                 break;
             }

@@ -12,7 +12,7 @@ require "$homedir/class/class_date_object.php";
     require './common_head.php';
     ?>
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="./css/bs4-timeline.css">
+    <link rel="stylesheet" href="<?=$config_handler->http_host?>/css/bs4-timeline.css">
 </head>
 
 <body>

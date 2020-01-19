@@ -29,7 +29,7 @@ $signup_form_handler = new SignupFormHandler();
                 <div class="card-body">
                     <h1 class="text-center">Welcome to Gairyo!</h1>
                     <p class="text-center">必要項目を記入し、提出してください。管理者の承認次第、ご利用になれます。</p>
-                    <form action="./process/signup.php" method="POST">
+                    <form action="<?=$config_handler->http_host?>/process/signup.php" method="POST">
                         <input type="hidden" name="id_google" value=<?= $_GET['id_google'] ?>>
                         <div class="form-group form-group-required">
                             <div class="row">

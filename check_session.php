@@ -57,7 +57,7 @@ $host = 'localhost';
 $DBName = 'gairyo';
 $userName = 'root';
 $pw = '111111';
-$params = ['id_google'=>'315977953185055105728'];
+$params = ['id_google'=>'315977953185055105728', 'id_user' => '2'];
 $master_handler = new MasterHandler($test, $host, $DBName, $userName, $pw, $config_handler, $params);
 $dbh = $master_handler->dbh;
 $signedin = $master_handler->signedin;

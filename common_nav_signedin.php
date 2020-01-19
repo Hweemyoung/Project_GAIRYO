@@ -38,7 +38,7 @@ for ($i = 0; $i < count($requests); $i++) {
     <nav class="navbar navbar-expand-sm bg-light fixed-top">
         <!-- logo -->
         <a href="#" class="navbar-brand order-sm-1 d-flex">
-            <img class="d-none d-md-block mr-md-3" src="./data/png/logo_travel_color_large.png" alt="imgLogo">
+            <img class="d-none d-md-block mr-md-3" src="<?=$config_handler->http_host?>/data/png/logo_travel_color_large.png" alt="imgLogo">
             <p class="d-none d-sm-block mr-md-2 small">外国人旅行センター</p>
             <p class="d-sm-none">外旅</p>
         </a>
@@ -71,7 +71,7 @@ for ($i = 0; $i < count($requests); $i++) {
                     }
                     ?>
                     <div class="dropdown-divider"></div>
-                    <a href="./transactions.php" class="dropdown-item">More</a>
+                    <a href="<?=$config_handler->http_host?>/transactions.php" class="dropdown-item">More</a>
                 </div>
             </li>
             <!-- Account -->
@@ -91,17 +91,17 @@ for ($i = 0; $i < count($requests); $i++) {
         </ul>
         <!-- nav-menu toggler -->
         <button class="navbar-toggler btn" data-toggle="collapse" data-target="#navMenu">
-            <!-- <img src="./data/png/list-2x.png" alt="navbar-toggler-icon"> -->
+            <!-- <img src="<?=$config_handler->http_host?>/data/png/list-2x.png" alt="navbar-toggler-icon"> -->
             <i class="fas fa-bars"></i>
         </button>
         <!-- menu -->
         <div class="collapse navbar-collapse order-sm-2" id="navMenu">
             <ul class="navbar-nav">
-                <li class="nav-item"><a href="./admin.php" class="nav-link">Overview</a></li>
-                <li class="nav-item"><a href="./shifts.php" class="nav-link">Shifts</a></li>
-                <li class="nav-item"><a href="./transactions.php" class="nav-link">Transactions</a></li>
-                <li class="nav-item"><a href="./logs.php" class="nav-link">Logs</a></li>
-                <li class="nav-item"><a href="./forms.php" class="nav-link">Board</a></li>
+                <li class="nav-item"><a href="<?=$config_handler->http_host?>/admin.php" class="nav-link">Overview</a></li>
+                <li class="nav-item"><a href="<?=$config_handler->http_host?>/shifts.php" class="nav-link">Shifts</a></li>
+                <li class="nav-item"><a href="<?=$config_handler->http_host?>/transactions.php" class="nav-link">Transactions</a></li>
+                <li class="nav-item"><a href="<?=$config_handler->http_host?>/logs.php" class="nav-link">Logs</a></li>
+                <li class="nav-item"><a href="<?=$config_handler->http_host?>/forms.php" class="nav-link">Board</a></li>
             </ul>
         </div>
     </nav>

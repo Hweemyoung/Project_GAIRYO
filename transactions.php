@@ -15,7 +15,7 @@ $alertHandler = new AlertHandler(__FILE__);
     require './common_head.php';
     ?>
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="./css/transactions.css">
+    <link rel="stylesheet" href="<?=$config_handler->http_host?>/css/transactions.css">
 </head>
 
 <body>
@@ -30,7 +30,7 @@ $alertHandler = new AlertHandler(__FILE__);
     }
     require './common_footer.php';
     ?>
-    <script src="./js/alerthandler.js"></script>
+    <script src="<?=$config_handler->http_host?>/js/alerthandler.js"></script>
     <script>
         const _alertArray = <?= json_encode($alertHandler->getAlertArray()) ?>;
         const alertHandler = new AlertHandler(<?= json_encode($alertHandler->getAlertArray()) ?>);

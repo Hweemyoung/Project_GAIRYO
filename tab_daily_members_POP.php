@@ -405,7 +405,7 @@ function echoAccordion($arrayShiftsByDate)
 <?php echoSearchBar($Y, $YLowerBound, $YMax, $currentPage, $pageUpperBound, $pageMax) ?>
 <!-- Accordion -->
 <?php echoAccordion($arrayShiftsByDate) ?>
-<script src="./js/custom_schedule.js"></script>
+<script src="<?=$config_handler->http_host?>/js/custom_schedule.js"></script>
 <script>
     // text color of card-headers
     $('#accordion .card-header a').addClass('text-dark')

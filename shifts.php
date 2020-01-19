@@ -13,9 +13,9 @@ require "$homedir/check_session.php";
     require './common_head.php';
     ?>
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="./css/shifts.css">
-    <link rel="stylesheet" href="./css/custom_schedule.css">
-    <link rel="stylesheet" href="./css/submitform.css">
+    <link rel="stylesheet" href="<?=$config_handler->http_host?>/css/shifts.css">
+    <link rel="stylesheet" href="<?=$config_handler->http_host?>/css/custom_schedule.css">
+    <link rel="stylesheet" href="<?=$config_handler->http_host?>/css/submitform.css">
 </head>
 <body>
 <?php

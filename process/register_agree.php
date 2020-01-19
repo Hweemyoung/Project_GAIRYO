@@ -17,8 +17,9 @@ class RequestsHandler extends DBHandler
         $this->idUser = $idUser;
         $this->idTrans = $idTrans;
         $this->dbh = $master_handler->dbh;
-        $this->url = './transactions.php';
+        $this->url = 'transactions.php';
         $this->sleepSeconds = $config_handler->sleepSeconds;
+        $this->http_host = $config_handler->http_host;
         $this->timeProceeded = date('Y-m-d H:i:s');
         $this->positions = ['from', 'to'];
         $this->SQLS = '';

@@ -30,5 +30,5 @@ if ($_GET["mode"] === 'modify'){
 } else if ($_GET["mode"] === 'submit'){
     submitShifts($id_user, $Ym, $_POST);
 }
-
-header('Location: '. './shifts.php');
+$http_host = $_SERVER['HTTP_HOST'];
+header("Location: $http_host/gairyo_temp/shifts.php");

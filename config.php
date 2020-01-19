@@ -37,7 +37,7 @@ class ConfigHandler{
     public $arrayShiftTimes;
 
     public function __construct() {
-        $http_host = $_SERVER['HTTP_HOST'] . 'gairyo_temp';
+        $http_host = $_SERVER['HTTP_HOST'] . '/' . 'gairyo_temp';
         $this->http_host = "http://$http_host";
         $this->setArrayShiftsByPart();
         $this->setArrayShiftTimes();

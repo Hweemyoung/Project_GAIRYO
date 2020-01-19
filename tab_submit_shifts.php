@@ -100,4 +100,4 @@ $arrayRecords = getArrayRecords($Y, $m);
 <script>
     var arrayRecords = <?=json_encode($arrayRecords)?>;
 </script>
-<script src="./js/submitform.js"></script>
+<script src="<?=$config_handler->http_host?>/js/submitform.js"></script>

@@ -17,8 +17,8 @@ class TransactionUploader extends DBHandler
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
         $this->sleepSeconds = $config_handler->sleepSeconds;
         $this->SQLS = '';
-        $http_host = $_SERVER['HTTP_HOST'] . '/gairyo_temp';
-        $this->url = "http://$http_host/transactions.php";
+        $this->http_host = 'http://' . $_SERVER['HTTP_HOST'] . '/gairyo_temp';
+        $this->url = "transactions.php";
         $this->sleepSeconds = 2;
         $this->arrayFormIds = explode(',', $_POST["formIDs"]);
         $this->process();

@@ -126,10 +126,10 @@ $arrayRequestsByIdTrans = prepArrayIdShiftsByIdTrans($master_handler->id_user, $
         <section id="section-form-choices">
             <div class="row text-center">
                 <div class="col-md-6 my-1">
-                    <a href="./transactionform.php" class="btn btn-primary d-block"><i class="fas fa-plus-square"> Create Transaction</i></a>
+                    <a href="<?=$config_handler->http_host?>/transactionform.php" class="btn btn-primary d-block"><i class="fas fa-plus-square"> Create Transaction</i></a>
                 </div>
                 <div class="col-md-6 my-1">
-                    <a href="./marketplace.php" class="btn btn-primary d-block"><i class="fas fa-search-dollar"> Marketplace</i></a>
+                    <a href="<?=$config_handler->http_host?>/marketplace.php" class="btn btn-primary d-block"><i class="fas fa-search-dollar"> Marketplace</i></a>
                 </div>
             </div>
         </section>

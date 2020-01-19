@@ -10,7 +10,7 @@ $userName = 'root';
 $pw = '111111';
 $params = ['id_google' => '315977953185055105728'];
 
-$master_handler = new MasterHandler(true, $host, $DBName, $userName, $pw, $params);
+$master_handler = new MasterHandler(true, $host, $DBName, $userName, $pw, $config_handler, $params);
 
 class SignupHandler extends DBHandler
 {
@@ -36,7 +36,7 @@ class SignupHandler extends DBHandler
         $sql = "INSERT INTO members (" . $cols . ", date_signup) VALUES (" . $values . ", '$date_signup');";
         $stmt = $this->querySql($sql);
         if (($stmt->errorInfo())[1] === NULL) {
-            $this->redirect(true, '../admin.php', ['f' => 3, 's' => 0]);
+            $this->redirect(true, 'admin.php', ['f' => 3, 's' => 0]);
         } else {
             var_dump($stmt->errorInfo());
             exit;
@@ -56,7 +56,7 @@ class SignupHandler extends DBHandler
     {
         foreach (array_values($this->cols_required_members) as $col) {
             if (!in_array($col, array_keys($_POST))) {
-                $this->redirect(false, '../admin.php', ['f' => 3, 'e' => 1, 'col' => $col]);
+                $this->redirect(false, 'admin.php', ['f' => 3, 'e' => 1, 'col' => $col]);
             }
         }
     }

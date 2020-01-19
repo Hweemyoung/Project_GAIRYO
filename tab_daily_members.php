@@ -3,7 +3,7 @@ $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/config.php";
 require_once "$homedir/class/class_date_object.php";
 
-class DailyMembersHandler
+class DailyMembersHandler extends DateObjectsHandler
 {
     public $id_user;
     public $dbh;
@@ -22,9 +22,11 @@ class DailyMembersHandler
     {
         $this->id_user = $master_handler->id_user;
         $this->dbh = $master_handler->dbh;
+        $this->config_handler = $config_handler;
         $this->YLowerBound = $config_handler->YLowerBound;
         $this->dayStart = $config_handler->dayStart;
         $this->dayEnd = $config_handler->dayEnd;
+        $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
         $this->arrayShiftTimes = $config_handler->arrayShiftTimes;
         $this->arrayPartNames = $config_handler->arrayPartNames;
         $this->arrayLangsByPart = $config_handler->arrayLangsByPart;
@@ -45,7 +47,12 @@ class DailyMembersHandler
         $this->setPage();
         $this->setDateRange();
         $this->setArrayMemberObjectsByIdUser();
-        $this->setArrayDateObjects();
+        $sql = "SELECT date_shift, id_user, shift FROM shifts_assigned WHERE date_shift >= ? AND date_shift <= ? ORDER BY date_shift ASC";
+        $stmt = $this->dbh->prepare($sql);
+        $stmt->execute(array($this->dateStart, $this->dateEnd));
+        // var_dump($stmt->errorInfo());
+        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->config_handler]);
+        $this->setArrayDateObjects($arrayShiftObjectsByDate);
     }
 
     private function setYear()
@@ -104,21 +111,21 @@ class DailyMembersHandler
         $this->arrayMemberObjectsByIdUser = $this->dbh->query($sql)->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'MemberObject');
     }
 
-    private function setArrayDateObjects()
-    {
-        $sql = "SELECT date_shift, id_user, shift FROM shifts_assigned WHERE date_shift >= ? AND date_shift <= ? ORDER BY date_shift ASC";
-        $stmt = $this->dbh->prepare($sql);
-        $stmt->execute(array($this->dateStart, $this->dateEnd));
-        // var_dump($stmt->errorInfo());
-        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject');
-        foreach (array_keys($arrayShiftObjectsByDate) as $date) {
-            foreach ($arrayShiftObjectsByDate[$date] as $shiftObject) {
-                $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
-                $shiftObject->setShiftPart();
-            }
-            $this->arrayDateObjects[$date] = new DateObject($date, $arrayShiftObjectsByDate[$date], $this->arrayLangsByPart);
-        }
-    }
+    // public function setArrayDateObjects()
+    // {
+    //     $sql = "SELECT date_shift, id_user, shift FROM shifts_assigned WHERE date_shift >= ? AND date_shift <= ? ORDER BY date_shift ASC";
+    //     $stmt = $this->dbh->prepare($sql);
+    //     $stmt->execute(array($this->dateStart, $this->dateEnd));
+    //     // var_dump($stmt->errorInfo());
+    //     $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject');
+    //     foreach (array_keys($arrayShiftObjectsByDate) as $date) {
+    //         foreach ($arrayShiftObjectsByDate[$date] as $shiftObject) {
+    //             $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
+    //             $shiftObject->setShiftPart($this->arrayShiftsByPart);
+    //         }
+    //         $this->arrayDateObjects[$date] = new DateObject($date, $arrayShiftObjectsByDate[$date], $this->arrayLangsByPart);
+    //     }
+    // }
 
     private function genHref(array $params)
     {
@@ -454,7 +461,7 @@ $daily_member_handler = new DailyMembersHandler($master_handler, $config_handler
 <?php $daily_member_handler->echoSearchBar() ?>
 <!-- Accordion -->
 <?php $daily_member_handler->echoAccordion() ?>
-<script src="./js/custom_schedule.js"></script>
+<script src="<?=$config_handler->http_host?>/js/custom_schedule.js"></script>
 <script>
     // text color of card-headers
     $('#accordion .card-header a').addClass('text-dark')

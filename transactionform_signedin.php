@@ -3,27 +3,13 @@ $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/config.php";
 require_once "$homedir/class/class_date_object.php";
 
-class TransactionFormHandler extends DateObjectsHandler
-{
-    public function setArrayDateObjects()
-    {
-        $sql = "SELECT date_shift, id_user, shift FROM shifts_assigned WHERE done=0 ORDER BY date_shift ASC";
-        $stmt = $this->dbh->query($sql);
-        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject');
-        $stmt->closeCursor();
-        foreach (array_keys($arrayShiftObjectsByDate) as $date) {
-            foreach ($arrayShiftObjectsByDate[$date] as $shiftObject) {
-                $shiftObject->setShiftPart();
-                $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
-            }
-            $this->arrayDateObjects[$date] = new DateObject($date, $arrayShiftObjectsByDate[$date]);
-        }
-    }
-}
-
-$transaction_form_handler = new TransactionFormHandler($master_handler, $config_handler->arrayShiftTimes);
-$transaction_form_handler->setArrayDateObjects();
-// var_dump($transaction_form_handler->arrayDateObjects);
+$transactionform_handler = new DateObjectsHandler($master_handler, $config_handler);
+$sql = "SELECT date_shift, id_user, shift FROM shifts_assigned WHERE done=0 ORDER BY date_shift ASC";
+$stmt = $master_handler->dbh->query($sql);
+$arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$config_handler]);
+$stmt->closeCursor();
+$transactionform_handler->setArrayDateObjects($arrayShiftObjectsByDate);
+// var_dump($transactionform_handler->arrayDateObjects);
 
 // $sql = "SELECT date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE done = 0";
 // $stmt = $master_handler->dbh->prepare($sql);
@@ -192,7 +178,7 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
     </div>
 </main>
 <footer></footer>
-<script src="./js/transactionform.js"></script>
+<script src="<?=$config_handler->http_host?>/js/transactionform.js"></script>
 <script>
-    const formHandler = new FormHandler(<?= json_encode($arrayShiftsByIdUser) ?>, <?= json_encode($transaction_form_handler) ?>);
+    const formHandler = new FormHandler(<?= json_encode($arrayShiftsByIdUser) ?>, <?= json_encode($transactionform_handler) ?>);
 </script>
