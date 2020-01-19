@@ -1,7 +1,8 @@
 <?php
 $signedin = false;
-require 'check_session.php';
-require_once './class/class_alert_handler.php';
+$homedir = '/var/www/html/gairyo_temp';
+require "$homedir/check_session.php";
+require_once "$homedir/class/class_alert_handler.php";
 $alert_handler = new AlertHandler(__FILE__);
 var_dump($alert_handler);
 

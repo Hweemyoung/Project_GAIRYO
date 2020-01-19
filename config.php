@@ -8,11 +8,16 @@ class ConfigHandler{
 
     // DB
     public $cols_required_members = ['id_google', 'nickname', 'first_name', 'middle_name', 'last_name'];
+
+    // DBHandler
+    public $http_host;
+    public $homedir = '/var/www/html/gairyo_temp';
     
     // Languages
     public $numLangs = 8; // Includes 'other'
     public $arrayLangsShort = ['cn', 'kr', 'th', 'my', 'ru', 'fr', 'de', 'other'];
     public $arrayLangsLong = ['Chinese', 'Korean', 'Thailand', 'Malaysian', 'Russian', 'French', 'Deutsche', 'Others'];
+    public $arrayLangsByPart = [['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL], ['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL]];
     
     // Shifts
     public $numOfShiftsPart = 2;
@@ -32,6 +37,8 @@ class ConfigHandler{
     public $arrayShiftTimes;
 
     public function __construct() {
+        $http_host = $_SERVER['HTTP_HOST'] . 'gairyo_temp';
+        $this->http_host = "http://$http_host";
         $this->setArrayShiftsByPart();
         $this->setArrayShiftTimes();
     }

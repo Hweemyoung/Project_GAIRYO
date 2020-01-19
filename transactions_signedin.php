@@ -1,7 +1,8 @@
 <?php
-require_once './config.php';
-require_once './class/class_user_oriented_request.php';
-require_once './class/class_db_handler.php';
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/config.php";
+require_once "$homedir/class/class_user_oriented_request.php";
+require_once "$homedir/class/class_db_handler.php";
 
 class hrefGenerator
 {

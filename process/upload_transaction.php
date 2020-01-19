@@ -1,7 +1,8 @@
 <?php
-require_once './config.php';
-require './check_session.php';
-require_once './class/class_db_handler.php';
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/config.php";
+require "$homedir/check_session.php";
+require_once "$homedir/class/class_db_handler.php";
 
 class TransactionUploader extends DBHandler
 {
@@ -16,7 +17,8 @@ class TransactionUploader extends DBHandler
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
         $this->sleepSeconds = $config_handler->sleepSeconds;
         $this->SQLS = '';
-        $this->url = './transactions.php';
+        $http_host = $_SERVER['HTTP_HOST'] . '/gairyo_temp';
+        $this->url = "http://$http_host/transactions.php";
         $this->sleepSeconds = 2;
         $this->arrayFormIds = explode(',', $_POST["formIDs"]);
         $this->process();

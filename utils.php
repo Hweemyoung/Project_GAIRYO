@@ -1,6 +1,7 @@
 <?php
-
 namespace utils;
+$homedir = $homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/config.php";
 
 function customVarDump(string $varName)
 {
@@ -19,7 +20,7 @@ function groupArrayByKey($array, $key)
     return $arrayGrouped;
 }
 
-function genHref(string $url, array $query){
+function genHref(string $http_host, string $url, array $query){
     if (count($query)){
         for($i=0;$i<count($query);$i++){
             if ($i === 0){
@@ -30,7 +31,7 @@ function genHref(string $url, array $query){
             $url = $url . $seperator . array_keys($query)[$i] . '=' . $query[array_keys($query)[$i]];
         }
     }
-    return $url;
+    return $http_host . '/' . $url;
 }
 
 function isAssoc(array $arr)
@@ -38,4 +39,3 @@ function isAssoc(array $arr)
     if (array() === $arr) return 2;
     return array_keys($arr) !== range(0, count($arr) - 1);
 }
-?>

@@ -1,5 +1,6 @@
 <?php
-require_once '../utils.php';
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/utils.php";
 
 class DBHandler
 {
@@ -11,6 +12,7 @@ class DBHandler
     public function __construct($master_handler, $config_handler)
     {
         $this->dbh = $master_handler->dbh;
+        $this->http_host = $config_handler->http_host;
         $this->sleepSeconds = $config_handler->sleepSeconds;
     }
 
@@ -26,7 +28,7 @@ class DBHandler
             $this->dbh->query('ROLLBACK;');
         }
         $this->dbh = NULL;
-        $url = utils\genHref($url, $query);
+        $url = utils\genHref($this->http_host, $url, $query);
         header('Location: ' . $url);
     }
 
@@ -68,6 +70,7 @@ class DBHandler
             $arrayFieldValues = [0];
         } else {
             for ($i = 0; $i < count($arrayFieldValues); $i++) {
+                var_dump($arrayFieldValues[$i]);
                 $arrayFieldValues[$i] = $colName . '=' . $arrayFieldValues[$i];
             }
         }

@@ -1,7 +1,8 @@
 <?php
-require_once './config.php';
-require './check_session.php';
-require_once './class/class_db_handler.php';
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/config.php";
+require "$homedir/check_session.php";
+require_once "$homedir/class/class_db_handler.php";
 
 class RequestsHandler extends DBHandler
 {
@@ -52,6 +53,7 @@ class RequestsHandler extends DBHandler
     {
         // var_dump($sqlConditions);
         if ($sqlConditions === '(0)') {
+            echo 'here';
             exit;
         }
         $sql = "UPDATE requests_pending SET `status`=0, time_proceeded='$this->timeProceeded' WHERE `status`=2 AND " . $sqlConditions . ';';
@@ -63,13 +65,20 @@ class RequestsHandler extends DBHandler
     private function invalidateAllRequests()
     {
         // Select pending id_transactions surrounding the shifts
-        $sqlConditions = $this->genSqlConditions($this->arrayRequestsInTransaction['2'], 'id_shift', 'OR');
+        $arrayIdShifts = [];
+        foreach($this->arrayRequestsInTransaction['2'] as $request){
+            array_push($arrayIdShifts, $request['id_shift']);
+        }
+        $sqlConditions = $this->genSqlConditions($arrayIdShifts, 'id_shift', 'OR');
+        echo $sqlConditions.'<br>';
         $sql = 'SELECT id_transaction FROM requests_pending WHERE `status`=2 AND ' . $sqlConditions . 'FOR UPDATE;';
         $stmt = ($this->dbh)->prepare($sql);
         $stmt->execute();
         $arrayByIdTrans = $stmt->fetchAll(PDO::FETCH_GROUP);
+        var_dump($arrayByIdTrans);
         // Invalidate transactions
         $sqlConditions = $this->genSqlConditions(array_keys($arrayByIdTrans), 'id_transaction', 'OR');
+        echo $sqlConditions.'<br>';
         $this->decline($sqlConditions);
     }
 

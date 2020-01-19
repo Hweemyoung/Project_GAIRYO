@@ -1,50 +1,50 @@
 <?php
-session_name('sess_gairyo');
-session_start();
-require_once './class/class_master_handler.php';
-require_once './class/class_date_object.php';
+$homepath = '/var/www/html/gairyo_temp';
+require_once "$homepath/config.php";
+require_once "$homepath/class/class_master_handler.php";
+require_once "$homepath/class/class_date_object.php";
 
-class Overloading
-{
-    private $_arrayProps = array();
+// class Overloading
+// {
+//     private $_arrayProps = array();
 
-    public function __set($_prop, $value)
-    {
-        $this->_arrayProps[$_prop] = $value;
-    }
+//     public function __set($_prop, $value)
+//     {
+//         $this->_arrayProps[$_prop] = $value;
+//     }
 
-    public function __get($_prop)
-    {
-        if (array_key_exists($_prop, $this->_arrayProps)) {
-            return $this->_arrayProps[$_prop];
-        }
-        $trace = debug_backtrace();
-        trigger_error(
-            'Undefined property via __get(): ' . $_prop .
-                ' in ' . $trace[0]['file'] .
-                ' on line ' . $trace[0]['line'],
-            E_USER_NOTICE
-        );
-        return null;
-    }
+//     public function __get($_prop)
+//     {
+//         if (array_key_exists($_prop, $this->_arrayProps)) {
+//             return $this->_arrayProps[$_prop];
+//         }
+//         $trace = debug_backtrace();
+//         trigger_error(
+//             'Undefined property via __get(): ' . $_prop .
+//                 ' in ' . $trace[0]['file'] .
+//                 ' on line ' . $trace[0]['line'],
+//             E_USER_NOTICE
+//         );
+//         return null;
+//     }
 
-    public function __isset($_prop)
-    {
-        return isset($this->_arrayProps[$_prop]);
-    }
+//     public function __isset($_prop)
+//     {
+//         return isset($this->_arrayProps[$_prop]);
+//     }
 
-    public function __unset($_prop)
-    {
-        unset($this->_arrayProps[$_prop]);
-    }
+//     public function __unset($_prop)
+//     {
+//         unset($this->_arrayProps[$_prop]);
+//     }
 
-    public function set_all($_array)
-    {
-        foreach (array_keys($_array) as $_prop) {
-            $this->_arrayProps[$_prop] = $_array[$_prop];
-        }
-    }
-}
+//     public function set_all($_array)
+//     {
+//         foreach (array_keys($_array) as $_prop) {
+//             $this->_arrayProps[$_prop] = $_array[$_prop];
+//         }
+//     }
+// }
 
 // PDO Object
 // $host = 'sql304.epizy.com';
@@ -58,7 +58,7 @@ $DBName = 'gairyo';
 $userName = 'root';
 $pw = '111111';
 $params = ['id_google'=>'315977953185055105728'];
-$master_handler = new MasterHandler($test, $host, $DBName, $userName, $pw, $params);
+$master_handler = new MasterHandler($test, $host, $DBName, $userName, $pw, $config_handler, $params);
 $dbh = $master_handler->dbh;
 $signedin = $master_handler->signedin;
 $id_google = $master_handler->id_google;

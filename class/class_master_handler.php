@@ -1,33 +1,75 @@
 <?php
 // ini_set('include_path', '/var/www/html/gairyo_temp');
-require_once 'class_member_object.php';
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/class/class_member_object.php";
+require_once "$homedir/config.php";
+
 class MasterHandler
 {
     public $test;
+    public $homedir;
     public $dbh;
     public $signedin;
     public $id_google;
     public $arrayMemberObjectsByIdUser;
     public $arrayMemberObjectsByIdGoogle;
-    public function __construct($test, $host, $DBName, $userName, $pw, array $params)
+    public function __construct($test, string $host, string $DBName, string $userName, string $pw, ConfigHandler $config_handler, array $params)
     {
         $this->dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
         $this->test = $test;
-        foreach(array_keys($params) as $prop){
+        $this->homedir = $config_handler->homedir;
+        foreach (array_keys($params) as $prop) {
             $this->$prop = $params[$prop];
         }
-        $this->init();
-    }
-    
-    private function init(){
-        $this->setArrayMemberObjects();
-        if ($this->test){
+        if ($this->test) {
+            // id_user, id_google must be given via array params
             $this->signedin = true;
+        } elseif (isset($_POST['id_google'])) {
+            // Newly signed in
+            $this->newSignin($_POST['id_google']);
         } else {
-            $this->set_signedin();
-            $this->set_id_google();
+            $this->checkSession();
         }
-        $this->setIdUser();
+        if ($this->signedin) {
+            $this->setArrayMemberObjects();
+        }
+    }
+
+    private function newSignin($id_google)
+    {
+        $sql = "SELECT id_user FROM members WHERE valid=1 AND id_google=$id_google LIMIT 1;";
+        $stmt = $this->dbh->query($sql);
+        $exists = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $stmt->closeCursor();
+        if (count($exists)) {
+            session_save_path("$this->homedir/sess");
+            session_name('sess_gairyo');
+            session_start();
+            $_SESSION['id_google'] = $id_google;
+            $_SESSION['id_user'] = $exists[0];
+            $_SESSION['signedin'] = true;
+        } else {
+            // Redirect to signup
+            // HERE!
+        }
+    }
+
+    private function checkSession()
+    {
+        $this->signedin = false;
+        if (isset($_COOKIE['sess_gairyo'])) {
+            // if ($this->sessIdInTable($_COOKIE['sess_gairyo'])) {
+            if (file_exists($this->homedir . '/sess/sess_' . $_COOKIE['sess_gairyo'])) {
+                session_save_path("$this->homedir/sess");
+                session_name('sess_gairyo');
+                session_start();
+                if ($_SESSION['signedin']) {
+                    $this->signedin = true;
+                    $this->id_google = $_SESSION['id_google'];
+                    $this->id_user = $_SESSION['id_user'];
+                }
+            }
+        }
     }
 
     private function setArrayMemberObjects()

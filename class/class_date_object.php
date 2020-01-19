@@ -1,6 +1,7 @@
 <?php
-require_once './utils.php';
-require_once 'class_member_object.php';
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/utils.php";
+require_once "$homedir/class/class_member_object.php";
 
 class DateObjectsHandler
 {
@@ -52,9 +53,10 @@ class DateObject
     public $arrayShiftObjectsByShift;
     public $arrayNumLangsByPart;
     public $arrayLangsByPart = [['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL], ['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL]];
-    function __construct($date, $arrayShiftObjectsOfDate)
+    function __construct($date, $arrayShiftObjectsOfDate, $arrayLangsByPart)
     {
         $this->date = $date;
+        $this->arrayLangsByPart = $arrayLangsByPart;
         $this->arrayNumLangsByPart = [[], []];
         $this->arrayShiftObjectsByShift = [];
         $this->setArrayShiftObjectByShift($arrayShiftObjectsOfDate);

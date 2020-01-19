@@ -1,5 +1,6 @@
 <?php
-require_once './class/class_user_oriented_request.php';
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/class/class_user_oriented_request.php";
 class CommonNavHandler
 {
     function genHref(array $params){

@@ -1,6 +1,7 @@
 <?php
-require_once './config.php';
-require_once './class/class_date_object.php';
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/config.php";
+require_once "$homedir/class/class_date_object.php";
 
 class DailyMembersHandler
 {
@@ -26,6 +27,7 @@ class DailyMembersHandler
         $this->dayEnd = $config_handler->dayEnd;
         $this->arrayShiftTimes = $config_handler->arrayShiftTimes;
         $this->arrayPartNames = $config_handler->arrayPartNames;
+        $this->arrayLangsByPart = $config_handler->arrayLangsByPart;
         $this->arrayDateObjects = [];
         $this->setProps();
     }
@@ -114,7 +116,7 @@ class DailyMembersHandler
                 $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
                 $shiftObject->setShiftPart();
             }
-            $this->arrayDateObjects[$date] = new DateObject($date, $arrayShiftObjectsByDate[$date]);;
+            $this->arrayDateObjects[$date] = new DateObject($date, $arrayShiftObjectsByDate[$date], $this->arrayLangsByPart);
         }
     }
 

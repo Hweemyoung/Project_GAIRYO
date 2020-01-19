@@ -1,6 +1,7 @@
 <?php
-require_once './config.php';
-require_once './class/class_date_object.php';
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/config.php";
+require_once "$homedir/class/class_date_object.php";
 
 class TransactionFormHandler extends DateObjectsHandler
 {

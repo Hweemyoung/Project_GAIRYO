@@ -1,5 +1,6 @@
 <?php
-require_once './config.php';
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/config.php";
 
 class SignupFormHandler
 {

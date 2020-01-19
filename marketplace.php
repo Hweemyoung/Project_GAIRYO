@@ -1,6 +1,7 @@
 <?php
-require './check_session.php';
-require './class/class_date_object.php';
+$homedir = '/var/www/html/gairyo_temp';
+require "$homedir/check_session.php";
+require "$homedir/class/class_date_object.php";
 
 ?>
 <!DOCTYPE html>

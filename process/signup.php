@@ -1,9 +1,9 @@
 <?php
-require_once '../utils.php';
-require_once '../config.php';
-require_once '../class/class_db_handler.php';
-
-require_once '../class/class_master_handler.php';
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/utils.php";
+require_once "$homedir/config.php";
+require_once "$homedir/class/class_db_handler.php";
+require_once "$homedir/class/class_master_handler.php";
 $host = 'localhost';
 $DBName = 'gairyo';
 $userName = 'root';
