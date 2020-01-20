@@ -14,36 +14,41 @@ class MarketItemHandler extends DBHandler
     }
     private function load_market_items()
     {
-        $sql = "SELECT id_shift, id_transaction, id_from, id_shift FROM requests_pending WHERE `status`=2 AND id_to=NULL ORDER BY time_created DESC;";
+        $sql = "SELECT date_shift, id_transaction, id_to, shift FROM requests_pending WHERE `status`=2 AND id_from=NULL ORDER BY time_created ASC;";
         $stmt = $this->querySql($sql);
-        $arrayShiftObjects = $stmt->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'RequestObject');
+        $arrayCallObjectsByDate = $stmt->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'RequestObject');
         $stmt->closeCursor();
-        $sqlConditions = $this->genSqlConditions(array_keys($arrayShiftObjects), 'id_shift', 'OR');
-        $sql = "SELECT date_shift, id_user, shift FROM shift_assigned WHERE $sqlConditions AND done=0 AND under_request=1;";
+        $sql = "SELECT date_shift, id_shift, id_transaction, id_to, shift FROM requests_pending WHERE `status`=2 AND id_to=NULL ORDER BY time_created ASC;";
         $stmt = $this->querySql($sql);
-        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_CLASS, 'ShiftObject');
+        $arrayPutObjectsByDate = $stmt->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'RequestObject');
         $stmt->closeCursor();
-        foreach($arrayShiftObjectsByDate as $arrayShiftObjects){
-            foreach($arrayShiftObjects as $shiftObject){
+
+        $stmt = $this->querySql($sql);
+        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject');
+        $stmt->closeCursor();
+        foreach ($arrayShiftObjectsByDate as $arrayShiftObjects) {
+            foreach ($arrayShiftObjects as $shiftObject) {
                 $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
             }
         }
         $this->date_objects_handler->setArrayDateObjects($arrayShiftObjectsByDate);
     }
 
-    public function echoMarketTimeline(){
+    public function echoMarketTimeline()
+    {
         echo '<div class="bs4-timeline">';
-        foreach($this->date_objects_handler->arrayDateObjects as $dateObject){
+        foreach ($this->date_objects_handler->arrayDateObjects as $dateObject) {
             $this->echoSection($dateObject);
         }
         echo '</div>';
     }
 
-    private function echoSection($dateObject){
+    private function echoSection($dateObject)
+    {
         $dateTime = DateTime::createFromFormat('Y-m-d', $dateObject->date);
         $date = $dateTime->format('M j');
         $day = $dateTime->format('D');
-        switch($day){
+        switch ($day) {
             case 'Sun':
                 $classTextColor = 'text-danger';
                 break;
@@ -67,7 +72,7 @@ class MarketItemHandler extends DBHandler
                     <div class='row'>
                         <div class='col-12 col-put'>
                             <ul type='none'>";
-        foreach($dateObject->arrayShiftObjectsByShift as $shiftObject){
+        foreach ($dateObject->arrayShiftObjectsByShift as $shiftObject) {
             echo "
                                     <li>H: Member1</li>";
         }
@@ -185,3 +190,7 @@ class MarketItemHandler extends DBHandler
         </div>
     </div>
 </div>
+<script src="./js/marketplace.js"></script>
+<script>
+    const market_item_handler = new MarketItemHandler(<?= json_encode($market_item_handler) ?>);
+</script>
