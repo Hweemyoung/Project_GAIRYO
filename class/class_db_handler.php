@@ -70,9 +70,14 @@ class DBHandler
         if (count($arrayFieldValues) === 0) {
             $arrayFieldValues = [0];
         } else {
-            for ($i = 0; $i < count($arrayFieldValues); $i++) {
-                var_dump($arrayFieldValues[$i]);
-                $arrayFieldValues[$i] = $colName . '=' . $arrayFieldValues[$i];
+            if ($colName === 'date_shift') {
+                for ($i = 0; $i < count($arrayFieldValues); $i++) {
+                    $arrayFieldValues[$i] = $colName . '="' . $arrayFieldValues[$i] . '"';
+                }
+            } else {
+                for ($i = 0; $i < count($arrayFieldValues); $i++) {
+                    $arrayFieldValues[$i] = $colName . '=' . $arrayFieldValues[$i];
+                }
             }
         }
         return '(' . implode(" $condition ", $arrayFieldValues) . ')';

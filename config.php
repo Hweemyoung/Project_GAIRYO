@@ -1,5 +1,6 @@
 <?php
-class ConfigHandler{
+class ConfigHandler
+{
     // Server
     public $host = 'sql304.epizy.com';
     public $DBName = 'epiz_24956964_gairyo';
@@ -12,13 +13,13 @@ class ConfigHandler{
     // DBHandler
     public $http_host;
     public $homedir = '/var/www/html/gairyo_temp';
-    
+
     // Languages
     public $numLangs = 8; // Includes 'other'
     public $arrayLangsShort = ['cn', 'kr', 'th', 'my', 'ru', 'fr', 'de', 'other'];
-    public $arrayLangsLong = ['Chinese', 'Korean', 'Thailand', 'Malaysian', 'Russian', 'French', 'Deutsche', 'Others'];
+    public $arrayLangsLong = ['cn' => 'Chinese', 'kr' => 'Korean', 'th' => 'Thailand', 'my' => 'Malaysian', 'ru' => 'Russian', 'fr' => 'French', 'de' => 'Deutsche', 'other' => 'Others'];
     public $arrayLangsByPart = [['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL], ['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL]];
-    
+
     // Shifts
     public $numOfShiftsPart = 2;
     public $shiftsPart0 = ['A', 'B', 'H'];
@@ -36,18 +37,21 @@ class ConfigHandler{
     public $arrayShiftsByPart;
     public $arrayShiftTimes;
 
-    public function __construct() {
+    public function __construct()
+    {
         $http_host = $_SERVER['HTTP_HOST'] . '/' . 'gairyo_temp';
         $this->http_host = "http://$http_host";
         $this->setArrayShiftsByPart();
         $this->setArrayShiftTimes();
     }
 
-    public function setArrayShiftsByPart(){
+    public function setArrayShiftsByPart()
+    {
         $this->arrayShiftsByPart = [$this->shiftsPart0, $this->shiftsPart1];
     }
 
-    public function setArrayShiftTimes(){
+    public function setArrayShiftTimes()
+    {
         $shiftA = array('time-start' => '07:40', 'time-end' => '12:00', 'btn-color' => 'btn-info');
         $shiftB = array('time-start' => '08:00', 'time-end' => '13:30', 'btn-color' => 'btn-secondary');
         $shiftH = array('time-start' => '08:00', 'time-end' => '13:00', 'btn-color' => 'btn-success');
@@ -58,4 +62,3 @@ class ConfigHandler{
 }
 
 $config_handler = new ConfigHandler();
-?>

@@ -74,7 +74,7 @@ $signup_form_handler = new SignupFormHandler();
                                     for ($i = 0; $i < $config_handler->numLangs; $i++) {
                                         // echo $i;
                                         $langShort = $config_handler->arrayLangsShort[$i];
-                                        $langLong = $config_handler->arrayLangsLong[$i];
+                                        $langLong = $config_handler->arrayLangsLong[$langShort];
                                         echo "
                                                 <div class='custom-control custom-control-inline custom-checkbox m-1' style='width: 7rem'>
                                                     <input type='checkbox' id='$langShort' class='custom-control-input' name='$langShort' value='1'><label for='$langShort' class='custom-control-label'>$langLong</label>

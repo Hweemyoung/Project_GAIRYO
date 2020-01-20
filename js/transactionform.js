@@ -139,6 +139,15 @@ class FormHandler {
         $(event.target).find('option:first-child').attr('disabled', true);
     }
 
+    disableIcons(){
+        this._$btnConfirm.addClass('disabled');
+        this._$iNotFound.addClass('invisible');
+        this._$iTargetOverlap.addClass('invisible');
+        this._$iShiftOverlap.addClass('invisible');
+        this._$iLangNotEnough.addClass('invisible');
+        this._$formItems.find('.div-form-icons i').addClass('d-none');
+    }
+
     checkConfirmable(event) {
         var handler = this;
         var _clonedArrayDateObjects = JSON.parse(JSON.stringify(this._transaction_form_handler.arrayDateObjects));
@@ -146,12 +155,13 @@ class FormHandler {
         var _ignore = false;
         var _confirmable = true;
 
-        this._$btnConfirm.addClass('disabled');
-        this._$iNotFound.addClass('invisible');
-        this._$iTargetOverlap.addClass('invisible');
-        this._$iShiftOverlap.addClass('invisible');
-        this._$iLangNotEnough.addClass('invisible');
-        this._$formItems.find('.div-form-icons i').addClass('d-none');
+        this.disableIcons();
+        // this._$btnConfirm.addClass('disabled');
+        // this._$iNotFound.addClass('invisible');
+        // this._$iTargetOverlap.addClass('invisible');
+        // this._$iShiftOverlap.addClass('invisible');
+        // this._$iLangNotEnough.addClass('invisible');
+        // this._$formItems.find('.div-form-icons i').addClass('d-none');
         this._$formItems.each(function (idxFormItem) {
             // New variables
             var error = false;
@@ -293,14 +303,17 @@ class FormHandler {
             for (var part in dateObject.arrayNumLangsByPart) {
                 var arrayLangs = dateObject.arrayLangsByPart[part];
                 var arrayNumLangs = dateObject.arrayNumLangsByPart[part];
-                console.log(arrayNumLangs);
+                console.log('part', part);
+                console.log('after', arrayNumLangs);
                 for (var lang in arrayNumLangs) {
                     if (arrayLangs[lang] !== null) {
                         if (arrayNumLangs[lang] < arrayLangs[lang]) {
                             // Insufficient number for this language
-                            if (arrayNumLangs[lang] < Number(this._transaction_form_handler.arrayDateObjects[_objectDatesByIdxFormItem[idxFormItem]].arrayLangsByPart[part][lang])) {
+                            console.log('date', _objectDatesByIdxFormItem[idxFormItem], 'part', part, 'lang', lang);
+                            console.log('before', Number(this._transaction_form_handler.arrayDateObjects[_objectDatesByIdxFormItem[idxFormItem]].arrayNumLangsByPart[part][lang]));
+                            if (arrayNumLangs[lang] < Number(this._transaction_form_handler.arrayDateObjects[_objectDatesByIdxFormItem[idxFormItem]].arrayNumLangsByPart[part][lang])) {
                                 // Is that due to change of number? Or it just used to be not enough? If the number is decreased by transaction, ban it.
-                                return [idxFormItem, _objectDatesByIdxFormItem[idxFormItem], lang, arrayNumLangs[lang], this._transaction_form_handler.arrayDateObjects[_objectDatesByIdxFormItem[idxFormItem]].arrayLangsByPart[part][lang]]
+                                return [idxFormItem, _objectDatesByIdxFormItem[idxFormItem], lang, arrayNumLangs[lang], this._transaction_form_handler.arrayDateObjects[_objectDatesByIdxFormItem[idxFormItem]].arrayNumLangsByPart[part][lang]]
                                 // [0, 2020-01-23, cn, 1, 2]
                             }
                         }
@@ -366,7 +379,7 @@ class FormHandler {
     addEvents($formItem) {
         $formItem.find('select').on('change', $.proxy(this.changeSelects, this)).on('change', $.proxy(this.disableNoneOption, this));
         $formItem.find('select:not(.select-id-to)').on('change', $.proxy(function () {
-            this._$btnConfirm.addClass('disabled');
+            this.disableIcons();
         }, this));
         $formItem.find('select.select-id-to').on('change', $.proxy(this.checkConfirmable, this));
         $formItem.find('.btn-delete').click($.proxy(this.deleteItem, this));

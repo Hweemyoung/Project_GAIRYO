@@ -3,9 +3,12 @@
 // AlertHandler::_from = $_GET[f]
 // AlertHandler::_status: [0=> error, 1=> success]
 // AlertHandler::_value: value of corresponding status
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/config.php";
+
 class AlertHandler
 {
-    public function __construct($__FILE__)
+    public function __construct($__FILE__, $config_handler)
     {
         // From none
         if (!isset($_GET["f"])) {
@@ -14,6 +17,7 @@ class AlertHandler
             $this->_from = intval($_GET["f"]);
         }
         $this->basename = basename($__FILE__);
+        $this->arrayLangsLong = $config_handler->arrayLangsLong;
         $this->init();
     }
 
@@ -63,6 +67,20 @@ class AlertHandler
                                     case 2:
                                         $this->alertMsg = 'The request had already been agreed with by the user.';
                                         break;
+                                    case 4:
+                                        $arrayCases = [];
+                                        foreach(array_keys($_GET) as $key){
+                                            if (substr($key, 0, 4) === 'case'){
+                                                $temp = explode('_', $_GET[$key]);
+                                                $dateTime = DateTime::createFromFormat('Y-m-d', $temp[0]);
+                                                $date = $dateTime->format('Y M j (D)');
+                                                $partName = $this->arrayPartNames[$temp[1]];
+                                                $langLong = $this->arrayLangsLong[$temp[2]];
+                                                $msg = "$date $partName の $langLong";
+                                                array_push($arrayCases, $msg);
+                                            }
+                                        }
+                                        $this->alertMsg = "Following languages are not sufficient: " . implode(', ', $arrayCases);
                                 }
                                 break;
                             case 1:
