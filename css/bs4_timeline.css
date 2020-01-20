@@ -1,13 +1,37 @@
 .bs4-timeline{
-  background: linear-gradient(120deg, #3498db, #8e44ad);
+  /* background-image: url('../data/jpg/renate-vanaga-2pV2LwPVP9A-unsplash.jpg');
+  background-size: cover;
+  background-position: center; */
+  position: relative;
+  overflow-y: scroll;
   border-radius: .5rem;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+.bs4-timeline::after {
+  content: "";
+  background-image: url('../data/jpg/renate-vanaga-2pV2LwPVP9A-unsplash.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.3;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  z-index: -1;   
+}
+
+.bs4-timeline::-webkit-scrollbar { 
+  display: none;  /* Safari and Chrome */
 }
 
 .circle {
     padding: .25rem;
     border-radius: .25rem;
     font-size: .75rem;
-    background-color: rgb(88, 218, 223);
+    background-color: rgb(88, 223, 149);
     color: #000;
     /* max-height: 50px; */
     z-index: 2;
@@ -28,7 +52,7 @@
 .how-it-works.row .col-2::after {
   content: "";
   position: absolute;
-  border-left: 3px solid rgb(88, 218, 223);
+  border-left: 3px solid rgb(88, 223, 149);
   z-index: 1;
 }
 .how-it-works.row .col-2.bottom::after {
@@ -48,10 +72,6 @@
 .how-it-works.row .col-6 .row .col-put{
   background-color: rgba(255, 35, 35, .35);
   transition: 350ms;
-}
-
-.how-it-works.row .col-6 .row .col-put .btn-group button.btn{
-  /* color: ; */
 }
 
 .how-it-works.row .col-6 .row .col-call{
@@ -84,7 +104,7 @@
   height: 40px;
 }
 .timeline hr {
-  border-top: 3px solid rgb(88, 218, 223);
+  border-top: 3px solid rgb(88, 223, 149);
   margin: 0;
   top: 17px;
   position: relative;
@@ -111,7 +131,7 @@
 }
 
 .timeline .corner {
-  border: 3px solid rgb(88, 218, 223);
+  border: 3px solid rgb(88, 223, 149);
   width: 100%;
   position: relative;
   border-radius: 15px;
@@ -133,9 +153,6 @@
 .timeline .right-bottom {
   left: 50%;
   top: calc(50% - 3px);
-}
-.how-it-works .col-6{
-    /* border: 1px solid red; */
 }
 
 .div-market-bg{
