@@ -3,6 +3,7 @@ $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/config.php";
 require "$homedir/check_session.php";
 require_once "$homedir/class/class_db_handler.php";
+require_once "$homedir/class/class_date_object.php";
 
 class RequestsHandler extends DBHandler
 {
@@ -11,6 +12,7 @@ class RequestsHandler extends DBHandler
     private $idTrans;
     private $timeProceeded;
     private $arrayRequestsInTransaction;
+    private $arrayQuery;
     public function __construct($mode, $idUser, $idTrans, $master_handler, $config_handler)
     {
         $this->mode = $mode;
@@ -18,8 +20,10 @@ class RequestsHandler extends DBHandler
         $this->idTrans = $idTrans;
         $this->dbh = $master_handler->dbh;
         $this->url = 'transactions.php';
+        $this->config_handler = $config_handler;
         $this->sleepSeconds = $config_handler->sleepSeconds;
         $this->http_host = $config_handler->http_host;
+        $this->date_objects_handler = new DateObjectsHandler($master_handler, $this->config_handler);
         $this->timeProceeded = date('Y-m-d H:i:s');
         $this->positions = ['from', 'to'];
         $this->SQLS = '';
@@ -67,11 +71,11 @@ class RequestsHandler extends DBHandler
     {
         // Select pending id_transactions surrounding the shifts
         $arrayIdShifts = [];
-        foreach($this->arrayRequestsInTransaction['2'] as $request){
+        foreach ($this->arrayRequestsInTransaction['2'] as $request) {
             array_push($arrayIdShifts, $request['id_shift']);
         }
         $sqlConditions = $this->genSqlConditions($arrayIdShifts, 'id_shift', 'OR');
-        echo $sqlConditions.'<br>';
+        echo $sqlConditions . '<br>';
         $sql = 'SELECT id_transaction FROM requests_pending WHERE `status`=2 AND ' . $sqlConditions . 'FOR UPDATE;';
         $stmt = ($this->dbh)->prepare($sql);
         $stmt->execute();
@@ -79,7 +83,7 @@ class RequestsHandler extends DBHandler
         var_dump($arrayByIdTrans);
         // Invalidate transactions
         $sqlConditions = $this->genSqlConditions(array_keys($arrayByIdTrans), 'id_transaction', 'OR');
-        echo $sqlConditions.'<br>';
+        echo $sqlConditions . '<br>';
         $this->decline($sqlConditions);
     }
 
@@ -87,8 +91,11 @@ class RequestsHandler extends DBHandler
     {
         // For every shift in invalidated transactions, check if there is any other requests surrounding it and update under_request.
         $sql = 'SELECT id_shift FROM requests_pending WHERE ' . $sqlConditions;
-        // Lock
-        $this->querySql('SELECT id_shift FROM shifts_assigned WHERE id_shift in (' . $sql . ') FOR UPDATE;');
+        // Lock. Dates will be used for checking language changes between before and after.
+        $this->sqlShifts = 'SELECT date_shift, id_shift FROM shifts_assigned WHERE id_shift in (' . $sql . ') FOR UPDATE;';
+        $stmt = $this->querySql($this->sqlShifts);
+        $this->arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->config_handler]);
+        $stmt->closeCursor();
         // Get id_shifts
         $arrayByIdShift = $this->querySql($sql)->fetchAll(PDO::FETCH_GROUP);
         var_dump($arrayByIdShift);
@@ -185,14 +192,66 @@ class RequestsHandler extends DBHandler
             echo $this->SQLS;
             $stmt = $this->querySql($this->SQLS);
             if (($stmt->errorInfo())[2] === NULL) {
-                $this->redirect(true, $this->url, ['f' => 1, 's' => 1]);
+                $this->arrayQuery = ['f' => 1, 's' => 1];
+                // $this->redirect(true, $this->url, ['f' => 1, 's' => 1]);
             } else {
                 var_dump($stmt->errorInfo());
                 exit;
             }
         } else {
             // echo "Awaiting agreements from other members.";
-            $this->redirect(true, $this->url, ['f' => 1, 's' => 0]);
+            $this->arrayQuery = ['f' => 1, 's' => 0];
+            // $this->redirect(true, $this->url, ['f' => 1, 's' => 0]);
+        }
+    }
+
+    public function checkLangsChange()
+    {
+        // Before
+        $this->date_objects_handler->setArrayDateObjects($this->arrayShiftObjectsByDate);
+        $arrayDateObjects_before = clone $this->date_objects_handler->arrayDateObjects;
+        var_dump($arrayDateObjects_before);
+        echo '<br>';
+        // After
+        $stmt = $this->querySql($this->sqlShifts);
+        $this->arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->config_handler]);
+        $stmt->closeCursor();
+        $this->date_objects_handler->setArrayDateObjects($this->arrayShiftObjectsByDate);
+        $arrNotEnough = [];
+        foreach (array_keys($this->date_objects_handler->arrayDateObjects) as $date) {
+            // For each date object (after)
+            if (!$this->date_objects_handler->arrayDateObjects[$date]->enoughLangs) {
+                echo $date .': not enough<br>';
+                // Find if this transactions contributes to lack of langs
+                foreach (array_keys($this->date_objects_handler->arrayDateObjects[$date]->arrBalancesByPart) as $part) {
+                    echo $part .'<br>';
+                    foreach (array_keys($this->date_objects_handler->arrayDateObjects[$date]->arrBalancesByPart[$part]) as $lang) {
+                        echo $lang .'<br>';
+                        if (isset($arrayDateObjects_before[$date]->arrBalancesByPart[$part][$lang])) {
+                            echo 'it was not sufficient before execution.<br>';
+                            // if it was not sufficient before execution
+                            if ($this->date_objects_handler->arrayDateObjects[$date]->arrBalancesByPart[$part][$lang] >= $arrayDateObjects_before[$date]->arrBalancesByPart[$part][$lang]) {
+                                // No Contribution
+                                echo 'But no contribution. <br>';
+                                continue;
+                            }
+                        }
+                        echo 'It has contribution. <br>';
+                        array_push($arrNotEnough, [$date, $part, $lang]);
+                    }
+                }
+            }
+        }
+        var_dump($arrNotEnough);
+        if (count($arrNotEnough)) {
+            for ($i = 0; $i < count($arrNotEnough); $i++) {
+                $this->arrayQuery["case$i"] = implode('_', $arrNotEnough[$i]);
+            }
+            var_dump($this->arrayQuery);
+            // $this->redirect(false, $this->url, $this->arrayQuery);
+        } else {
+            var_dump($this->arrayQuery);
+            // $this->redirect(true, $this->url, $this->arrayQuery);
         }
     }
 
