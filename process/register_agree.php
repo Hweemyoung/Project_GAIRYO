@@ -39,7 +39,7 @@ class RequestsHandler extends DBHandler
     {
         if (intval($this->idUser) !== intval($id_user)) {
             // echo 'Error - No permission';
-            // $this->redirect(false, $this->url, array('f' => 1, 'e' => 0));
+            $this->redirect(false, $this->url, array('f' => 1, 'e' => 0));
         }
     }
 
@@ -52,7 +52,7 @@ class RequestsHandler extends DBHandler
         if (in_array('0', array_keys($this->arrayRequestsInTransaction)) || in_array('1', array_keys($this->arrayRequestsInTransaction))) {
             // echo "Fatal Error - Some requests had already been closed:<br>";
             // var_dump($results);OK
-            // $this->redirect(false, $this->url, array('f' => 1, 'e' => 1));
+            $this->redirect(false, $this->url, array('f' => 1, 'e' => 1));
         }
         return true;
     }
@@ -152,7 +152,7 @@ class RequestsHandler extends DBHandler
         if (count($this->arrayErrors)) {
             // echo "Fatal Error - The request had already been agreed with by the user.<br>Request ID:";
             // exit;
-            // $this->redirect(false, $this->url, array('f' => 1, 'e' => 2));
+            $this->redirect(false, $this->url, array('f' => 1, 'e' => 2));
         }
     }
 
@@ -167,7 +167,7 @@ class RequestsHandler extends DBHandler
             $this->agree();
         } else {
             // echo "Error - mode NOT understood<br>mode:";
-            // $this->redirect(false, $this->url, ['f' => 1, 'e' => 3]);
+            $this->redirect(false, $this->url, ['f' => 1, 'e' => 3]);
         }
         echo $this->SQLS;
         $stmt = $this->querySql($this->SQLS);
@@ -178,7 +178,7 @@ class RequestsHandler extends DBHandler
         $stmt->closeCursor();
         if ($this->mode === 'decline') {
             // exit;
-            // $this->redirect(true, $this->url, ['f' => 1, 's' => 2]);
+            $this->redirect(true, $this->url, ['f' => 1, 's' => 2]);
         }
         $this->SQLS = '';
     }
@@ -214,7 +214,7 @@ class RequestsHandler extends DBHandler
             $stmt = $this->querySql($this->SQLS);
             if (($stmt->errorInfo())[2] === NULL) {
                 $this->arrayQuery = ['f' => 1, 's' => 1];
-                // $this->redirect(true, $this->url, ['f' => 1, 's' => 1]);
+                $this->redirect(true, $this->url, ['f' => 1, 's' => 1]);
             } else {
                 var_dump($stmt->errorInfo());
                 exit;
@@ -222,7 +222,7 @@ class RequestsHandler extends DBHandler
         } else {
             // echo "Awaiting agreements from other members.";
             $this->arrayQuery = ['f' => 1, 's' => 0];
-            // $this->redirect(true, $this->url, ['f' => 1, 's' => 0]);
+            $this->redirect(true, $this->url, ['f' => 1, 's' => 0]);
         }
     }
 
@@ -237,26 +237,28 @@ class RequestsHandler extends DBHandler
             // For each date object (after)
             foreach (array_keys($this->arrayDateObjects_after[$date]->enoughLangsByPart) as $part) {
                 if (!$this->arrayDateObjects_after[$date]->enoughLangsByPart[$part]) {
-                    // echo $date . ': not enough<br>';
-                    // echo 'part:' . $part . '<br>';
+                    echo $date . ': not enough<br>';
+                    echo 'part:' . $part . '<br>';
                     // Find if this transactions contributes to lack of langs
-                    foreach ($this->arrayDateObjects_after[$date]->arrBalancesByPart[$part] as $arrBalances) {
-                        foreach (array_keys($this->arrayDateObjects_after[$date]->arrBalancesByPart[$part]) as $lang) {
-                            echo 'lang:' . $lang . '<br>';
-                            if (isset($this->arrayDateObjects_before->$date->arrBalancesByPart[$part][$lang])) {
-                                // if it was not sufficient before execution
-                                // echo 'it was not sufficient before execution.<br>';
-                                echo 'before:' . $this->arrayDateObjects_before->$date->arrBalancesByPart[$part][$lang] . '<br>';
-                                echo 'after:' . $this->arrayDateObjects_after[$date]->arrBalancesByPart[$part][$lang] . '<br>';
-                                if ($this->arrayDateObjects_after[$date]->arrBalancesByPart[$part][$lang] >= $this->arrayDateObjects_before->$date->arrBalancesByPart[$part][$lang]) {
-                                    // No Contribution
-                                    // echo 'But no contribution. <br>';
-                                    continue;
-                                }
+                    // foreach ($this->arrayDateObjects_after[$date]->arrBalancesByPart[$part] as $arrBalances) {
+                    foreach (array_keys($this->arrayDateObjects_after[$date]->arrBalancesByPart[$part]) as $lang) {
+                        // echo 'lang:' . $lang . '<br>';
+                        // var_dump($this->arrayDateObjects_before[$date]->arrBalancesByPart[$part]);
+                        // echo '<br>';
+                        if (isset($this->arrayDateObjects_before[$date]->arrBalancesByPart[$part][$lang])) {
+                            // if it was not sufficient before execution
+                            // echo 'it was not sufficient before execution.<br>';
+                            echo 'before:' . $this->arrayDateObjects_before[$date]->arrBalancesByPart[$part][$lang] . '<br>';
+                            echo 'after:' . $this->arrayDateObjects_after[$date]->arrBalancesByPart[$part][$lang] . '<br>';
+                            if ($this->arrayDateObjects_after[$date]->arrBalancesByPart[$part][$lang] >= $this->arrayDateObjects_before[$date]->arrBalancesByPart[$part][$lang]) {
+                                // No Contribution
+                                // echo 'But no contribution. <br>';
+                                continue;
                             }
-                            // echo 'It has contribution. <br>';
-                            array_push($arrNotEnough, [$date, $part, $lang]);
                         }
+                        // echo 'It has contribution. <br>';
+                        array_push($arrNotEnough, [$date, $part, $lang]);
+                        // }
                     }
                 }
             }
@@ -268,10 +270,10 @@ class RequestsHandler extends DBHandler
             for ($i = 0; $i < count($arrNotEnough); $i++) {
                 $this->arrayQuery["case$i"] = implode('_', $arrNotEnough[$i]);
             }
-            var_dump($this->arrayQuery);
+            // var_dump($this->arrayQuery);
             $this->redirect(false, $this->url, $this->arrayQuery);
         } else {
-            var_dump($this->arrayQuery);
+            // var_dump($this->arrayQuery);
             $this->redirect(true, $this->url, $this->arrayQuery);
         }
     }

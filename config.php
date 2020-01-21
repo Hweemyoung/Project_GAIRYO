@@ -45,6 +45,9 @@ class ConfigHandler
     {
         $http_host = $_SERVER['HTTP_HOST'] . '/' . 'gairyo_temp';
         $this->http_host = "http://$http_host";
+        foreach($this->arrayLangsByPart as $arrLangs){
+            arsort($arrLangs);
+        }
         $this->setArrayShiftsByPart();
         $this->setArrayShiftTimes();
     }
