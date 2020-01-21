@@ -34,6 +34,10 @@ class ConfigHandler
     public $dayStart = 'Mon';
     public $dayEnd = 'Sun';
 
+    // ShiftsDistributor
+    public $Ym = '202002';
+    public $arr_mshifts = [];
+
     public $arrayShiftsByPart;
     public $arrayShiftTimes;
 
@@ -58,6 +62,19 @@ class ConfigHandler
         $shiftC = array('time-start' => '12:30', 'time-end' => '18:00', 'btn-color' => 'btn-dark text-light');
         $shiftD = array('time-start' => '13:30', 'time-end' => '18:00', 'btn-color' => 'btn-sky');
         $this->arrayShiftTimes = array('A' => $shiftA, 'B' => $shiftB, 'H' => $shiftH, 'C' => $shiftC, 'D' => $shiftD);
+    }
+
+    public function set_arr_mshifts(){
+        foreach(range(0, 31) as $j){
+            foreach($this->arrayShiftsByPart as $arrShifts){
+                foreach($arrShifts as $shift){
+                    array_push($this->arr_mshifts, $j . $shift);
+                }
+                // Don't forget 'O'
+                array_push($this->arr_mshifts, $j . 'O');
+            }
+        }
+        return $this;
     }
 }
 

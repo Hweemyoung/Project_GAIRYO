@@ -92,7 +92,7 @@ class RequestsHandler extends DBHandler
     private function saveDateObjects()
     {
         $stmt = $this->querySql($this->sqlForNumLangs);
-        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->config_handler]);
+        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->config_handler->arrayShiftsByPart]);
         $stmt->closeCursor();
         $this->date_objects_handler->setArrayDateObjects($arrayShiftObjectsByDate);
         // var_dump($this->date_objects_handler->arrayDateObjects);
@@ -110,7 +110,7 @@ class RequestsHandler extends DBHandler
 
         // Lock. Dates will be used for checking language changes between before and after.
         $stmt = $this->querySql('SELECT date_shift FROM shifts_assigned WHERE id_shift in (' . $sql . ') FOR UPDATE;');
-        $arrayByDateShift = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->config_handler]);
+        $arrayByDateShift = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->config_handler->arrayShiftsByPart]);
         $stmt->closeCursor();
         // Save Date Objects Before execution.
         $sqlConditions = $this->genSqlConditions(array_keys($arrayByDateShift), 'date_shift', 'OR');

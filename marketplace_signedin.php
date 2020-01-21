@@ -9,6 +9,7 @@ class MarketItemHandler extends DBHandler
     {
         $this->dbh = $master_handler->dbh;
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
+        $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
         $this->date_objects_handler = new DateObjectsHandler($master_handler, $config_handler);
         $this->load_market_items();
     }
@@ -24,7 +25,7 @@ class MarketItemHandler extends DBHandler
         $stmt->closeCursor();
 
         $stmt = $this->querySql($sql);
-        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject');
+        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart]);
         $stmt->closeCursor();
         foreach ($arrayShiftObjectsByDate as $arrayShiftObjects) {
             foreach ($arrayShiftObjects as $shiftObject) {

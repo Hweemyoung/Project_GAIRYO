@@ -131,7 +131,7 @@ $sql = 'SELECT date_shift, id_user, shift FROM shifts_assigned WHERE date_shift 
 $stmt = $dbh->prepare($sql);
 $stmt->execute(array($dateStart, $dateEnd));
 // var_dump($stmt->errorInfo());OK
-// $arrayShiftsObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$arrayMemberObjectsByIdUser]); OK
+// $arrayShiftsObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, , [$arrayMemberObjectsByIdUser]); OK
 $arrayShiftsByDate = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
 // var_dump($stmt->errorInfo());
 // var_dump($arrayShiftsByDate);OK
