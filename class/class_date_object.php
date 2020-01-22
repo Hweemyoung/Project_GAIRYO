@@ -19,11 +19,11 @@ class DateObjectsHandler
 
     public function setArrayDateObjects($arrayShiftObjectsByDate)
     {
-        foreach (array_keys($arrayShiftObjectsByDate) as $date) {
-            foreach ($arrayShiftObjectsByDate[$date] as $shiftObject) {
+        foreach ($arrayShiftObjectsByDate as $date => $arrShiftObjects) {
+            foreach ($arrShiftObjects as $shiftObject) {
                 $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
             }
-            $this->arrayDateObjects[$date] = new DateObject($date, $arrayShiftObjectsByDate[$date], $this->arrayLangsByPart);
+            $this->arrayDateObjects[$date] = new DateObject($date, $arrShiftObjects, $this->arrayLangsByPart);
         }
     }
 
@@ -51,11 +51,11 @@ class DateObjectsHandler
         // var_dump($stmt->errorInfo());
         $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart]);
         $stmt->closeCursor();
-        foreach (array_keys($arrayShiftObjectsByDate) as $date) {
-            foreach ($arrayShiftObjectsByDate[$date] as $shiftObject) {
+        foreach ($arrayShiftObjectsByDate as $date => $arrShiftObjects) {
+            foreach ($arrShiftObjects as $shiftObject) {
                 $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
             }
-            $this->arrayDateObjects[$date] = new DateObject($date, $arrayShiftObjectsByDate[$date], $this->arrayLangsByPart);
+            $this->arrayDateObjects[$date] = new DateObject($date, $arrShiftObjects, $this->arrayLangsByPart);
         }
     }
 }

@@ -37,6 +37,7 @@ class ConfigHandler
     // ShiftsDistributor
     public $Ym = '202002';
     public $arr_mshifts = [];
+    public $arrScoreItems = ['numShiftAppObjects' => 'min', 'numAppNotEnough' => 'max', 'langScore' => 'max'];
 
     public $arrayShiftsByPart;
     public $arrayShiftTimes;

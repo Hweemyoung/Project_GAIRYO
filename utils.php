@@ -10,6 +10,10 @@ function customVarDump(string $varName)
     var_dump($$varName) . PHP_EOL;
 }
 
+function randFloat(){
+    return mt_rand(0, mt_getrandmax() - 1) / mt_getrandmax();
+}
+
 function groupArrayByKey($array, $key)
 {
     $arrayGrouped = array();

@@ -69,9 +69,9 @@ class AlertHandler
                                         break;
                                     case 4:
                                         $arrayCases = [];
-                                        foreach(array_keys($_GET) as $key){
-                                            if (substr($key, 0, 4) === 'case'){
-                                                $temp = explode('_', $_GET[$key]);
+                                        foreach ($_GET as $key => $value) {
+                                            if (substr($key, 0, 4) === 'case') {
+                                                $temp = explode('_', $value);
                                                 $dateTime = DateTime::createFromFormat('Y-m-d', $temp[0]);
                                                 $date = $dateTime->format('Y M j (D)');
                                                 $partName = $this->arrayPartNames[$temp[1]];

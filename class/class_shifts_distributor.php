@@ -3,6 +3,8 @@ $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/class/class_db_handler.php";
 require_once "$homedir/class/class_date_object.php";
 require_once "$homedir/config.php";
+require_once "$homedir/utils.php";
+require_once "$homedir/utils.php";
 
 class ShiftsDistributor extends DBHandler
 {
@@ -115,12 +117,12 @@ class DateShiftsHandler extends DateObject
         $this->arrayShiftObjectsByShift = [];
         $this->enoughLangsByPart = [];
         $this->arrBalancesByPart = [];
+        $this->arrScoreItems = $config_handler->arrScoreItems;
     }
-
-
 
     public function pushArrShiftAppObjectsByShift($shiftObject)
     {
+        // This method is called explicitly in ShiftsDistributor instance.
         if (!isset($this->arrShiftAppObjectsByShift[$shiftObject->shift])) {
             $this->arrShiftAppObjectsByShift[$shiftObject->shift] = new ShiftStatus($shiftObject->shift, $this->config_handler);
         }
@@ -130,26 +132,74 @@ class DateShiftsHandler extends DateObject
     public function init()
     {
         // Call after setting arrShiftAppObjectsByShift
+        // Updates arrNumLangsAppByPart, arrScoresByIdUser
         $this->setArrNumLangsAppByPart($this->arrShiftAppObjectsByShift);
+        $this->setArrScoresByIdUser();
     }
 
-    public function updateArrScoresByIdUser()
+    public function deployShift(){
+        $id_user_seleted = $this->getMemberToDeploy();
+        $this->deployShiftOfMember($id_user_seleted);
+    }
+
+    private function deployShiftOfMember($id_user_seleted){
+
+    }
+
+    public function getMemberToDeploy()
+    {
+        // Call after setting arrScoresByIdUser
+        foreach ($this->arrScoreItems as $score_item_name => $minORmax){
+            if(count($this->arrScoreItems) > 1){
+                // Every step, $this->arrScoreItems is shrinked.
+                $this->genAndFilterArrScoresByIdUser($score_item_name, $minORmax);
+            } else {
+                break;
+            }
+        }
+        $id_user_seleted = array_keys($this->arrScoresByIdUser)[mt_rand(0, count($this->arrScoreItems) - 1)];
+        return $id_user_seleted;
+    }
+
+    private function genAndFilterArrScoresByIdUser(string $score_item_name, string $minORmax)
+    {
+        $arrItemValues = [];
+        foreach ($this->arrScoresByIdUser as $id_user => $arrScores) {
+            $arrItemValues[$id_user] = $arrScores[$score_item_name];
+        }
+        if ($minORmax === 'max') {
+            $$minORmax = max($arrItemValues);
+        } elseif ($minORmax === 'min') {
+            $$minORmax = min($arrItemValues);
+        } else {
+            echo 'Argument not understood.';
+            exit;
+        }
+        $arrItemValues = array_filter($arrItemValues, function ($var, $minORmax) {
+            return $var === $minORmax;
+        });
+        $newArrScoresByIdUser = [];
+        foreach(array_keys($arrItemValues) as $id_user){
+            $newArrScoresByIdUser[$id_user] = $this->arrScoresByIdUser[$id_user];
+        }
+        $this->arrScoresByIdUser = $newArrScoresByIdUser;
+    }
+
+    public function setArrScoresByIdUser()
     {
         foreach (array_keys($this->arrShiftAppObjectsByIdUser) as $id_user) {
-            $this->updateArrScores($id_user);
+            $this->setArrScores($id_user);
         }
     }
 
-    public function updateArrScores($id_user)
+    public function setArrScores($id_user)
     {
         $this->arrScoresByIdUser[$id_user]['numShiftAppObjects'] = count($this->arrShiftAppObjectsByIdUser[$id_user]);
-        $this->arrScoresByIdUser[$id_user]['numNotEnough'];
-        $this->arrScoresByIdUser[$id_user]['numFit'];
-        $this->arrScoresByIdUser[$id_user]['numEnough'];
-        $this->arrScoresByIdUser[$id_user]['langScore'] = $this->calcLangScore($id_user);
+        $this->arrScoresByIdUser[$id_user]['numAppNotEnough'];
+        $this->arrScoresByIdUser[$id_user]['langScore'] = $this->getLangScore($id_user);
     }
 
-    private function calcLangScore($id_user)
+    private function getLangScore($id_user)
     {
         $arr = [];
         foreach ($this->arrShiftAppObjectsByIdUser[$id_user] as $shiftObject) {
