@@ -44,7 +44,7 @@ class DBHandler
     public function executeSql($sql)
     {
         $stmt = $this->dbh->exec($sql);
-        return $this->restartIfErLock($stmt);
+        return $stmt;
     }
 
     public function restartIfErLock($stmt)

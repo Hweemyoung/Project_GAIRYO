@@ -77,6 +77,7 @@ class DateObject
         $this->enoughLangsByPart = [];
         $this->arrBalancesByPart = [];
         $this->setArrayShiftObjectsByShift($arrayShiftObjectsOfDate);
+        // var_dump($arrayShiftObjectsOfDate);
         $this->setArrayNumLangsByPart($arrayShiftObjectsOfDate);
         $this->setEnoughLangsByPart();
     }

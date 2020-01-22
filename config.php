@@ -25,6 +25,7 @@ class ConfigHandler
     public $shiftsPart0 = ['A', 'B', 'H'];
     public $shiftsPart1 = ['C', 'D'];
     public $arrayPartNames = ['午前', '午後'];
+    public $numNeededByShift = ['A' => 1, 'B' => 4, 'H' => 2, 'C' => 2, 'D' => 4];
 
     // ConfigHandler
     public $sleepSeconds = 2;
@@ -35,7 +36,7 @@ class ConfigHandler
     public $dayEnd = 'Sun';
 
     // ShiftsDistributor
-    public $Ym = '202002';
+    public $m = '202002';
     public $arr_mshifts = [];
     public $arrScoreItems = ['numShiftAppObjects' => 'min', 'numAppNotEnough' => 'max', 'langScore' => 'max'];
 
@@ -46,7 +47,7 @@ class ConfigHandler
     {
         $http_host = $_SERVER['HTTP_HOST'] . '/' . 'gairyo_temp';
         $this->http_host = "http://$http_host";
-        foreach($this->arrayLangsByPart as $arrLangs){
+        foreach ($this->arrayLangsByPart as $arrLangs) {
             arsort($arrLangs);
         }
         $this->setArrayShiftsByPart();
@@ -68,10 +69,11 @@ class ConfigHandler
         $this->arrayShiftTimes = array('A' => $shiftA, 'B' => $shiftB, 'H' => $shiftH, 'C' => $shiftC, 'D' => $shiftD);
     }
 
-    public function set_arr_mshifts(){
-        foreach(range(0, 31) as $j){
-            foreach($this->arrayShiftsByPart as $arrShifts){
-                foreach($arrShifts as $shift){
+    public function set_arr_mshifts()
+    {
+        foreach (range(1, 31) as $j) {
+            foreach ($this->arrayShiftsByPart as $arrShifts) {
+                foreach ($arrShifts as $shift) {
                     array_push($this->arr_mshifts, $j . $shift);
                 }
                 // Don't forget 'O'
