@@ -11,6 +11,7 @@ class DateObjectsHandler
         $this->dbh = $master_handler->dbh;
         $this->arrayDateObjects = [];
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
+        $this->config_handler = $config_handler;
         $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
         $this->arrayShiftTimes = $config_handler->arrayShiftTimes;
         $this->arrayLangsByPart = $config_handler->arrayLangsByPart;
@@ -23,7 +24,7 @@ class DateObjectsHandler
             foreach ($arrShiftObjects as $shiftObject) {
                 $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
             }
-            $this->arrayDateObjects[$date] = new DateObject($date, $arrShiftObjects, $this->arrayLangsByPart);
+            $this->arrayDateObjects[$date] = new DateObject($date, $arrShiftObjects, $this->config_handler);
         }
     }
 
@@ -55,7 +56,7 @@ class DateObjectsHandler
             foreach ($arrShiftObjects as $shiftObject) {
                 $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
             }
-            $this->arrayDateObjects[$date] = new DateObject($date, $arrShiftObjects, $this->arrayLangsByPart);
+            $this->arrayDateObjects[$date] = new DateObject($date, $arrShiftObjects, $this->config_handler);
         }
     }
 }
@@ -68,10 +69,11 @@ class DateObject
     public $enoughLangsByPart;
     public $arrBalancesByPart;
     public $arrLangsNotEnoughByPart;
-    function __construct($date, $arrayShiftObjectsOfDate, $arrayLangsByPart)
+    function __construct($date, $arrayShiftObjectsOfDate, $config_handler)
     {
         $this->date = $date;
-        $this->arrayLangsByPart = $arrayLangsByPart;
+        $this->config_handler = $config_handler;
+        $this->arrayLangsByPart = $config_handler->arrayLangsByPart;
         $this->arrayNumLangsByPart = [];
         $this->arrayShiftObjectsByShift = [];
         $this->enoughLangsByPart = [];
@@ -87,7 +89,7 @@ class DateObject
         if (!isset($this->arrayNumLangsByPart[$shiftObject->shiftPart])) {
             $this->arrayNumLangsByPart[$shiftObject->shiftPart] = [];
         }
-        foreach (array_keys($this->arrayLangsByPart[0]) as $lang) {
+        foreach ($this->config_handler->arrayLangsShort as $lang) {
             if (!isset($this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang])) {
                 $this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang] = 0;
             }
