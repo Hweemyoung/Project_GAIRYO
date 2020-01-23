@@ -25,7 +25,7 @@ class ConfigHandler
     public $shiftsPart0 = ['A', 'B', 'H'];
     public $shiftsPart1 = ['C', 'D'];
     public $arrayPartNames = ['午前', '午後'];
-    public $numNeededByShift = ['A' => 1, 'B' => 4, 'H' => 2, 'C' => 2, 'D' => 4];
+    public $numNeededByShift = ['A' => 1, 'B' => 8, 'H' => 5, 'C' => 2, 'D' => 4];
 
     // ConfigHandler
     public $sleepSeconds = 2;
