@@ -1,12 +1,26 @@
 class MarketItemHandler {
     constructor(_objectDateObjects) {
         this._objectDateObjects = _objectDateObjects;
-        this._objectTimelineSections = {};
+        this.divBs4Timeline = $('.bs4-timeline');
+        this._arrTimelineSections = new array;
+        this.genTimelineSections();
+        this.appendAllSections();
     }
 
     genTimelineSections() {
         for (var _date in this._objectDateObjects) {
-            this._objectTimelineSections[_date] = new TimelineSection(this._objectDateObjects[_date]);
+            if (this._arrTimelineSections.length % 2) {
+                _position = 'left';
+            } else {
+                _position = 'right';
+            }
+            this._arrTimelineSections.push(new TimelineSection(this._objectDateObjects[_date], _position));
+        }
+    }
+
+    appendAllSections() {
+        for (var i in this._arrTimelineSections) {
+            this._arrTimelineSections[i].divRow.appendTo(this.divBs4Timeline);
         }
     }
 }
@@ -22,12 +36,15 @@ class TimelineSection {
         this._position = _position;
         this._dateObject = _dateObject;
         this._timelinePath = new TimelinePath(_position);
+        this.setTimelineSection(_dateObject);
     }
 
     setTimelineSection(_dateObject) {
+        var _date = new Date(_dateObject.date);
         this._$ = $('<div class="row align-items-center how-it-works d-flex"></div>');
         // Col Date
-        this.divColDate.clone().append(this.divCircle.append($('<p></p>').text(_dateObject.date))).appendTo(this._$);
+        this.divColDate.append(this.divCircle.append($('<p></p>').text(`<p>${_date.getMonth()} ${_date.getDate()}<br>${_date.getDay()}<p>`))).appendTo(this._$);
+        this.divRow.append(this.divColDate);
         // Col Shifts
         // Shift Put
         var _$btnGroup = $('<div class="btn-group"></div>');
@@ -35,7 +52,9 @@ class TimelineSection {
             $(`<button class="btn" type="button">${_shift}</button>`).appendTo(_$btnGroup);
         }
         this.divColShifts.append($('<div class="row"></div>').append($('<div class="col-12 col-put">').append(_$btnGroup)));
-        // Shift Call
+        // Shift Call: Forget call at this point :)
+        // Build up _$
+        this.divRow.append(this.ColShifts);
     }
 }
 

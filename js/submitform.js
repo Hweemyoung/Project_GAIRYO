@@ -32,7 +32,7 @@ months[9] = "Oct";
 months[10] = "Nov";
 months[11] = "Dec";
 
-const monthShift = months[submitMonth - 1] + ' ' + String(submitYear); // String('Dec 2020')
+const monthShift = _constants.months[submitMonth - 1] + ' ' + String(submitYear); // String('Dec 2020')
 var d = new Date('15 ' + monthShift);
 
 // Clone .form-check-inline
@@ -51,7 +51,7 @@ var tBodyRight = $('#div-form form>.row .col-sm-6:last-child table tbody');
 tBodyRight.closest('table').siblings('h3').html(monthShift);
 var lastMonth = new Date(d);
 lastMonth.setMonth(lastMonth.getMonth() - 1);
-tBodyLeft.closest('table').siblings('h3').html(months[lastMonth.getMonth()] + ' ' + lastMonth.getFullYear());
+tBodyLeft.closest('table').siblings('h3').html(_constants.months[lastMonth.getMonth()] + ' ' + lastMonth.getFullYear());
 
 // Create rows within tbody
 while (true) {
@@ -61,7 +61,7 @@ while (true) {
     var date = d.getDate()
     tds[0].innerHTML = date;
     // Second td: fill with day
-    tds[1].innerHTML = weekdays[d.getDay()];
+    tds[1].innerHTML = _constants.weekdays[d.getDay()];
     if (d.getDay() === 0) {
         tds.slice(0, 2).addClass('text-danger');
     } else if (d.getDay() === 6) {
@@ -156,10 +156,10 @@ $('#btn-confirm').click(function (event) {
             // For each td:first-child
             if (parseInt($(this).text()) < 16) {
                 $(this).prepend(document.createTextNode(' '));
-                $(this).prepend(months[submitMonth - 1]);
+                $(this).prepend(_constants.months[submitMonth - 1]);
             } else {
                 $(this).prepend(document.createTextNode(' '));
-                $(this).prepend(months[lastMonth.getMonth()] + ' ');
+                $(this).prepend(_constants.months[lastMonth.getMonth()] + ' ');
             }
         })
         $(this).find('td:last-child').each(function () {
