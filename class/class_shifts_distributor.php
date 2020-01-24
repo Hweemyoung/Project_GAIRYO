@@ -38,6 +38,8 @@ class ShiftsDistributor extends DBHandler
         $this->executeSql('START TRANSACTION;');
         $this->loadApplications();
         $this->setArrDateShiftsHandlerByDate();
+        // $this->distributeAllShifts();
+        // $this->executeSql('COMMIT;');
     }
 
     private function loadApplications()
@@ -56,7 +58,18 @@ class ShiftsDistributor extends DBHandler
     {
         $this->arrDateShiftsHandlerByDate = [];
         $reflectionShiftObject = new ReflectionClass('ShiftObject');
+        $dateTime = DateTime::createFromFormat('Ym', $this->m); // '2020-03-01'
         foreach (range(1, 31) as $date) {
+            if($date >15){
+                $dateTime = $dateTime->modify('-1 days'); // '2020-02-28';
+                if ($date > 28) {
+                    // Check if $date could be valid DateTime
+                    if (!checkdate($dateTime->format('n'), $date, $dateTime->format('Y'))) { // If like '2020-02-30'
+                        break;
+                    }
+                }
+            }
+            $dateTime->setDate($dateTime->format('Y'), $dateTime->format('n'), $date);
             $this->arrDateShiftsHandlerByDate[$date] = new DateShiftsHandler($date, $this->master_handler, $this->config_handler);
             $appliedForDate = false;
             foreach (['O', 'A', 'B', 'H', 'C', 'D'] as $shift) {
@@ -69,20 +82,20 @@ class ShiftsDistributor extends DBHandler
                             echo "$id_user $date Now O! <br>";
                             foreach ($this->arrayShiftsByPart as $arrShifts) {
                                 foreach ($arrShifts as $shift) {
-                                    $shiftObject = $this->genShiftAppObject($reflectionShiftObject, $id_user, $date, $shift);
+                                    // Create date_shift
+
+                                    $shiftObject = $this->genShiftAppObject($reflectionShiftObject, $id_user, $dateTime, $shift);
                                     $this->pushShiftAppObject($shiftObject);
                                 }
                             }
                         } else {
                             // If person applied for this
-                            $shiftObject = $this->genShiftAppObject($reflectionShiftObject, $id_user, $date, $shift);
+                            $shiftObject = $this->genShiftAppObject($reflectionShiftObject, $id_user, $dateTime, $shift);
                             $this->pushShiftAppObject($shiftObject);
                         }
                         $appliedForDate = true;
                     }
                 }
-                // 2. Initialize properties
-                // $this->arrDateShiftsHandlerByDate[$date]->init();
             }
             $this->updateNumDaysApplied($id_user, $appliedForDate);
             // Update 
@@ -90,8 +103,7 @@ class ShiftsDistributor extends DBHandler
         // echo 'keys of arrShiftStatusByShift<br>';
         // var_dump(array_keys($this->arrDateShiftsHandlerByDate[16]->arrShiftStatusByShift));
         // echo '<br>';
-        $this->arrDateShiftsHandlerByDate[16]->deployShift();
-        $this->arrDateShiftsHandlerByDate[16]->deployShift();
+        $this->arrDateShiftsHandlerByDate[16]->deployAllShifts();
         // var_dump($this->arrDateShiftsHandlerByDate[16]->arrNumLangsAppByPart);
         // echo '<br>';
         // var_dump($this->arrDateShiftsHandlerByDate[16]->arrScoresByIdUser);
@@ -115,11 +127,12 @@ class ShiftsDistributor extends DBHandler
         }
     }
 
-    private function genShiftAppObject($reflectionShiftObject, $id_user, $date, $shift)
+    private function genShiftAppObject($reflectionShiftObject, $id_user, $dateTime, $shift)
     {
         $shiftObject = $reflectionShiftObject->newInstanceWithoutConstructor();
         $shiftObject->id_user = $id_user;
-        $shiftObject->date_shift = $date;
+        $shiftObject->date = $dateTime->format('n'); // int(23)
+        $shiftObject->date_shift = $dateTime->format('Y-m-d'); // '2020-02-23'
         $shiftObject->shift = $shift;
         $shiftObject->__construct($this->arrayShiftsByPart);
         $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
@@ -131,25 +144,20 @@ class ShiftsDistributor extends DBHandler
         // To MemberObject->arrShiftAppObjects
         $shiftObject->memberObject->pushShiftAppObjects($shiftObject);
         // To DateShiftsHandler->arrShiftAppObjectsByIdUser
-        $this->arrDateShiftsHandlerByDate[$shiftObject->date_shift]->pushShiftAppObject($shiftObject);
+        $this->arrDateShiftsHandlerByDate[$shiftObject->date]->pushShiftAppObject($shiftObject);
         // To ShiftStatus->arrShiftAppObjectsByIdUser
-        $this->arrDateShiftsHandlerByDate[$shiftObject->date_shift]->pushShiftAppObjectToShiftStatus($shiftObject);
+        $this->arrDateShiftsHandlerByDate[$shiftObject->date]->pushShiftAppObjectToShiftStatus($shiftObject);
     }
 
-    private function chooseMemberToDistribute()
+    private function distributeAllShifts()
     {
-    }
-
-    private function distributeShift()
-    {
-    }
-
-    private function distributeShiftsOfDate()
-    {
-        // Choose member
-        $this->chooseMemberToDistribute();
-        // Distribute date
-        $this->distributeShift();
+        // Shuffle range of date
+        foreach (shuffle(range(1, 31)) as $date) {
+            // Deploy all shifts
+            $this->arrDateShiftsHandlerByDate[$date]->deployAllShifts();
+            // Assign all shifts
+            $this->arrDateShiftsHandlerByDate[$date]->assignAllShifts($this);
+        }
     }
 }
 
@@ -177,7 +185,7 @@ class DateShiftsHandler extends DateObject
             $this->arrShiftAppObjectsByIdUser[$shiftObject->memberObject->id_user] = [];
         }
         array_push($this->arrShiftAppObjectsByIdUser[$shiftObject->memberObject->id_user], $shiftObject);
-        // echo "Pushing shiftAppObject to DateShiftsHandler... $shiftObject->date_shift $shiftObject->shift<br>";
+        // echo "Pushing shiftAppObject to DateShiftsHandler... $shiftObject->date $shiftObject->shift<br>";
         // echo 'Now id_user ' . $shiftObject->memberObject->id_user . ' has ' . count($shiftObject->memberObject->arrShiftAppObjects) . ' shiftAppObjects.<br>';
         // var_dump($shiftObject->memberObjects->arrShiftAppObjects);
         // echo count($shiftObject->memberObject->arrShiftAppObjects);
@@ -196,7 +204,16 @@ class DateShiftsHandler extends DateObject
         $this->arrShiftStatusByShift[$shiftObject->shift]->updateProps();
     }
 
-    public function deployShift()
+    public function deployAllShifts()
+    {
+        while (count($this->arrShiftAppObjectsByIdUser)) {
+            $this->deployShift();
+        }
+    }
+
+
+
+    private function deployShift()
     {
         // Calc scores
         $this->setArrScoresByIdUser();
@@ -230,6 +247,25 @@ class DateShiftsHandler extends DateObject
 
             // Update props for ShiftStatus
             $this->arrShiftStatusByShift[$shiftObjectDeployed->shift]->updateProps();
+        }
+    }
+
+    public function assignAllShifts(ShiftsDistributor $shifts_distributor)
+    {
+        if (count($this->arrayShiftObjectsByShift)) {
+            $arrValues = [];
+            foreach ($this->arrayShiftObjectsByShift as $shift => $arrShiftObjects) {
+                foreach ($arrShiftObjects as $shiftObject) {
+                    array_push($arrValues, "($shiftObject->id_user, '$shiftObject->date_shift', '$shiftObject->shift')");
+                }
+            }
+            $SQLS = "INSERT INTO shifts_assigned (id_user, date_shift, shift) VALUES " . implode(', ', $arrValues) . ';';
+            echo "SQLS = $SQLS<br>";
+            // $shifts_distributor->executeSql($SQLS);
+            $stmt = $shifts_distributor->querySql($SQLS);
+            echo "Now assigning all shifts of $this->date <br>";
+            var_dump($stmt->errorInfo());
+            echo '<br>';
         }
     }
 
@@ -552,7 +588,7 @@ class DateShiftsHandler extends DateObject
 
     public function pushArrNumLangsAppByPart($shiftObject)
     {
-        // echo $shiftObject->date_shift . '<br>';
+        // echo $shiftObject->date . '<br>';
         if (!isset($this->arrNumLangsAppByPart[$shiftObject->shiftPart])) {
             $this->arrNumLangsAppByPart[$shiftObject->shiftPart] = [];
         }
@@ -573,7 +609,7 @@ class DateShiftsHandler extends DateObject
             $this->arrNumLangsAppByPart = [];
             // var_dump($this->arrShiftStatusByShift);
             foreach ($this->arrShiftStatusByShift as $shiftStatus) {
-                // echo $shiftObject->date_shift . '<br>';
+                // echo $shiftObject->date . '<br>';
                 // echo '$arrShiftObjects = ';
                 // var_dump($arrShiftObjects);
                 // echo '<br>';
