@@ -1,7 +1,7 @@
 <?php
 $homedir = '/var/www/html/gairyo_temp';
 require "$homedir/check_session.php";
-require "$homedir/class/class_date_object.php";
+require_once "$homedir/class/class_date_object.php";
 
 ?>
 <!DOCTYPE html>
@@ -12,7 +12,7 @@ require "$homedir/class/class_date_object.php";
     require './common_head.php';
     ?>
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?=$config_handler->http_host?>/css/bs4-timeline.css">
+    <link rel="stylesheet" href="<?=$config_handler->http_host?>/css/bs4_timeline.css">
 </head>
 
 <body>
