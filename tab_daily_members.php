@@ -22,6 +22,7 @@ class DailyMembersHandler extends DateObjectsHandler
     {
         $this->id_user = $master_handler->id_user;
         $this->dbh = $master_handler->dbh;
+        $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
         $this->config_handler = $config_handler;
         $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
         $this->YLowerBound = $config_handler->YLowerBound;
@@ -52,7 +53,7 @@ class DailyMembersHandler extends DateObjectsHandler
         $stmt = $this->dbh->prepare($sql);
         $stmt->execute(array($this->dateStart, $this->dateEnd));
         // var_dump($stmt->errorInfo());
-        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart]);
+        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
         $this->setArrayDateObjects($arrayShiftObjectsByDate);
     }
 

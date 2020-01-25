@@ -6,7 +6,7 @@ require_once "$homedir/class/class_date_object.php";
 $transactionform_handler = new DateObjectsHandler($master_handler, $config_handler);
 $sql = "SELECT date_shift, id_user, shift FROM shifts_assigned WHERE done=0 ORDER BY date_shift ASC";
 $stmt = $master_handler->dbh->query($sql);
-$arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$config_handler->arrayShiftsByPart]);
+$arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$config_handler->arrayShiftsByPart, $master_handler->arrayMemberObjectsByIdUser]);
 $stmt->closeCursor();
 $transactionform_handler->setArrayDateObjects($arrayShiftObjectsByDate);
 // var_dump($transactionform_handler->arrayDateObjects);

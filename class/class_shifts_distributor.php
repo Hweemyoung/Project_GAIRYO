@@ -22,7 +22,7 @@ class ShiftsDistributor extends DBHandler
 
     private function init()
     {
-        $this->arrDateShiftsHandlerByDate = [];
+        $this->arrDateShiftsDeployerByDate = [];
         $this->arrDateRange = [];
         $this->addPropsToMemberObjects(); // memberObject->numDaysApplied = 0; memberObject->numDaysDeployed = 0; memberObject->arrShiftAppObjects = [];
     }
@@ -57,7 +57,7 @@ class ShiftsDistributor extends DBHandler
 
     private function setArrDateShiftsHandlerByDate()
     {
-        $this->arrDateShiftsHandlerByDate = [];
+        $this->arrDateShiftsDeployerByDate = [];
         $reflectionShiftObject = new ReflectionClass('ShiftObject');
         // echo "Current DateTime<br>";
         // var_dump($dateTime->format('Y-m-d'));
@@ -82,9 +82,9 @@ class ShiftsDistributor extends DBHandler
             echo "Modified DateTime<br>";
             var_dump($dateTime->format('Y-m-d'));
             echo '<br>';
-            $this->arrDateShiftsHandlerByDate[$date] = new DateShiftsHandler($date, $this->master_handler, $this->config_handler);
-            // echo "$date 's DateShiftsHandler: <br>";
-            // var_dump($this->arrDateShiftsHandlerByDate[$date]);
+            $this->arrDateShiftsDeployerByDate[$date] = new DateShiftsDeployer($date, $this->master_handler, $this->config_handler);
+            // echo "$date 's DateShiftsDeployer: <br>";
+            // var_dump($this->arrDateShiftsDeployerByDate[$date]);
             // echo '<br>';
             $appliedForDate = false;
             foreach (['O', 'A', 'B', 'H', 'C', 'D'] as $shift) {
@@ -117,25 +117,25 @@ class ShiftsDistributor extends DBHandler
             // Update 
         }
         // echo 'keys of arrShiftStatusByShift<br>';
-        // var_dump(array_keys($this->arrDateShiftsHandlerByDate[16]->arrShiftStatusByShift));
+        // var_dump(array_keys($this->arrDateShiftsDeployerByDate[16]->arrShiftStatusByShift));
         // echo '<br>';
-        // $this->arrDateShiftsHandlerByDate[16]->deployAllShifts();
+        // $this->arrDateShiftsDeployerByDate[16]->deployAllShifts();
         // echo '<br> Deployment Completed: <br>';
-        // foreach ($this->arrDateShiftsHandlerByDate[16]->arrayShiftObjectsByShift as $shift => $arrShiftObjects) {
+        // foreach ($this->arrDateShiftsDeployerByDate[16]->arrayShiftObjectsByShift as $shift => $arrShiftObjects) {
         //     echo "$shift<br>";
         //     foreach ($arrShiftObjects as $shiftObject) {
         //         echo "id_user : $shiftObject->id_user<br>";
         //     }
         // }
-        // $this->arrDateShiftsHandlerByDate[16]->assignAllShifts($this);
-        // var_dump($this->arrDateShiftsHandlerByDate[16]->arrNumLangsAppByPart);
+        // $this->arrDateShiftsDeployerByDate[16]->assignAllShifts($this);
+        // var_dump($this->arrDateShiftsDeployerByDate[16]->arrNumLangsAppByPart);
         // echo '<br>';
-        // var_dump($this->arrDateShiftsHandlerByDate[16]->arrScoresByIdUser);
+        // var_dump($this->arrDateShiftsDeployerByDate[16]->arrScoresByIdUser);
         // echo '<br><br>';
         // echo 'arrShiftAppObjectsByIdUser: <br>';
-        // var_dump($this->arrDateShiftsHandlerByDate[16]->arrShiftAppObjectsByIdUser);
-        // var_dump($this->arrDateShiftsHandlerByDate['2020-02-10']->arrShiftAppObjectsByIdUser);
-        // var_dump(($this->arrDateShiftsHandlerByDate)['2020-02-16']);
+        // var_dump($this->arrDateShiftsDeployerByDate[16]->arrShiftAppObjectsByIdUser);
+        // var_dump($this->arrDateShiftsDeployerByDate['2020-02-10']->arrShiftAppObjectsByIdUser);
+        // var_dump(($this->arrDateShiftsDeployerByDate)['2020-02-16']);
     }
 
     private function updateNumDaysApplied($id_user, $appliedForDate)
@@ -158,8 +158,7 @@ class ShiftsDistributor extends DBHandler
         $shiftObject->date = intval($dateTime->format('j')); // int(23)
         $shiftObject->date_shift = $dateTime->format('Y-m-d'); // '2020-02-23'
         $shiftObject->shift = $shift;
-        $shiftObject->__construct($this->arrayShiftsByPart);
-        $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
+        $shiftObject->__construct($this->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser);
         return $shiftObject;
     }
 
@@ -167,10 +166,10 @@ class ShiftsDistributor extends DBHandler
     {
         // To MemberObject->arrShiftAppObjects
         $shiftObject->memberObject->pushShiftAppObjects($shiftObject);
-        // To DateShiftsHandler->arrShiftAppObjectsByIdUser
-        $this->arrDateShiftsHandlerByDate[$shiftObject->date]->pushShiftAppObject($shiftObject);
+        // To DateShiftsDeployer->arrShiftAppObjectsByIdUser
+        $this->arrDateShiftsDeployerByDate[$shiftObject->date]->pushShiftAppObject($shiftObject);
         // To ShiftStatus->arrShiftAppObjectsByIdUser
-        $this->arrDateShiftsHandlerByDate[$shiftObject->date]->pushShiftAppObjectToShiftStatus($shiftObject);
+        $this->arrDateShiftsDeployerByDate[$shiftObject->date]->pushShiftAppObjectToShiftStatus($shiftObject);
     }
 
     private function distributeAllShifts()
@@ -180,16 +179,16 @@ class ShiftsDistributor extends DBHandler
         foreach ($this->arrDateRange as $date) {
             echo "Deploying date $date<br>";
             // Deploy all shifts
-            $this->arrDateShiftsHandlerByDate[$date]->deployAllShifts();
+            $this->arrDateShiftsDeployerByDate[$date]->deployAllShifts();
             // Assign all shifts
-            $this->arrDateShiftsHandlerByDate[$date]->assignAllShifts($this);
+            $this->arrDateShiftsDeployerByDate[$date]->assignAllShifts($this);
             // Update MemberObjects
-            $this->arrDateShiftsHandlerByDate[$date]->updateMemberObjects();
+            $this->arrDateShiftsDeployerByDate[$date]->updateMemberObjects();
         }
     }
 }
 
-class DateShiftsHandler extends DateObject
+class DateShiftsDeployer extends DateObject
 {
     public function __construct($date, $master_handler, $config_handler)
     {
@@ -213,7 +212,7 @@ class DateShiftsHandler extends DateObject
             $this->arrShiftAppObjectsByIdUser[$shiftObject->memberObject->id_user] = [];
         }
         array_push($this->arrShiftAppObjectsByIdUser[$shiftObject->memberObject->id_user], $shiftObject);
-        // echo "Pushing shiftAppObject to DateShiftsHandler... $shiftObject->date $shiftObject->shift<br>";
+        // echo "Pushing shiftAppObject to DateShiftsDeployer... $shiftObject->date $shiftObject->shift<br>";
         // echo 'Now id_user ' . $shiftObject->memberObject->id_user . ' has ' . count($shiftObject->memberObject->arrShiftAppObjects) . ' shiftAppObjects.<br>';
         // var_dump($shiftObject->memberObjects->arrShiftAppObjects);
         // echo count($shiftObject->memberObject->arrShiftAppObjects);
@@ -248,7 +247,7 @@ class DateShiftsHandler extends DateObject
         $id_user_seleted = $this->getMemberToDeploy();
         $shiftObjectDeployed = $this->deployShiftOfMember($id_user_seleted);
 
-        // Unset Member from candidates i.e. Unset from DateShiftsHandler::arrShiftAppObjects
+        // Unset Member from candidates i.e. Unset from DateShiftsDeployer::arrShiftAppObjects
         unset($this->arrShiftAppObjectsByIdUser[$id_user_seleted]);
         // echo "User $id_user_seleted has been unset.<br>";
         // var_dump($this->arrShiftAppObjectsByIdUser[$id_user_seleted]);
@@ -268,7 +267,7 @@ class DateShiftsHandler extends DateObject
             // echo '<br>';
             $this->arrShiftStatusByShift[$shiftObjectDeployed->shift]->pushArrShiftObjectByIdUser($shiftObjectDeployed); // For ShiftStatus
 
-            // Unset from ShiftStatus::arrShiftAppObjects. For DateShiftsHandler, already done above.
+            // Unset from ShiftStatus::arrShiftAppObjects. For DateShiftsDeployer, already done above.
             $this->arrShiftStatusByShift[$shiftObjectDeployed->shift]->unsetShiftAppObjectsByIdUser($shiftObjectDeployed);
 
             // Update props for ShiftStatus
@@ -323,7 +322,7 @@ class DateShiftsHandler extends DateObject
             if ($this->arrShiftStatusByShift[$this->arrShiftAppObjectsByIdUser[$id_user_seleted][0]->shift]->vacancy >= 1) {
                 echo 'This shift is already full.<br>';
                 echo 'Vacancy = ' . $this->arrShiftStatusByShift[$this->arrShiftAppObjectsByIdUser[$id_user_seleted][0]->shift]->vacancy . '<br>';
-                // Unset this shiftApp from DateShiftsHandler::arrShiftAppObjectsByIdUser and ShiftStatus::arrShiftAppObjectsByIdUser. This can no longer be used.
+                // Unset this shiftApp from DateShiftsDeployer::arrShiftAppObjectsByIdUser and ShiftStatus::arrShiftAppObjectsByIdUser. This can no longer be used.
                 $this->unsetShiftAppObject($this->arrShiftAppObjectsByIdUser[$id_user_seleted][0]);
                 // This member is out.
                 return false;
@@ -342,7 +341,7 @@ class DateShiftsHandler extends DateObject
                 // Check if this shift is already filled out.
                 if ($this->arrShiftStatusByShift[$shiftObject->shift]->vacancy >= 1) {
                     echo 'This shift is already full.<br>';
-                    // Unset this shiftApp from DateShiftsHandler::arrShiftAppObjectsByIdUser and ShiftStatus::arrShiftAppObjectsByIdUser. This can no longer be used.
+                    // Unset this shiftApp from DateShiftsDeployer::arrShiftAppObjectsByIdUser and ShiftStatus::arrShiftAppObjectsByIdUser. This can no longer be used.
                     $this->unsetShiftAppObject($shiftObject);
                     // Search for next shift
                     continue;
@@ -446,7 +445,7 @@ class DateShiftsHandler extends DateObject
     private function unsetShiftAppObject($shiftObjectDeployed)
     {
         // For ShiftsDistributor: No way to access 
-        // For DateShiftsHandler
+        // For DateShiftsDeployer
         $this->unsetShiftAppObjectsByIdUser($shiftObjectDeployed);
         // For ShiftStatus
         $this->arrShiftStatusByShift[$shiftObjectDeployed->shift]->unsetShiftAppObjectsByIdUser($shiftObjectDeployed);
@@ -458,7 +457,7 @@ class DateShiftsHandler extends DateObject
         if ($key !== false) {
             unset($this->arrShiftAppObjectsByIdUser[$shiftObject->id_user][$key]);
         } else {
-            echo 'ERROR! Shift object being deployed has already been unset from (or never been pushed into) DateShiftsHandler::arrShiftAppObjectsByIdUser.';
+            echo 'ERROR! Shift object being deployed has already been unset from (or never been pushed into) DateShiftsDeployer::arrShiftAppObjectsByIdUser.';
             exit;
         }
     }

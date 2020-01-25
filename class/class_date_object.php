@@ -21,9 +21,6 @@ class DateObjectsHandler
     public function setArrayDateObjects($arrayShiftObjectsByDate)
     {
         foreach ($arrayShiftObjectsByDate as $date => $arrShiftObjects) {
-            foreach ($arrShiftObjects as $shiftObject) {
-                $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
-            }
             $this->arrayDateObjects[$date] = new DateObject($date, $arrShiftObjects, $this->config_handler);
         }
     }
@@ -50,12 +47,9 @@ class DateObjectsHandler
         $sql = "SELECT date_shift, id_user, shift FROM shifts_assigned WHERE " . '(' . implode('AND', $array_conditions) . ')' . " ORDER BY date_shift ASC;";
         $stmt = $this->dbh->query($sql);
         // var_dump($stmt->errorInfo());
-        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart]);
+        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
         $stmt->closeCursor();
         foreach ($arrayShiftObjectsByDate as $date => $arrShiftObjects) {
-            foreach ($arrShiftObjects as $shiftObject) {
-                $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
-            }
             $this->arrayDateObjects[$date] = new DateObject($date, $arrShiftObjects, $this->config_handler);
         }
     }
@@ -68,7 +62,6 @@ class DateObject
     public $arrayNumLangsByPart;
     public $enoughLangsByPart;
     public $arrBalancesByPart;
-    public $arrLangsNotEnoughByPart;
     function __construct($date, $arrayShiftObjectsOfDate, $config_handler)
     {
         $this->date = $date;
@@ -138,29 +131,30 @@ class DateObject
         $this->enoughLangsByPart = [];
         $this->arrBalancesByPart = [];
         // echo $this->date .'<br>';
-        // Negative value means not enough
+
         if (count($this->arrayNumLangsByPart)) {
-            foreach (array_keys($this->arrayNumLangsByPart) as $part) {
-                $this->arrBalancesByPart[$part] = [];
-                foreach (array_keys($this->arrayNumLangsByPart[$part]) as $lang) {
-                    // echo '$lang = ' . $lang.'<br>';
-                    // echo '$this->arrayLangsByPart[$part][$lang] = ' .$this->arrayLangsByPart[$part][$lang] . '<br>';
-                    if ($this->arrayLangsByPart[$part][$lang] !== NULL) {
-                        $balance = $this->arrayNumLangsByPart[$part][$lang] - $this->arrayLangsByPart[$part][$lang];
-                        // echo '$this->arrayNumLangsByPart[$part][$lang] = '. $this->arrayNumLangsByPart[$part][$lang].'<br>';
-                        // echo '$balance = '.$balance.'<br>';
-                        if ($balance < 0) {
-                            $this->arrBalancesByPart[$part][$lang] = $balance;
-                        }
+            foreach ($this->arrayLangsByPart as $part => $arrLangs) {
+                $partEnough = true;
+                foreach ($arrLangs as $lang => $numNeeded) {
+                    if ($numNeeded === NULL) {
+                        continue;
+                    }
+                    if (!isset($this->arrayNumLangsByPart[$part][$lang])) {
+                        $balance = -$numNeeded;
+                        $this->enoughLangsByPart[$part] = false;
+                    } else {
+                        $balance = $this->arrayNumLangsByPart[$part][$lang] - $numNeeded;
+                    }
+                    // Negative value means not enough
+                    $this->arrBalancesByPart[$part][$lang] = $balance;
+                    if ($balance < 0) {
+                        $partEnough = false;
                     }
                 }
-                if (count($this->arrBalancesByPart[$part])) {
-                    $this->enoughLangsByPart[$part] = false;
-                } else {
-                    $this->enoughLangsByPart[$part] = true;
-                }
+                $this->enoughLangsByPart[$part] = $partEnough;
             }
         }
+        $partEnough = NULL;
     }
 }
 
@@ -171,9 +165,10 @@ class ShiftObject
     public $shift;
     public $memberObject;
     public static $arrayShiftsByPart;
-    function __construct($arrayShiftsByPart)
+    function __construct($arrayShiftsByPart, $arrayMemberObjectsByIdUser)
     {
         $this->setShiftPart($arrayShiftsByPart);
+        $this->setMemberObj($arrayMemberObjectsByIdUser);
     }
     public function setMemberObj($arrayMemberObjectsByIdUser)
     {
