@@ -879,46 +879,49 @@
                     <div class="tab-pane active fade show" id="tab-content3">
                         <h2 class="pb-3 pt-2 border-bottom mb-5">Market Timeline</h2>
                         <div class="bs4-timeline">
-                            <!--first section-->
-                            <div class="row align-items-center how-it-works d-flex">
-                                <div class="col-2 text-center bottom d-inline-flex justify-content-center align-items-center">
-                                    <div class="circle">
-                                        <p>Feb 28<br>土</p>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="row">
-                                        <div class="col-12 col-put">
-                                            <ul type="none">
-                                                <li>H: Member1</li>
-                                                <li>D: Member3, Member4</li>
-                                            </ul>
+                            <div>
+                                <!--first section-->
+                                <div class="row align-items-center how-it-works d-flex">
+                                    <div
+                                        class="col-2 text-center bottom d-inline-flex justify-content-center align-items-center">
+                                        <div class="circle">
+                                            <p>Feb 28<br>土</p>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-12 col-call">
-                                            <ul type="none">
-                                                <li>B: Member2, Member5</li>
-                                                <li>A: Member3</li>
-                                            </ul>
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-12 col-put">
+                                                <ul type="none">
+                                                    <li>H: Member1</li>
+                                                    <li>D: Member3, Member4</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-call">
+                                                <ul type="none">
+                                                    <li>B: Member2, Member5</li>
+                                                    <li>A: Member3</li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!--path between 1-2-->
-                            <div class="row timeline">
-                                <div class="col-2">
-                                    <div class="corner top-right"></div>
-                                </div>
-                                <div class="col-8">
-                                    <hr />
-                                </div>
-                                <div class="col-2">
-                                    <div class="corner left-bottom"></div>
+                                <!--path between 1-2-->
+                                <div class="row timeline d-flex">
+                                    <div class="col-2">
+                                        <div class="corner top-right"></div>
+                                    </div>
+                                    <div class="col-8">
+                                        <hr />
+                                    </div>
+                                    <div class="col-2">
+                                        <div class="corner left-bottom"></div>
+                                    </div>
                                 </div>
                             </div>
                             <!--second section-->
-                            <div class="row align-items-center justify-content-end how-it-works d-flex">
+                            <div class="row align-items-center how-it-works d-flex flex-row-reverse">
                                 <div class="col-6 text-right">
                                     <div class="row">
                                         <div class="col-12 col-put">
@@ -945,7 +948,7 @@
                                 </div>
                             </div>
                             <!--path between 2-3-->
-                            <div class="row timeline">
+                            <div class="row timeline d-flex flex-row-reverse">
                                 <div class="col-2">
                                     <div class="corner right-bottom"></div>
                                 </div>
@@ -998,6 +1001,23 @@
         </div>
 
     </main>
+    <a href="#modal" data-toggle="modal"></a>
+    <div class="modal fade" id="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title">.modal-title</h1>
+                </div>
+                <div class="modal-body">
+                    <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Corporis minus quisquam sapiente amet
+                        perspiciatis officia similique repellendus. Ea cupiditate voluptatem harum possimus, voluptas
+                        nulla, odio placeat perspiciatis totam, et vitae!</p>
+                </div>
+                <div class="modal-footer"><button class="btn btn-danger" type="button"
+                        data-dismiss="modal">Close</button></div>
+            </div>
+        </div>
+    </div>
     <footer></footer>
 </body>
 

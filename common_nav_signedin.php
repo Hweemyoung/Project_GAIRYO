@@ -18,7 +18,7 @@ class CommonNavHandler
 $common_nav_handler = new CommonNavHandler();
 
 // Get requests
-$sql = 'SELECT id_transaction, id_request, id_from, id_to, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE id_from=:id_user OR id_to=:id_user ORDER BY time_proceeded DESC LIMIT 5';
+$sql = 'SELECT id_transaction, id_request, id_from, id_to, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE (id_from=:id_user OR id_to=:id_user) AND (id_from IS NOT NULL AND id_to IS NOT NULL) ORDER BY time_proceeded DESC LIMIT 5';
 $stmt = $dbh->prepare($sql);
 $stmt->bindParam(':id_user', $id_user);
 $stmt->execute();

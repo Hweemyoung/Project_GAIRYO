@@ -1,6 +1,6 @@
 <?php
 $arrayShifts = array('O', 'A', 'B', 'H', 'C', 'D');
-$arrayDates = range(1, 28);
+$arrayDates = range(1, 31);
 
 // $host = 'sql304.epizy.com';
 // $DBName = 'epiz_24956964_gairyo';

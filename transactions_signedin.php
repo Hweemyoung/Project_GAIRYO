@@ -107,7 +107,7 @@ function echoTrsTrans($arrayRequestsByIdTrans)
 
 $db_handler = new DBHandler($master_handler, $config_handler);
 
-$sql = "SELECT id_transaction FROM requests_pending WHERE `status`=2 AND (id_from=$id_user OR id_to=$id_user);";
+$sql = "SELECT id_transaction FROM requests_pending WHERE `status`=2 AND (id_from=$id_user OR id_to=$id_user) AND (id_from IS NOT NULL AND id_to IS NOT NULL);";
 $stmt = $db_handler->querySql($sql);
 $results = $stmt->fetchAll(PDO::FETCH_GROUP);
 $stmt->closeCursor();

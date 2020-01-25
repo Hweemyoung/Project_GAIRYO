@@ -23,6 +23,7 @@ class ShiftsDistributor extends DBHandler
     private function init()
     {
         $this->arrDateShiftsHandlerByDate = [];
+        $this->arrDateRange = [];
         $this->addPropsToMemberObjects(); // memberObject->numDaysApplied = 0; memberObject->numDaysDeployed = 0; memberObject->arrShiftAppObjects = [];
     }
 
@@ -38,8 +39,8 @@ class ShiftsDistributor extends DBHandler
         $this->executeSql('START TRANSACTION;');
         $this->loadApplications();
         $this->setArrDateShiftsHandlerByDate();
-        // $this->distributeAllShifts();
-        // $this->executeSql('COMMIT;');
+        $this->distributeAllShifts();
+        $this->executeSql('COMMIT;');
     }
 
     private function loadApplications()
@@ -58,39 +59,54 @@ class ShiftsDistributor extends DBHandler
     {
         $this->arrDateShiftsHandlerByDate = [];
         $reflectionShiftObject = new ReflectionClass('ShiftObject');
-        $dateTime = DateTime::createFromFormat('Ym', $this->m); // '2020-03-01'
+        // echo "Current DateTime<br>";
+        // var_dump($dateTime->format('Y-m-d'));
+        // echo '<br>';
         foreach (range(1, 31) as $date) {
-            if($date >15){
+            $dateTime = DateTime::createFromFormat('Ymd', $this->m . '01'); // '2020-03-01'
+            if ($date > 15) {
                 $dateTime = $dateTime->modify('-1 days'); // '2020-02-28';
+                // echo 'Modified DateTime:' . $dateTime->format('Y-m-d') . '<br>';
                 if ($date > 28) {
                     // Check if $date could be valid DateTime
                     if (!checkdate($dateTime->format('n'), $date, $dateTime->format('Y'))) { // If like '2020-02-30'
+                        echo "For date = $date, this datetime is NOT valid <br>";
                         break;
                     }
+                    echo "For date = $date, this datetime is valid <br>";
                 }
             }
+            // Add date to arrDateRange
+            $this->arrDateRange[] = $date;
             $dateTime->setDate($dateTime->format('Y'), $dateTime->format('n'), $date);
+            echo "Modified DateTime<br>";
+            var_dump($dateTime->format('Y-m-d'));
+            echo '<br>';
             $this->arrDateShiftsHandlerByDate[$date] = new DateShiftsHandler($date, $this->master_handler, $this->config_handler);
+            // echo "$date 's DateShiftsHandler: <br>";
+            // var_dump($this->arrDateShiftsHandlerByDate[$date]);
+            // echo '<br>';
             $appliedForDate = false;
             foreach (['O', 'A', 'B', 'H', 'C', 'D'] as $shift) {
+                // echo "Now $shift! <br>";
                 // Set properties
                 // 1. Push all ShiftAppObjects
                 foreach (array_keys($this->arrMemberApplicationsByIdUser) as $id_user) {
-                    if ($this->arrMemberApplicationsByIdUser[$id_user][$date . $shift] === '1') {
+                    if ($this->arrMemberApplicationsByIdUser[$id_user][$date . $shift] == 1) {
                         // echo "\$this->arrMemberApplicationsByIdUser[$id_user][$date$shift] = '1'<br><br>";
                         if ($shift === 'O') {
-                            echo "$id_user $date Now O! <br>";
                             foreach ($this->arrayShiftsByPart as $arrShifts) {
-                                foreach ($arrShifts as $shift) {
+                                foreach ($arrShifts as $shiftTemp) {
                                     // Create date_shift
-
-                                    $shiftObject = $this->genShiftAppObject($reflectionShiftObject, $id_user, $dateTime, $shift);
+                                    $shiftObject = $this->genShiftAppObject($reflectionShiftObject, $id_user, $dateTime, $shiftTemp);
+                                    // echo "Created ShiftObject: id_user: $shiftObject->id_user / date_shift: $shiftObject->date_shift / shift: $shiftObject->shift<br>";
                                     $this->pushShiftAppObject($shiftObject);
                                 }
                             }
                         } else {
                             // If person applied for this
                             $shiftObject = $this->genShiftAppObject($reflectionShiftObject, $id_user, $dateTime, $shift);
+                            // echo "Created ShiftObject: id_user: $shiftObject->id_user / date_shift: $shiftObject->date_shift / shift: $shiftObject->shift<br>";
                             $this->pushShiftAppObject($shiftObject);
                         }
                         $appliedForDate = true;
@@ -103,7 +119,15 @@ class ShiftsDistributor extends DBHandler
         // echo 'keys of arrShiftStatusByShift<br>';
         // var_dump(array_keys($this->arrDateShiftsHandlerByDate[16]->arrShiftStatusByShift));
         // echo '<br>';
-        $this->arrDateShiftsHandlerByDate[16]->deployAllShifts();
+        // $this->arrDateShiftsHandlerByDate[16]->deployAllShifts();
+        // echo '<br> Deployment Completed: <br>';
+        // foreach ($this->arrDateShiftsHandlerByDate[16]->arrayShiftObjectsByShift as $shift => $arrShiftObjects) {
+        //     echo "$shift<br>";
+        //     foreach ($arrShiftObjects as $shiftObject) {
+        //         echo "id_user : $shiftObject->id_user<br>";
+        //     }
+        // }
+        // $this->arrDateShiftsHandlerByDate[16]->assignAllShifts($this);
         // var_dump($this->arrDateShiftsHandlerByDate[16]->arrNumLangsAppByPart);
         // echo '<br>';
         // var_dump($this->arrDateShiftsHandlerByDate[16]->arrScoresByIdUser);
@@ -131,7 +155,7 @@ class ShiftsDistributor extends DBHandler
     {
         $shiftObject = $reflectionShiftObject->newInstanceWithoutConstructor();
         $shiftObject->id_user = $id_user;
-        $shiftObject->date = $dateTime->format('n'); // int(23)
+        $shiftObject->date = intval($dateTime->format('j')); // int(23)
         $shiftObject->date_shift = $dateTime->format('Y-m-d'); // '2020-02-23'
         $shiftObject->shift = $shift;
         $shiftObject->__construct($this->arrayShiftsByPart);
@@ -152,11 +176,15 @@ class ShiftsDistributor extends DBHandler
     private function distributeAllShifts()
     {
         // Shuffle range of date
-        foreach (shuffle(range(1, 31)) as $date) {
+        shuffle($this->arrDateRange);
+        foreach ($this->arrDateRange as $date) {
+            echo "Deploying date $date<br>";
             // Deploy all shifts
             $this->arrDateShiftsHandlerByDate[$date]->deployAllShifts();
             // Assign all shifts
             $this->arrDateShiftsHandlerByDate[$date]->assignAllShifts($this);
+            // Update MemberObjects
+            $this->arrDateShiftsHandlerByDate[$date]->updateMemberObjects();
         }
     }
 }
@@ -211,8 +239,6 @@ class DateShiftsHandler extends DateObject
         }
     }
 
-
-
     private function deployShift()
     {
         // Calc scores
@@ -247,6 +273,9 @@ class DateShiftsHandler extends DateObject
 
             // Update props for ShiftStatus
             $this->arrShiftStatusByShift[$shiftObjectDeployed->shift]->updateProps();
+
+            // Update prop of MemberObject;
+            $shiftObjectDeployed->memberObject->numDaysDeployed++;
         }
     }
 
@@ -261,11 +290,11 @@ class DateShiftsHandler extends DateObject
             }
             $SQLS = "INSERT INTO shifts_assigned (id_user, date_shift, shift) VALUES " . implode(', ', $arrValues) . ';';
             echo "SQLS = $SQLS<br>";
-            // $shifts_distributor->executeSql($SQLS);
-            $stmt = $shifts_distributor->querySql($SQLS);
-            echo "Now assigning all shifts of $this->date <br>";
-            var_dump($stmt->errorInfo());
-            echo '<br>';
+            $shifts_distributor->executeSql($SQLS);
+            // $stmt = $shifts_distributor->querySql($SQLS);
+            // echo "Now assigning all shifts of $this->date <br>";
+            // var_dump($stmt->errorInfo());
+            // echo '<br>';
         }
     }
 
@@ -291,9 +320,9 @@ class DateShiftsHandler extends DateObject
         // if count shift = 1
         if (count($this->arrShiftAppObjectsByIdUser[$id_user_seleted]) === 1) {
             echo 'User applied for only one shift.<br>';
-            if ($this->arrShiftStatusByShift[$this->arrShiftAppObjectsByIdUser[$id_user_seleted][0]->shift]->percentage >= 1) {
+            if ($this->arrShiftStatusByShift[$this->arrShiftAppObjectsByIdUser[$id_user_seleted][0]->shift]->vacancy >= 1) {
                 echo 'This shift is already full.<br>';
-                echo 'percentage = ' . $this->arrShiftStatusByShift[$this->arrShiftAppObjectsByIdUser[$id_user_seleted][0]->shift]->percentage . '<br>';
+                echo 'Vacancy = ' . $this->arrShiftStatusByShift[$this->arrShiftAppObjectsByIdUser[$id_user_seleted][0]->shift]->vacancy . '<br>';
                 // Unset this shiftApp from DateShiftsHandler::arrShiftAppObjectsByIdUser and ShiftStatus::arrShiftAppObjectsByIdUser. This can no longer be used.
                 $this->unsetShiftAppObject($this->arrShiftAppObjectsByIdUser[$id_user_seleted][0]);
                 // This member is out.
@@ -305,12 +334,13 @@ class DateShiftsHandler extends DateObject
                 // var_dump($arrShiftObjectsFiltered);
             }
         } else {
+            echo 'Check splited part.<br>';
             // check splited part?
             $arrKeyPartsApp = [];
             $arrShiftAppObjectsByPart = [];
-            foreach ($this->arrShiftAppObjectsByIdUser[$id_user_seleted] as $key => $shiftObject) {
+            foreach ($this->arrShiftAppObjectsByIdUser[$id_user_seleted] as $shiftObject) {
                 // Check if this shift is already filled out.
-                if ($this->arrShiftStatusByShift[$shiftObject->shift]->percentage >= 1) {
+                if ($this->arrShiftStatusByShift[$shiftObject->shift]->vacancy >= 1) {
                     echo 'This shift is already full.<br>';
                     // Unset this shiftApp from DateShiftsHandler::arrShiftAppObjectsByIdUser and ShiftStatus::arrShiftAppObjectsByIdUser. This can no longer be used.
                     $this->unsetShiftAppObject($shiftObject);
@@ -323,13 +353,15 @@ class DateShiftsHandler extends DateObject
                 }
                 array_push($arrShiftAppObjectsByPart[$shiftObject->shiftPart], $shiftObject);
             }
+            echo "Count of part candidates: " . count($arrKeyPartsApp) . '<br>';
             if (count($arrKeyPartsApp) === 0) {
                 // This member is out.
                 return false;
             } elseif (count($arrKeyPartsApp) === 1) {
-                // part already selected: $part
+                $part = array_keys($arrKeyPartsApp)[0];
                 $arrShiftObjectsFiltered = $this->arrShiftAppObjectsByIdUser[$id_user_seleted];
             } else {
+                echo 'Multiple part candidates.<br>';
                 // Splited.
                 // Select part accordingto lang contribution
                 // Compare in order of lang priority in each part
@@ -341,7 +373,7 @@ class DateShiftsHandler extends DateObject
                 }
                 // $i: i th priority of language
                 for ($i = 0; $i < $this->config_handler->numLangs; $i++) {
-                    $arrLangPercentageByPart = [];
+                    $arrLangVacancyByPart = [];
                     foreach (array_keys($arrKeyPartsApp) as $part) {
                         $arrLangs = $this->config_handler->arrayLangsByPart[$part];
                         $lang = array_keys($arrLangs)[$i];
@@ -350,15 +382,15 @@ class DateShiftsHandler extends DateObject
                             continue;
                         }
                         if (!isset($this->arrayNumLangsByPart[$part][$lang])) {
-                            $arrLangPercentageByPart[$part] = 0;
+                            $arrLangVacancyByPart[$part] = 0;
                         } else {
-                            $arrLangPercentageByPart[$part] = $this->arrayNumLangsByPart[$part][$lang] / $arrLangs[$lang];
+                            $arrLangVacancyByPart[$part] = $this->arrayNumLangsByPart[$part][$lang] / $arrLangs[$lang];
                         }
                     }
-                    if (count($arrLangPercentageByPart)) {
-                        if (min($arrLangPercentageByPart) < 1) {
+                    if (count($arrLangVacancyByPart)) {
+                        if (min($arrLangVacancyByPart) < 1) {
                             // Insufficient
-                            $part = array_keys($arrLangPercentageByPart, min($arrLangPercentageByPart));
+                            $part = array_keys($arrLangVacancyByPart, min($arrLangVacancyByPart));
                             if (is_array($part)) {
                                 // part selected: $part
                                 $part = $part[mt_rand(0, count($part) - 1)];
@@ -380,21 +412,23 @@ class DateShiftsHandler extends DateObject
     private function decideShift($arrShiftObjectsFiltered)
     {
         if (count($arrShiftObjectsFiltered) > 1) {
-            echo '$shiftPriority<br>';
-            echo 'Before sort:<br>';
-            var_dump(array_keys($this->arrShiftStatusByShift));
-            echo '<br>';
+            // echo '<br>ShiftPriority<br>';
+            // echo 'Before sort:<br>';
+            // var_dump(array_keys($this->arrShiftStatusByShift));
+            // echo '<br>';
             uasort($this->arrShiftStatusByShift, function ($a, $b) {
-                if ($a->percentage == $b->percentage) {
+                if ($a->percentApp == $b->percentApp) {
                     return 0;
                 }
-                return ($a < $b) ? -1 : 1;
+                return ($a->percentApp < $b->percentApp) ? -1 : 1;
             });
             echo 'After sort:<br>';
-            var_dump(array_keys($this->arrShiftStatusByShift));
+            foreach ($this->arrShiftStatusByShift as $shiftStatus) {
+                echo "$shiftStatus->shift $shiftStatus->percentApp<br>";
+            }
             echo '<br>';
             $shiftPriority = array_keys($this->arrShiftStatusByShift);
-            echo '$arrShiftObjectsFiltered';
+            // echo '$arrShiftObjectsFiltered';
             // echo 'Before sort:<br>';
             // var_dump($arrShiftObjectsFiltered);
             // echo '<br>';
@@ -403,9 +437,6 @@ class DateShiftsHandler extends DateObject
                 $pos_b = array_search($b->shift, $shiftPriority);
                 return $pos_a - $pos_b;
             });
-            // echo 'After sort:<br>';
-            // var_dump($arrShiftObjectsFiltered);
-            // echo '<br>';
         } else {
             echo 'One shift passed. No sorting needed.';
         }
@@ -464,7 +495,6 @@ class DateShiftsHandler extends DateObject
         }
         echo "Now $score_item_name <br>";
         // var_dump($arrItemValues);
-        echo '<br>';
         if ($minORmax === 'max') {
             $threshold = max($arrItemValues);
         } elseif ($minORmax === 'min') {
@@ -473,8 +503,7 @@ class DateShiftsHandler extends DateObject
             echo 'Argument not understood.';
             exit;
         }
-        echo "Threshold: " . $threshold;
-        echo '<br>';
+        echo "Threshold: " . $threshold . '<br>';
         $arrItemValues = array_filter($arrItemValues, function ($val) use ($threshold) {
             return $val === $threshold;
         });
@@ -514,8 +543,8 @@ class DateShiftsHandler extends DateObject
     {
         $this->arrScoresByIdUser[$id_user]['numAppNotEnough'] = 0;
         foreach ($this->arrShiftAppObjectsByIdUser[$id_user] as $shiftObject) {
-            // echo "$this->date $shiftObject->shift" . ' Percentage:' . $this->arrShiftStatusByShift[$shiftObject->shift]->percentage . '<br>';
-            if ($this->arrShiftStatusByShift[$shiftObject->shift]->percentage < 1) {
+            // echo "$this->date $shiftObject->shift" . ' Percentage:' . $this->arrShiftStatusByShift[$shiftObject->shift]->vacancy . '<br>';
+            if ($this->arrShiftStatusByShift[$shiftObject->shift]->vacancy < 1) {
                 $this->arrScoresByIdUser[$id_user]['numAppNotEnough']++;
             }
         }
@@ -523,10 +552,10 @@ class DateShiftsHandler extends DateObject
 
     private function setDeployRatio($id_user)
     {
-        if ($this->arrayMemberObjectsByIdUser[$id_user]->numDaysApplied === 0) {
+        if ($this->arrayMemberObjectsByIdUser[$id_user]->numDaysProceeded === 0) {
             $this->arrScoresByIdUser[$id_user]['deployRatio'] = INF;
         } else {
-            $this->arrScoresByIdUser[$id_user]['deployRatio'] = $this->arrayMemberObjectsByIdUser[$id_user]->numDaysDeployed / $this->arrayMemberObjectsByIdUser[$id_user]->numDaysApplied;
+            $this->arrScoresByIdUser[$id_user]['deployRatio'] = $this->arrayMemberObjectsByIdUser[$id_user]->numDaysDeployed / $this->arrayMemberObjectsByIdUser[$id_user]->numDaysProceeded;
         }
     }
 
@@ -624,6 +653,13 @@ class DateShiftsHandler extends DateObject
             ksort($this->arrNumLangsAppByPart);
         }
     }
+
+    public function updateMemberObjects()
+    {
+        foreach (array_keys($this->arrShiftAppObjectsByIdUser) as $id_user) {
+            $this->arrayMemberObjectsByIdUser[$id_user]->numDaysProceeded++;
+        }
+    }
 }
 
 class ShiftStatus
@@ -632,7 +668,8 @@ class ShiftStatus
     public $arrShiftObjectsByIdUser = [];
     public $numNeeded;
     public $numApplicants;
-    public $percentage; // 0: insufficient 1: fitted 2: enough
+    public $vacancy; // <1: insufficient int(1): full
+    public $percentApp; // <1: insufficient int(1): fitted >1: Over
 
     public function __construct($shift, $config_handler)
     {
@@ -695,7 +732,26 @@ class ShiftStatus
     {
         // Call after loop of pushShiftAppObjectsByIdUser method.
         // Update properties
-        $this->percentage = count($this->arrShiftObjectsByIdUser) / $this->numNeeded;
+        $this->setVacancy();
+        $this->setPercentApp();
         $this->numApplicants = count($this->arrShiftAppObjectsByIdUser);
+    }
+
+    private function setVacancy()
+    {
+        if (count($this->arrShiftObjectsByIdUser) === $this->numNeeded) {
+            $this->vacancy = 1;
+        } else {
+            $this->vacancy = count($this->arrShiftObjectsByIdUser) / $this->numNeeded;
+        }
+    }
+
+    private function setPercentApp()
+    {
+        if (count($this->arrShiftAppObjectsByIdUser) === $this->numNeeded) {
+            $this->percentApp = 1;
+        } else {
+            $this->percentApp = count($this->arrShiftAppObjectsByIdUser) / $this->numNeeded;
+        }
     }
 }

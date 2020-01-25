@@ -11,6 +11,7 @@ class MemberObject
     {
         $this->arrShiftAppObjects = [];
         $this->numDaysApplied = 0;
+        $this->numDaysProceeded = 0;
         $this->numDaysDeployed = 0;
     }
     

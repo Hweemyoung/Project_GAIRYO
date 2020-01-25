@@ -84,24 +84,28 @@ class DateObject
         $this->setEnoughLangsByPart();
     }
 
-    public function pushArrayNumLangsByPart($shiftObject){
+    public function pushArrayNumLangsByPart($shiftObject)
+    {
         // echo $shiftObject->date_shift . '<br>';
         if (!isset($this->arrayNumLangsByPart[$shiftObject->shiftPart])) {
             $this->arrayNumLangsByPart[$shiftObject->shiftPart] = [];
         }
         foreach ($this->config_handler->arrayLangsShort as $lang) {
-            if (!isset($this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang])) {
-                $this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang] = 0;
+            if (intval($shiftObject->memberObject->$lang)) {
+                if (!isset($this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang])) {
+                    $this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang] = 1;
+                } else {
+                    $this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang] += intval($shiftObject->memberObject->$lang);
+                }
             }
             // $mem = $shiftObject->memberObject;
             // echo "$shiftObject->shift / $mem->id_user / $lang = " . $shiftObject->memberObject->$lang .'<br>';
-            $this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang] += $shiftObject->memberObject->$lang;
         }
     }
 
     private function setArrayNumLangsByPart($arrayShiftObjectsOfDate)
     {
-        if (count($arrayShiftObjectsOfDate)){
+        if (count($arrayShiftObjectsOfDate)) {
             // Initialize array
             $this->arrayNumLangsByPart = [];
             foreach ($arrayShiftObjectsOfDate as $shiftObject) {
@@ -112,7 +116,8 @@ class DateObject
         }
     }
 
-    public function pushArrayShiftObjectByShift($shiftObject){
+    public function pushArrayShiftObjectByShift($shiftObject)
+    {
         $this->arrayShiftObjectsByShift[$shiftObject->shift][] = $shiftObject;
     }
 
@@ -134,7 +139,7 @@ class DateObject
         $this->arrBalancesByPart = [];
         // echo $this->date .'<br>';
         // Negative value means not enough
-        if (count($this->arrayNumLangsByPart)){
+        if (count($this->arrayNumLangsByPart)) {
             foreach (array_keys($this->arrayNumLangsByPart) as $part) {
                 $this->arrBalancesByPart[$part] = [];
                 foreach (array_keys($this->arrayNumLangsByPart[$part]) as $lang) {

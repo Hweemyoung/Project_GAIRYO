@@ -22,6 +22,7 @@ class DailyMembersHandler extends DateObjectsHandler
     {
         $this->id_user = $master_handler->id_user;
         $this->dbh = $master_handler->dbh;
+        $this->config_handler = $config_handler;
         $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
         $this->YLowerBound = $config_handler->YLowerBound;
         $this->dayStart = $config_handler->dayStart;
@@ -267,8 +268,7 @@ class DailyMembersHandler extends DateObjectsHandler
         echo '
         <div id="accordion">';
         // var_dump($this->arrayDateObjects);
-        foreach (array_keys($this->arrayDateObjects) as $date) {
-            $dateObject = $this->arrayDateObjects[$date];
+        foreach ($this->arrayDateObjects as $date => $dateObject) {
             // var_dump($dateObject->arrayNumLangs);
             $currentDateTime = new DateTime($date);
             // var_dump($currentDateTime);
@@ -401,8 +401,7 @@ class DailyMembersHandler extends DateObjectsHandler
                 $partName = $this->arrayPartNames[$idxPart];
                 echo "
                                     <div class='row no-gutters'><div class='div-grid-lang col-2'><p>$partName</p></div><div class='col-10 d-flex justify-content-center flex-wrap'>";
-                foreach (array_keys($dateObject->arrayNumLangsByPart[$idxPart]) as $lang) {
-                    $num = $dateObject->arrayNumLangsByPart[$idxPart][$lang];
+                foreach ($dateObject->arrayNumLangsByPart[$idxPart] as $lang => $num) {
                     $numNeeded = $dateObject->arrayLangsByPart[$idxPart][$lang];
                     // $numNeeded === NULL doesn't matter
                     if ($num === $numNeeded) {

@@ -14,7 +14,7 @@ function getNicksAndAd($nextShift, $arrayMemberObjectsByIdUser)
         $advertising = false;
 
         // If there are pending requests regarding this shift
-        $sql = 'SELECT id_to, requests_pending.* FROM requests_pending WHERE id_shift = :id_shift AND `status` = 2';
+        $sql = 'SELECT id_to, requests_pending.* FROM requests_pending WHERE id_shift=:id_shift AND (id_from IS NOT NULL AND id_to IS NOT NULL) AND `status` = 2';
         $stmt = $dbh->prepare($sql);
         $stmt->bindParam(':id_shift', $id_shift);
         $id_shift = $nextShift[0]["id_shift"];

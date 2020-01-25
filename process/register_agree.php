@@ -1,6 +1,6 @@
 <?php
 
-use ___PHPSTORM_HELPERS\object;
+// use ___PHPSTORM_HELPERS\object;
 
 $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/config.php";
@@ -116,7 +116,7 @@ class RequestsHandler extends DBHandler
         $sqlConditions = $this->genSqlConditions(array_keys($arrayByDateShift), 'date_shift', 'OR');
         // This sql will be used again after execution.
         $this->sqlForNumLangs = "SELECT date_shift, date_shift, shift, id_user, id_shift FROM shifts_assigned WHERE $sqlConditions FOR UPDATE;";
-        echo '<br>$this->sqlForNumLangs = ' . $this->sqlForNumLangs . '<br>';
+        // echo '<br>$this->sqlForNumLangs = ' . $this->sqlForNumLangs . '<br>';
         $this->arrayDateObjects_before = $this->saveDateObjects();
         // Get id_shifts
         $arrayByIdShift = $this->querySql($sql)->fetchAll(PDO::FETCH_GROUP);

@@ -4,48 +4,6 @@ require_once "$homepath/config.php";
 require_once "$homepath/class/class_master_handler.php";
 require_once "$homepath/class/class_date_object.php";
 
-// class Overloading
-// {
-//     private $_arrayProps = array();
-
-//     public function __set($_prop, $value)
-//     {
-//         $this->_arrayProps[$_prop] = $value;
-//     }
-
-//     public function __get($_prop)
-//     {
-//         if (array_key_exists($_prop, $this->_arrayProps)) {
-//             return $this->_arrayProps[$_prop];
-//         }
-//         $trace = debug_backtrace();
-//         trigger_error(
-//             'Undefined property via __get(): ' . $_prop .
-//                 ' in ' . $trace[0]['file'] .
-//                 ' on line ' . $trace[0]['line'],
-//             E_USER_NOTICE
-//         );
-//         return null;
-//     }
-
-//     public function __isset($_prop)
-//     {
-//         return isset($this->_arrayProps[$_prop]);
-//     }
-
-//     public function __unset($_prop)
-//     {
-//         unset($this->_arrayProps[$_prop]);
-//     }
-
-//     public function set_all($_array)
-//     {
-//         foreach (array_keys($_array) as $_prop) {
-//             $this->_arrayProps[$_prop] = $_array[$_prop];
-//         }
-//     }
-// }
-
 // PDO Object
 // $host = 'sql304.epizy.com';
 // $DBName = 'epiz_24956964_gairyo';
@@ -161,3 +119,45 @@ $id_user = $master_handler->id_user;
 // var_dump($arrayMembersByIdUser);
 // $id_user = getIdUser($id_google, $arrayMembersByIdGoogle);
 // var_dump($id_user); OK
+
+// class Overloading
+// {
+//     private $_arrayProps = array();
+
+//     public function __set($_prop, $value)
+//     {
+//         $this->_arrayProps[$_prop] = $value;
+//     }
+
+//     public function __get($_prop)
+//     {
+//         if (array_key_exists($_prop, $this->_arrayProps)) {
+//             return $this->_arrayProps[$_prop];
+//         }
+//         $trace = debug_backtrace();
+//         trigger_error(
+//             'Undefined property via __get(): ' . $_prop .
+//                 ' in ' . $trace[0]['file'] .
+//                 ' on line ' . $trace[0]['line'],
+//             E_USER_NOTICE
+//         );
+//         return null;
+//     }
+
+//     public function __isset($_prop)
+//     {
+//         return isset($this->_arrayProps[$_prop]);
+//     }
+
+//     public function __unset($_prop)
+//     {
+//         unset($this->_arrayProps[$_prop]);
+//     }
+
+//     public function set_all($_array)
+//     {
+//         foreach (array_keys($_array) as $_prop) {
+//             $this->_arrayProps[$_prop] = $_array[$_prop];
+//         }
+//     }
+// }
