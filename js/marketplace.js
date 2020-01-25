@@ -1,4 +1,88 @@
 class MarketItemHandler {
+    _$modal = $('#modal');
+
+    constructor(_memberObjectOfUser, _arrDateObjects, _arrIdRequestsByIdShift, _arrDateObjectsRequested, _constants) {
+        this._constants = _constants;
+        this._memberObjectOfUser = _memberObjectOfUser;
+        this._arrDateObjects = _arrDateObjects;
+        this._arrIdRequestsByIdShift = _arrIdRequestsByIdShift;
+        this._arrDateObjectsRequested = _arrDateObjectsRequested;
+        this._objModalBodies = {};  // this._objModalBodies[_date][_shift] = $('.modal-body')
+        this.setArrModalBodiesAcceptable();
+        this.disableBtns();
+    }
+
+    disableBtns(){
+        for(_date in this._objModalBodies){
+            for(_shift in _objModalBodies[_date]){
+
+            }
+        }
+    }
+
+    setArrModalBodiesAcceptable(){
+        // Language check
+        for(var _date_shift in this._arrDateObjects){
+            var _dateObject = this._arrDateObjects[_date_shift];
+            var _dateObjectRequested = this._arrDateObjectsRequested[_date_shift];
+            this._objModalBodies[_date_shift] = {};
+
+            for(var _shift in _dateObjectRequested.arrayShiftObjectsByShift){
+                var _arrShiftObjectsRequested = this._dateObjectRequested.arrayShiftObjectsByShift[_shift];
+
+                for(var idx in _arrShiftObjectsRequested){
+                    var _cloned_arrBalancesByPart = JSON.parse(JSON.stringify(_dateObject.arrBalancesByPart)); // This will be used for comparing before and after for every lang.
+                    var _shiftObjectRequested = _arrShiftObjectsRequested[idx];
+                    var arrBalances = _cloned_arrBalancesByPart[_shiftObjectRequested.shiftPart];
+                    var _acceptable = true;
+                    for(var lang in arrBalances){
+                        arrBalances[lang] -= Number(_shiftObject.memberObject[lang]);
+                        arrBalances[lang] += Number(this._memberObjectOfUser[lang]);
+                        if (arrBalances[lang] < 0 && (arrBalances[lang] < _dateObject.arrBalancesByPart)){
+                            // Cannot take this shift.
+                            var _acceptable = false;
+                            // Skip rest of langs 
+                            break;
+                        }
+                    }
+                    if (_acceptable){
+                        var _$tr = $('<tr></tr>');
+                        var _date = new Date(_date_shift);
+                        var _month = `${_date.getFullYear()} ${this._constants.months[_date.getMonth()]}`;
+                        var _day = `${_date.getDate()} (${this._constants.weekdays[_date.getDay()]})`;
+                        var _arrTds = [_shiftObjectRequested.memberObject.nickname, _month, _day, _shift, 'YOU'];
+                        for(var i in _arrTds){
+                            $(`<td>${_arrTds[i]}</td>`).appendTo(_$tr);
+                        }
+                        _$tr.appendTo($('#tbody-modal tr'));
+                        this._objModalBodies[_date_shift][_shift] = _$tr;
+                        // Found shiftobject for this date and shift.
+                        // Search for next shift.
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    buildModal(event) {
+        // Under $.Proxy
+        // event.target: .btn
+        var _handler = this;
+        var _$modalBody = this._$modal.find('.modal-body');
+        var _date = $(event.target).closest('.div-timeline-section').attr('id');
+        var _shift = $(event.target).text;
+        var _dateObject = this._arrDateObjects[_date];
+        var _cloned_arrBalancesByPart = JSON.parse(JSON.stringify(_dateObject.arrBalancesByPart));
+        // Check confirmable : Language
+        // Assume transaction has been executed.
+
+
+    }
+
+    checkConfirmable(_shiftObject){
+        
+    }
 }
 
 class TimelineSection {

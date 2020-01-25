@@ -13,35 +13,26 @@ class MarketItemHandler extends DBHandler
         $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
         $this->date_objects_handler = new DateObjectsHandler($master_handler, $config_handler);
         $this->load_market_items();
+        $this->setDateObjectsHandler();
     }
+
     private function load_market_items()
     {
-        // $sql = "SELECT date_shift, id_transaction, id_to, shift FROM requests_pending WHERE `status`=2 AND id_from=NULL ORDER BY time_created ASC;";
-        // $stmt = $this->querySql($sql);
-        // $arrayCallObjectsByDate = $stmt->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'RequestObject');
-        // $stmt->closeCursor();
-        // $stmt = $this->querySql($sql);
-        // $arrayPutObjectsByDate = $stmt->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'RequestObject');
-        // $stmt->closeCursor();
-
-        $sql = "SELECT id_shift, id_transaction, date_shift, shift FROM requests_pending WHERE `status`=2 AND id_to IS NULL ORDER BY time_created ASC;";
+        $sql = "SELECT id_shift, id_request FROM requests_pending WHERE `status`=2 AND id_to IS NULL ORDER BY time_created ASC;";
         $stmt = $this->querySql($sql);
-        $arrRequestsByIdShift = $stmt->fetchAll(PDO::FETCH_UNIQUE);
+        $this->arrIdRequestsByIdShift = $stmt->fetchAll(PDO::FETCH_UNIQUE);
         $stmt->closeCursor();
-        $sqlConditions = $this->genSqlConditions(array_keys($arrRequestsByIdShift), 'id_shift', 'OR');
+    }
 
-        $sql = "SELECT date_shift, date_shift, id_user, shift FROM shifts_assigned WHERE $sqlConditions AND under_request=1 AND done=0";
+    private function setDateObjectsHandler()
+    {
+        // Call after load_market_items
+        $sqlConditions = $this->genSqlConditions(array_keys($this->arrIdRequestsByIdShift), 'id_shift', 'OR');
+        $sql = "SELECT date_shift, date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE done=0 AND $sqlConditions;";
         $stmt = $this->querySql($sql);
-        $arrayPutObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart]);
+        $arrShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
         $stmt->closeCursor();
-
-        foreach ($arrayPutObjectsByDate as $arrayShiftObjects) {
-            foreach ($arrayShiftObjects as $shiftObject) {
-                $shiftObject->setMemberObj($this->arrayMemberObjectsByIdUser);
-            }
-        }
-        $this->date_objects_handler->setArrayDateObjects($arrayPutObjectsByDate);
-        ksort($this->date_objects_handler->arrayDateObjects);
+        $this->date_objects_handler->setArrayDateObjects($arrShiftObjectsByDate);
     }
 
     public function echoMarketTimeline()
@@ -113,7 +104,7 @@ class MarketItemHandler extends DBHandler
         echo '              <div class="btn-group">';
         foreach (array_keys($dateObject->arrayShiftObjectsByShift) as $shift) {
             echo "
-                                <a href='#modal' class='btn' data-toggle='modal'>$shift</a>";
+                                <a href='#modal' class='btn btn-$shift' data-toggle='modal'>$shift</a>";
         }
         echo "
                             
@@ -164,7 +155,21 @@ $market_item_handler = new MarketItemHandler($master_handler, $config_handler);
                     <h1 class="modal-title">.modal-title</h1>
                 </div>
                 <div class="modal-body">
-                    <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Corporis minus quisquam sapiente amet perspiciatis officia similique repellendus. Ea cupiditate voluptatem harum possimus, voluptas nulla, odio placeat perspiciatis totam, et vitae!</p>
+                    <table class="table table-responsive-md text-center">
+                        <thead>
+                            <tr>
+                                <th>From</th>
+                                <th>Month</th>
+                                <th>Day</th>
+                                <th>Shift</th>
+                                <th>To</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+
                 </div>
                 <div class="modal-footer"><button class="btn btn-danger" type="button" data-dismiss="modal">Close</button></div>
             </div>
