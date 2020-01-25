@@ -28,19 +28,6 @@ ksort($arrayShiftsByIdUser);
 // $arrayShiftsByIdUser[$idUser] = groupArrayByKey($arrayShiftsByIdUser[$idUser], 'date_shift');
 // }
 
-$arrayMonths = array();
-$arrayMonths[0] = "Jan";
-$arrayMonths[1] = "Feb";
-$arrayMonths[2] = "Mar";
-$arrayMonths[3] = "Apr";
-$arrayMonths[4] = "May";
-$arrayMonths[5] = "Jun";
-$arrayMonths[6] = "Jul";
-$arrayMonths[7] = "Aug";
-$arrayMonths[8] = "Sep";
-$arrayMonths[9] = "Oct";
-$arrayMonths[10] = "Nov";
-$arrayMonths[11] = "Dec";
 $arrayShifts = array('A', 'B', 'H', 'C', 'D');
 
 ?>

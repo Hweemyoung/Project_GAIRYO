@@ -5,6 +5,7 @@ body *{
 
 .col-left{
     position: relative;
+    height: 600px;
 }
 
 .div-schedule {

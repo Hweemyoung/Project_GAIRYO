@@ -137,3 +137,4 @@ class TimelinePath {
         $(`<div class="col-2"><div class="corner left-${_position}"></div></div>`).appendTo(this._$);
     }
 }
+

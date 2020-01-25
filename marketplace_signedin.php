@@ -178,5 +178,5 @@ $market_item_handler = new MarketItemHandler($master_handler, $config_handler);
 </div>
 <script src="./js/marketplace.js"></script>
 <script>
-
+const market_item_handler = new MarketItemHandler(<?=json_encode($master_handler->arrayMemberObjectsByIdUser[$master_handler->id_user])?>, <?=json_encode($market_item_handler->date_objects_handler->arrayDateObjects)?>, <?=json_encode($market_item_handler->arrIdRequestsByIdShift)?>, <?=json_encode(_arrDateObjectsRequested)?>);
 </script>

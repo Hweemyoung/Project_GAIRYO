@@ -139,7 +139,7 @@ class FormHandler {
         $(event.target).find('option:first-child').attr('disabled', true);
     }
 
-    disableIcons(){
+    disableIcons() {
         this._$btnConfirm.addClass('disabled');
         this._$iNotFound.addClass('invisible');
         this._$iTargetOverlap.addClass('invisible');
@@ -165,20 +165,68 @@ class FormHandler {
         this._$formItems.each(function (idxFormItem) {
             // New variables
             var error = false;
+            var targetOverlap = false;
+            var shiftOverlap = false;
 
             var $formItem = $(this);
             var $selectsInFormItem = $formItem.find('select');
+
+            // Check if targets are overlapped for shifts in the same shift part.
+            $.each(handler._$formItems, function (index) {
+                if (index === idxFormItem) {
+                    return true
+                }
+                var $selects = $(this).find('select');
+                if ($selects[1].value === $selectsInFormItem[1].value
+                    && $selects[2].value === $selectsInFormItem[2].value
+                    && !(handler._shiftsPart1.includes($selects[3].value) ^ handler._shiftsPart1.includes($selectsInFormItem[3]))
+                    && $selects[4].value === $selectsInFormItem[4].value) {
+                    targetOverlap = true;
+                    return false
+                }
+            });
+
+            if (targetOverlap) {
+                $formItem.find('i.i-target-overlap').removeClass('d-none');
+                handler._$iTargetOverlap.attr('title', `${$($selectsInFormItem[4]).children(`option[value="${$selectsInFormItem[4].value}"]`).html()}に２つ以上のかぶるシフトを与えています`).removeClass('invisible');
+                _ignore = true;
+                return false
+            }
+
+            // Check if a shift is transferred to multiple targets
+            $.each(handler._$formItems, function (index) {
+                if (index === idxFormItem) {
+                    return true
+                }
+                var $selects = $(this).find('select');
+                if ($selects[0].value === $selectsInFormItem[0].value
+                    && $selects[1].value === $selectsInFormItem[1].value
+                    && $selects[2].value === $selectsInFormItem[2].value
+                    && $selects[3].value === $selectsInFormItem[3].value) {
+                    shiftOverlap = true;
+                    return false
+                }
+            });
+
+            if (shiftOverlap) {
+                $formItem.find('i.i-shift-overlap').removeClass('d-none');
+                handler._$iShiftOverlap.attr('title', `${$($selectsInFormItem[0]).children(`option[value="${$selectsInFormItem[0].value}"]`).html()}の${$selectsInFormItem[1].value} ${$selectsInFormItem[2].value} ${$selectsInFormItem[3].value}を複数人に与えています`).removeClass('invisible');
+                _ignore = true;
+                return false;
+            }
+
             $.each($selectsInFormItem, function (idxSelect) {
                 // If any select is default or disabled
                 if (this.value == 0 || this.disabled) {
                     error = true;
                     return false
                 }
+
                 // If select.select-id-to has option-warning class
                 if (idxSelect == 4 && $(this).children(`option[value="${this.value}"]`).hasClass('option-warning')) {
                     var found = false;
-                    var targetOverlap = false;
-                    var shiftOverlap = false;
+
+
                     console.log(handler._$formItems);
                     // Check if there is counterpart request
                     // For each .form-item:
@@ -198,47 +246,10 @@ class FormHandler {
                             return false
                         }
                     });
-                    // Check if targets are overlapped for shifts in the same shift part.
-                    $.each(handler._$formItems, function (index) {
-                        if (index === idxFormItem) {
-                            return true
-                        }
-                        var $selects = $(this).find('select');
-                        if ($selects[1].value === $selectsInFormItem[1].value
-                            && $selects[2].value === $selectsInFormItem[2].value
-                            && !(handler._shiftsPart1.includes($selects[3].value) ^ handler._shiftsPart1.includes($selectsInFormItem[3]))
-                            && $selects[4].value === $selectsInFormItem[4].value) {
-                            targetOverlap = true;
-                            return false
-                        }
-                    });
-                    // Check if a shift is transferred to multiple targets
-                    $.each(handler._$formItems, function (index) {
-                        if (index === idxFormItem) {
-                            return true
-                        }
-                        var $selects = $(this).find('select');
-                        if ($selects[0].value === $selectsInFormItem[0].value
-                            && $selects[1].value === $selectsInFormItem[1].value
-                            && $selects[2].value === $selectsInFormItem[2].value
-                            && $selects[3].value === $selectsInFormItem[3].value) {
-                            shiftOverlap = true;
-                            return false
-                        }
-                    });
+
                     if (!found) {
                         $formItem.find('i.i-not-found').removeClass('d-none');
                         handler._$iNotFound.attr('title', `${$(this).children(`option[value="${this.value}"]`).html()}がもともと持っているシフトとかぶります`).removeClass('invisible');
-                    }
-                    if (targetOverlap) {
-                        $formItem.find('i.i-target-overlap').removeClass('d-none');
-                        handler._$iTargetOverlap.attr('title', `${$(this).children(`option[value="${this.value}"]`).html()}に２つ以上のかぶるシフトを与えています`).removeClass('invisible');
-                    }
-                    if (shiftOverlap) {
-                        $formItem.find('i.i-shift-overlap').removeClass('d-none');
-                        handler._$iShiftOverlap.attr('title', `${$($selectsInFormItem[0]).children(`option[value="${this.value}"]`).html()}の${$selectsInFormItem[1].value} ${$selectsInFormItem[2].value} ${$selectsInFormItem[3].value}を複数人に与えています`).removeClass('invisible');
-                    }
-                    if (!found || targetOverlap || shiftOverlap) {
                         error = true;
                         return false
                     }
