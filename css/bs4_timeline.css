@@ -28,33 +28,37 @@
 }
 
 .circle {
-    padding: .25rem;
-    border-radius: .25rem;
-    font-size: .75rem;
-    background-color: rgb(88, 223, 149);
-    color: #000;
-    /* max-height: 50px; */
-    z-index: 2;
+  padding: .25rem;
+  border-radius: .25rem;
+  background-color: rgba(88, 223, 149, .5);
+  color: #000;
+  /* max-height: 50px; */
+  z-index: 2;
+}
+
+.circle .div-circle-text {
+  font-size: 1rem;
+  margin: .25rem;
 }
 
 .how-it-works.row{
-    width: 100%;
-    margin: 0;
+  width: 100%;
+  margin: 0;
 }
 .timeline.row{
-    width: 100%;
-    margin: 0;
+  width: 100%;
+  margin: 0;
 }
 
 .how-it-works.row .col-2 {
   align-self: stretch;
 }
-.how-it-works.row .col-2::after {
+/* .how-it-works.row .col-2::after {
   content: "";
   position: absolute;
-  border-left: 3px solid rgb(88, 223, 149);
+  border-left: 3px solid rgba(88, 223, 149, .5);
   z-index: 1;
-}
+} */
 .how-it-works.row .col-2.bottom::after {
   height: 50%;
   left: 50%;
@@ -69,19 +73,27 @@
   left: 50%;
   top: 0;
 }
-.how-it-works.row .col-6 .row .col-put{
+/* .how-it-works.row .col-6 .row .col-put{
   background-color: rgba(255, 35, 35, .35);
-  transition: 350ms;
+  transition: 300ms;
+} */
+.col-put .btn-group .btn {
+  background-color: rgba(255, 35, 35, .35);
+  transition: 300ms;
+}
+
+.col-put .btn-group .btn:hover {
+  background-color: rgba(255, 35, 35, .5);
 }
 
 .how-it-works.row .col-6 .row .col-call{
   background-color: rgba(35, 35, 255, .35);
-  transition: 350ms;
+  transition: 300ms;
 }
 
-.how-it-works.row .col-6 .row .col-put:hover{
+/* .how-it-works.row .col-6 .row .col-put:hover{
   background-color: rgba(255, 35, 35, .5);
-}
+} */
 .how-it-works.row .col-6 .row .col-call:hover{
   background-color: rgba(35, 35, 255, .5);
 }
@@ -104,7 +116,7 @@
   height: 40px;
 }
 .timeline hr {
-  border-top: 3px solid rgb(88, 223, 149);
+  border-top: 3px solid rgba(88, 223, 149, .5);
   margin: 0;
   top: 17px;
   position: relative;
@@ -131,7 +143,7 @@
 }
 
 .timeline .corner {
-  border: 3px solid rgb(88, 223, 149);
+  border: 3px solid rgba(88, 223, 149, .5);
   width: 100%;
   position: relative;
   border-radius: 15px;
