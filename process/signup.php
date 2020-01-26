@@ -24,7 +24,7 @@ class SignupHandler extends DBHandler
 
     public function process()
     {
-        $this->dbh->query('START TRANSACTION;');
+        $this->beginTransactionIfNotIn();
         echo 'before:<br>';
         var_dump($_POST);
         $this->convertToNull();

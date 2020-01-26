@@ -4,7 +4,7 @@
 
 $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/config.php";
-require "$homedir/check_session.php";
+require_once "$homedir/check_session.php";
 require_once "$homedir/class/class_db_handler.php";
 require_once "$homedir/class/class_date_object.php";
 
@@ -39,8 +39,9 @@ class RequestsHandler extends DBHandler
     public function validateUser($id_user)
     {
         if (intval($this->idUser) !== intval($id_user)) {
-            // echo 'Error - No permission';
-            $this->redirect(false, $this->url, array('f' => 1, 'e' => 0));
+            echo 'Error - No permission';
+            // $this->redirect(false, $this->url, array('f' => 1, 'e' => 0));
+            exit;
         }
     }
 
@@ -51,9 +52,10 @@ class RequestsHandler extends DBHandler
         $stmt->execute();
         $this->arrayRequestsInTransaction = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
         if (in_array('0', array_keys($this->arrayRequestsInTransaction)) || in_array('1', array_keys($this->arrayRequestsInTransaction))) {
-            // echo "Fatal Error - Some requests had already been closed:<br>";
+            echo "Fatal Error - Some requests had already been closed:<br>";
             // var_dump($results);OK
-            $this->redirect(false, $this->url, array('f' => 1, 'e' => 1));
+            // $this->redirect(false, $this->url, array('f' => 1, 'e' => 1));
+            exit;
         }
         return true;
     }
@@ -110,7 +112,7 @@ class RequestsHandler extends DBHandler
         $sql = 'SELECT id_shift FROM requests_pending WHERE ' . $sqlConditions;
 
         // Lock. Dates will be used for checking language changes between before and after.
-        $stmt = $this->querySql('SELECT date_shift FROM shifts_assigned WHERE id_shift in (' . $sql . ') FOR UPDATE;');
+        $stmt = $this->querySql('SELECT date_shift, id_user FROM shifts_assigned WHERE id_shift in (' . $sql . ') FOR UPDATE;');
         $arrayByDateShift = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->config_handler->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
         $stmt->closeCursor();
         // Save Date Objects Before execution.
@@ -151,9 +153,9 @@ class RequestsHandler extends DBHandler
             }
         }
         if (count($this->arrayErrors)) {
-            // echo "Fatal Error - The request had already been agreed with by the user.<br>Request ID:";
-            // exit;
-            $this->redirect(false, $this->url, array('f' => 1, 'e' => 2));
+            echo "Fatal Error - The request had already been agreed with by the user.<br>Request ID:";
+            // $this->redirect(false, $this->url, array('f' => 1, 'e' => 2));
+            exit;
         }
     }
 
@@ -167,8 +169,9 @@ class RequestsHandler extends DBHandler
         } else if ($this->mode === 'agree') {
             $this->agree();
         } else {
-            // echo "Error - mode NOT understood<br>mode:";
-            $this->redirect(false, $this->url, ['f' => 1, 'e' => 3]);
+            echo "Error - mode NOT understood<br>mode:";
+            // $this->redirect(false, $this->url, ['f' => 1, 'e' => 3]);
+            exit;
         }
         echo $this->SQLS;
         $stmt = $this->querySql($this->SQLS);
@@ -179,7 +182,8 @@ class RequestsHandler extends DBHandler
         $stmt->closeCursor();
         if ($this->mode === 'decline') {
             // exit;
-            $this->redirect(true, $this->url, ['f' => 1, 's' => 2]);
+            // $this->redirect(true, $this->url, ['f' => 1, 's' => 2]);
+            exit;
         }
         $this->SQLS = '';
     }
@@ -215,7 +219,7 @@ class RequestsHandler extends DBHandler
             $stmt = $this->querySql($this->SQLS);
             if (($stmt->errorInfo())[2] === NULL) {
                 $this->arrayQuery = ['f' => 1, 's' => 1];
-                $this->redirect(true, $this->url, ['f' => 1, 's' => 1]);
+                echo 'Dont stop!';
             } else {
                 var_dump($stmt->errorInfo());
                 exit;
@@ -223,7 +227,8 @@ class RequestsHandler extends DBHandler
         } else {
             // echo "Awaiting agreements from other members.";
             $this->arrayQuery = ['f' => 1, 's' => 0];
-            $this->redirect(true, $this->url, ['f' => 1, 's' => 0]);
+            // $this->redirect(true, $this->url, ['f' => 1, 's' => 0]);
+            exit;
         }
     }
 
@@ -272,16 +277,20 @@ class RequestsHandler extends DBHandler
                 $this->arrayQuery["case$i"] = implode('_', $arrNotEnough[$i]);
             }
             // var_dump($this->arrayQuery);
-            $this->redirect(false, $this->url, $this->arrayQuery);
+            echo 'NOT ENOUGH LANGS!';
+            // $this->redirect(false, $this->url, $this->arrayQuery);
+            exit;
         } else {
             // var_dump($this->arrayQuery);
-            $this->redirect(true, $this->url, $this->arrayQuery);
+            echo 'All Good!';
+            // $this->redirect(true, $this->url, $this->arrayQuery);
+            exit;
         }
     }
 
     public function process()
     {
-        $this->dbh->query('START TRANSACTION;');
+        $this->beginTransactionIfNotIn();
         $this->execute();
         $this->executeTransaction();
         $this->checkLangsChange();

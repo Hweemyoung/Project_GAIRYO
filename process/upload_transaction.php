@@ -26,7 +26,7 @@ class TransactionUploader extends DBHandler
 
     public function process()
     {
-        $this->dbh->query('START TRANSACTION;');
+        $this->beginTransactionIfNotIn();
         var_dump($_POST);
         $sql = "SELECT id_transaction FROM requests_pending ORDER BY id_transaction DESC LIMIT 1;";
         $stmt = $this->querySql($sql);

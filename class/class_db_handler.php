@@ -24,9 +24,9 @@ class DBHandler
     public function redirect($commit, string $url, array $query)
     {
         if ($commit) {
-            $this->dbh->exec('COMMIT;');
+            $this->dbh->commit();
         } else {
-            $this->dbh->exec('ROLLBACK;');
+            $this->dbh->rollBack();
         }
         $this->dbh = NULL;
         $url = utils\genHref($this->http_host, $url, $query);
@@ -81,5 +81,14 @@ class DBHandler
             }
         }
         return '(' . implode(" $condition ", $arrayFieldValues) . ')';
+    }
+
+    public function beginTransactionIfNotIn()
+    {
+        if (!$this->dbh->inTransaction()) {
+            echo 'Starting transaction!';
+            $this->dbh->beginTransaction();
+            var_dump($this->dbh->inTransaction());
+        }
     }
 }

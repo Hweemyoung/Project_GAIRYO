@@ -1,17 +1,18 @@
 class MarketItemHandler {
 
-    constructor(_memberObjectOfUser, _arrDateObjects, _arrIdRequestsByIdShift, _arrDateObjectsRequested, _constants) {
+    constructor(_memberObjectOfUser, _arrDateObjects, _arrIdPutRequestsByIdShift, _arrIdCallRequestsByDate, _arrDateObjectsPut, _arrDateObjectsCall, _constants) {
         this._constants = _constants;
         this._memberObjectOfUser = _memberObjectOfUser;
         this._arrDateObjects = _arrDateObjects;
-        this._arrIdRequestsByIdShift = _arrIdRequestsByIdShift;
-        this._arrDateObjectsRequested = _arrDateObjectsRequested;
+        this._arrIdPutRequestsByIdShift = _arrIdPutRequestsByIdShift;
+        this._arrIdCallRequestsByDate = _arrIdCallRequestsByDate;
+        this._arrDateObjectsPut = _arrDateObjectsPut;
         this.init();
     }
 
     init() {
         this._objTbodies = {};  // this._objTbodies[_date][_shift] = $('.modal-body')
-        this._$modalBodyDisabled = $('<tr><td colspan=5>一部の必要言語が足りなくなるため、応募できません。</td><tr>');
+        this._$modalBodyDisabled = $('<tr><td colspan=5>一部の必要言語が足りなくなるため、応募できません。<i class="text-primary far fa-sad-tear fa-lg"></i></td><tr>');
         this.addEvents();
         this.setArrModalBodies();
     }
@@ -20,22 +21,24 @@ class MarketItemHandler {
         $('.div-timeline-section .btn-group .btn').click($.proxy(this.buildModal, this));
         $('#modal').on('hidden.bs.modal', function (event) {
             $('#tbody-modal').empty();
-            $('#form .btn[type="submit"]').removeClass('disabled');
-            $('#form input').removeAttr('value');
+            $('#form .btn[type="submit"]').attr('disabled', false);
+            $('#input-id-request').removeAttr('value');
+            $('#input-mode').removeAttr('value');
         });
     }
 
     setArrModalBodies() {
         // Language check
-        for (var _date_shift in this._arrDateObjectsRequested) {
+        for (var _date_shift in this._arrDateObjectsPut) {
             var _dateObject = this._arrDateObjects[_date_shift];
-            var _dateObjectRequested = this._arrDateObjectsRequested[_date_shift];
+            var _dateObjectRequested = this._arrDateObjectsPut[_date_shift];
             this._objTbodies[_date_shift] = {};
 
             for (var _shift in _dateObjectRequested.arrayShiftObjectsByShift) {
                 var _arrShiftObjectsRequested = _dateObjectRequested.arrayShiftObjectsByShift[_shift];
 
                 for (var idx in _arrShiftObjectsRequested) {
+                    var _found = false;
                     var _cloned_arrBalancesByPart = JSON.parse(JSON.stringify(_dateObject.arrBalancesByPart)); // This will be used for comparing before and after for every lang.
                     var _shiftObjectRequested = _arrShiftObjectsRequested[idx];
                     var arrBalances = _cloned_arrBalancesByPart[_shiftObjectRequested.shiftPart];
@@ -43,13 +46,15 @@ class MarketItemHandler {
                     for (var lang in arrBalances) {
                         arrBalances[lang] -= Number(_shiftObjectRequested.memberObject[lang]);
                         arrBalances[lang] += Number(this._memberObjectOfUser[lang]);
-                        if (arrBalances[lang] < 0 && (arrBalances[lang] < _dateObject.arrBalancesByPart)) {
+                        console.log('lang:', lang, 'before:', _dateObject.arrBalancesByPart[_shiftObjectRequested.shiftPart][lang], 'after:', arrBalances[lang])
+                        if (arrBalances[lang] < 0 && (arrBalances[lang] < _dateObject.arrBalancesByPart[_shiftObjectRequested.shiftPart][lang])) {
                             // Cannot take this shift.
                             var _acceptable = false;
                             // Skip rest of langs 
                             break;
                         }
                     }
+                    console.log('_acceptable:', _acceptable);
                     if (_acceptable) {
                         var _$tr = $('<tr></tr>');
                         var _date = new Date(_date_shift);
@@ -65,28 +70,37 @@ class MarketItemHandler {
                         console.log(_$tr);
                         this._objTbodies[_date_shift][_shift] = { 'ShiftObject': _shiftObjectRequested, '_$tr': _$tr };
                         // Found shiftobject for this date and shift.
+                        _found = true;
                         // Search for next shift.
                         break;
                     }
                 }
-
-                // No shiftObject found for this date+shift.
-                this._objTbodies[_date_shift][_shift] = { 'ShiftObject': null, '_$tr': this._$modalBodyDisabled };
+                if (!_found) {
+                    console.log('_$modalBodyDisabled:', this._$modalBodyDisabled);
+                    // No shiftObject found for this date+shift.
+                    this._objTbodies[_date_shift][_shift] = { 'ShiftObject': null, '_$tr': this._$modalBodyDisabled };
+                }
             }
         }
     }
 
     buildModal(event) {
         //$.proxy
+        console.log('event!');
+        // console.log(this);
         var _handler = this;
         var _date_shift = $(event.target).closest('.div-timeline-section').attr('id');
         var _shift = $(event.target).text();
         console.log(_date_shift, _shift);
-        this._objTbodies[_date_shift][_shift]._$tr.appendTo('#tbody-modal');
-        if (this._objTbodies[_date_shift][_shift].ShiftObject) {
-            $('#form input').attr('value', this._arrIdRequestsByIdShift[this._objTbodies[_date_shift][_shift].ShiftObject.id_shift]);
+        console.log(this._objTbodies[_date_shift][_shift]._$tr);
+        $('#tbody-modal').append(this._objTbodies[_date_shift][_shift]._$tr);
+
+        if (this._objTbodies[_date_shift][_shift].ShiftObject === null) {
+            $('#form .btn[type="submit"]').attr('disabled', true);
         } else {
-            $('#form .btn[type="submit"]').addClass('disabled');
+            console.log('exists!');
+            $('#input-id-request').attr('value', this._arrIdPutRequestsByIdShift[this._objTbodies[_date_shift][_shift].ShiftObject.id_shift].id_request);
+            $('#input-mode').attr('value', $(event.target).closest('.btn-group').attr('mode'));
         }
     }
 

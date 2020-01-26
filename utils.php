@@ -1,5 +1,8 @@
 <?php
 namespace utils;
+
+use Exception;
+
 $homedir = $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/config.php";
 
@@ -14,12 +17,20 @@ function randFloat(){
     return mt_rand(0, mt_getrandmax() - 1) / mt_getrandmax();
 }
 
-function groupArrayByKey($array, $key)
+function groupArrayByValue($array, $key)
 {
     $arrayGrouped = array();
     foreach ($array as $element) {
-
-        $arrayGrouped[$element[$key]][] = $element;
+        switch (gettype($element)){
+            case 'array':
+                $arrayGrouped[$element[$key]][] = $element;
+                break;
+            case 'object':
+                $arrayGrouped[$element->$key][] = $element;
+                break;
+            default:
+                throw new Exception("Date type inappropriate");
+        }
     }
     return $arrayGrouped;
 }
