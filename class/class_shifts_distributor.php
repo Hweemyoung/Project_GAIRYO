@@ -36,11 +36,11 @@ class ShiftsDistributor extends DBHandler
 
     public function process()
     {
-        $this->executeSql('START TRANSACTION;');
+        $this->beginTransactionIfNotIn();
         $this->loadApplications();
         $this->setArrDateShiftsHandlerByDate();
         $this->distributeAllShifts();
-        $this->executeSql('COMMIT;');
+        $this->dbh->commit();
     }
 
     private function loadApplications()
@@ -178,12 +178,12 @@ class ShiftsDistributor extends DBHandler
         shuffle($this->arrDateRange);
         foreach ($this->arrDateRange as $date) {
             echo "Deploying date $date<br>";
+            // Update MemberObjects
+            $this->arrDateShiftsDeployerByDate[$date]->addNumDaysProceeded();
             // Deploy all shifts
             $this->arrDateShiftsDeployerByDate[$date]->deployAllShifts();
             // Assign all shifts
             $this->arrDateShiftsDeployerByDate[$date]->assignAllShifts($this);
-            // Update MemberObjects
-            $this->arrDateShiftsDeployerByDate[$date]->updateMemberObjects();
         }
     }
 }
@@ -272,6 +272,15 @@ class DateShiftsDeployer extends DateObject
 
             // Update props for ShiftStatus
             $this->arrShiftStatusByShift[$shiftObjectDeployed->shift]->updateProps();
+            if ($this->arrShiftStatusByShift[$shiftObjectDeployed->shift]->vacancy === 1){
+                foreach($this->arrShiftAppObjectsByIdUser as $id_user => $arrShiftAppObjects){
+                    foreach($arrShiftAppObjects as $key => $shiftObject){
+                        if($shiftObject->shift === $shiftObjectDeployed->shift){
+                            unset($arrShiftAppObjects[$key]);
+                        }
+                    }
+                }
+            }
 
             // Update prop of MemberObject;
             $shiftObjectDeployed->memberObject->numDaysDeployed++;
@@ -474,8 +483,6 @@ class DateShiftsDeployer extends DateObject
             }
         }
         echo 'Filtering completed: <br>';
-        // var_dump($this->arrScoresByIdUser);
-        echo '<br>';
         if (count($this->arrScoresByIdUser) > 1) {
             $id_user_seleted = array_keys($this->arrScoresByIdUser)[mt_rand(0, count($this->arrScoresByIdUser) - 1)];
         } else {
@@ -492,7 +499,9 @@ class DateShiftsDeployer extends DateObject
         foreach ($this->arrScoresByIdUser as $id_user => $arrScores) {
             $arrItemValues[$id_user] = $arrScores[$score_item_name];
         }
-        echo "Now $score_item_name <br>";
+        var_dump($arrItemValues);
+        echo '<br>';
+        echo "Now selecting $minORmax $score_item_name <br>";
         // var_dump($arrItemValues);
         if ($minORmax === 'max') {
             $threshold = max($arrItemValues);
@@ -519,18 +528,21 @@ class DateShiftsDeployer extends DateObject
         // var_dump(array_keys($this->arrShiftAppObjectsByIdUser));
         // echo '<br>';
         echo 'Num of Candidates: ' . count($this->arrShiftAppObjectsByIdUser) . '<br>';
+        $this->arrScoresByIdUser = [];
         foreach (array_keys($this->arrShiftAppObjectsByIdUser) as $id_user) {
             $this->setArrScores($id_user);
         }
+        var_dump($this->arrScoresByIdUser);
+        echo '<br>';
     }
 
     public function setArrScores($id_user)
     {
-        $this->arrScoresByIdUser = [];
         $this->setNumShiftAppObjects($id_user);
         $this->setNumAppNotEnough($id_user);
         $this->setLangScore($id_user);
         $this->setDeployRatio($id_user);
+        
     }
 
     private function setNumShiftAppObjects($id_user)
@@ -653,7 +665,7 @@ class DateShiftsDeployer extends DateObject
         }
     }
 
-    public function updateMemberObjects()
+    public function addNumDaysProceeded()
     {
         foreach (array_keys($this->arrShiftAppObjectsByIdUser) as $id_user) {
             $this->arrayMemberObjectsByIdUser[$id_user]->numDaysProceeded++;
