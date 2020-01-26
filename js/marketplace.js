@@ -1,5 +1,4 @@
 class MarketItemHandler {
-    _$modal = $('#modal');
 
     constructor(_memberObjectOfUser, _arrDateObjects, _arrIdRequestsByIdShift, _arrDateObjectsRequested, _constants) {
         this._constants = _constants;
@@ -7,81 +6,92 @@ class MarketItemHandler {
         this._arrDateObjects = _arrDateObjects;
         this._arrIdRequestsByIdShift = _arrIdRequestsByIdShift;
         this._arrDateObjectsRequested = _arrDateObjectsRequested;
-        this._objModalBodies = {};  // this._objModalBodies[_date][_shift] = $('.modal-body')
-        this.setArrModalBodiesAcceptable();
-        this.disableBtns();
+        this.init();
     }
 
-    disableBtns(){
-        for(_date in this._objModalBodies){
-            for(_shift in _objModalBodies[_date]){
-
-            }
-        }
+    init() {
+        this._objTbodies = {};  // this._objTbodies[_date][_shift] = $('.modal-body')
+        this._$modalBodyDisabled = $('<tr><td colspan=5>一部の必要言語が足りなくなるため、応募できません。</td><tr>');
+        this.addEvents();
+        this.setArrModalBodies();
     }
 
-    setArrModalBodiesAcceptable(){
+    addEvents() {
+        $('.div-timeline-section .btn-group .btn').click($.proxy(this.buildModal, this));
+        $('#modal').on('hidden.bs.modal', function (event) {
+            $('#tbody-modal').empty();
+            $('#form .btn[type="submit"]').removeClass('disabled');
+            $('#form input').removeAttr('value');
+        });
+    }
+
+    setArrModalBodies() {
         // Language check
-        for(var _date_shift in this._arrDateObjects){
+        for (var _date_shift in this._arrDateObjectsRequested) {
             var _dateObject = this._arrDateObjects[_date_shift];
             var _dateObjectRequested = this._arrDateObjectsRequested[_date_shift];
-            this._objModalBodies[_date_shift] = {};
+            this._objTbodies[_date_shift] = {};
 
-            for(var _shift in _dateObjectRequested.arrayShiftObjectsByShift){
-                var _arrShiftObjectsRequested = this._dateObjectRequested.arrayShiftObjectsByShift[_shift];
+            for (var _shift in _dateObjectRequested.arrayShiftObjectsByShift) {
+                var _arrShiftObjectsRequested = _dateObjectRequested.arrayShiftObjectsByShift[_shift];
 
-                for(var idx in _arrShiftObjectsRequested){
+                for (var idx in _arrShiftObjectsRequested) {
                     var _cloned_arrBalancesByPart = JSON.parse(JSON.stringify(_dateObject.arrBalancesByPart)); // This will be used for comparing before and after for every lang.
                     var _shiftObjectRequested = _arrShiftObjectsRequested[idx];
                     var arrBalances = _cloned_arrBalancesByPart[_shiftObjectRequested.shiftPart];
                     var _acceptable = true;
-                    for(var lang in arrBalances){
-                        arrBalances[lang] -= Number(_shiftObject.memberObject[lang]);
+                    for (var lang in arrBalances) {
+                        arrBalances[lang] -= Number(_shiftObjectRequested.memberObject[lang]);
                         arrBalances[lang] += Number(this._memberObjectOfUser[lang]);
-                        if (arrBalances[lang] < 0 && (arrBalances[lang] < _dateObject.arrBalancesByPart)){
+                        if (arrBalances[lang] < 0 && (arrBalances[lang] < _dateObject.arrBalancesByPart)) {
                             // Cannot take this shift.
                             var _acceptable = false;
                             // Skip rest of langs 
                             break;
                         }
                     }
-                    if (_acceptable){
+                    if (_acceptable) {
                         var _$tr = $('<tr></tr>');
                         var _date = new Date(_date_shift);
+                        // console.log(_date);
                         var _month = `${_date.getFullYear()} ${this._constants.months[_date.getMonth()]}`;
                         var _day = `${_date.getDate()} (${this._constants.weekdays[_date.getDay()]})`;
                         var _arrTds = [_shiftObjectRequested.memberObject.nickname, _month, _day, _shift, 'YOU'];
-                        for(var i in _arrTds){
-                            $(`<td>${_arrTds[i]}</td>`).appendTo(_$tr);
+                        // console.log(_arrTds);
+                        for (var i in _arrTds) {
+                            // $(`<td>${_arrTds[i]}</td>`).appendTo(_$tr);
+                            _$tr.append($(`<td>${_arrTds[i]}</td>`));
                         }
-                        _$tr.appendTo($('#tbody-modal tr'));
-                        this._objModalBodies[_date_shift][_shift] = _$tr;
+                        console.log(_$tr);
+                        this._objTbodies[_date_shift][_shift] = { 'ShiftObject': _shiftObjectRequested, '_$tr': _$tr };
                         // Found shiftobject for this date and shift.
                         // Search for next shift.
                         break;
                     }
                 }
+
+                // No shiftObject found for this date+shift.
+                this._objTbodies[_date_shift][_shift] = { 'ShiftObject': null, '_$tr': this._$modalBodyDisabled };
             }
         }
     }
 
     buildModal(event) {
-        // Under $.Proxy
-        // event.target: .btn
+        //$.proxy
         var _handler = this;
-        var _$modalBody = this._$modal.find('.modal-body');
-        var _date = $(event.target).closest('.div-timeline-section').attr('id');
-        var _shift = $(event.target).text;
-        var _dateObject = this._arrDateObjects[_date];
-        var _cloned_arrBalancesByPart = JSON.parse(JSON.stringify(_dateObject.arrBalancesByPart));
-        // Check confirmable : Language
-        // Assume transaction has been executed.
-
-
+        var _date_shift = $(event.target).closest('.div-timeline-section').attr('id');
+        var _shift = $(event.target).text();
+        console.log(_date_shift, _shift);
+        this._objTbodies[_date_shift][_shift]._$tr.appendTo('#tbody-modal');
+        if (this._objTbodies[_date_shift][_shift].ShiftObject) {
+            $('#form input').attr('value', this._arrIdRequestsByIdShift[this._objTbodies[_date_shift][_shift].ShiftObject.id_shift]);
+        } else {
+            $('#form .btn[type="submit"]').addClass('disabled');
+        }
     }
 
-    checkConfirmable(_shiftObject){
-        
+    checkConfirmable(_shiftObject) {
+
     }
 }
 

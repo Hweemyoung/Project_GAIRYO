@@ -20,7 +20,7 @@ $master_handler = new MasterHandler($test, $host, $DBName, $userName, $pw, $conf
 $dbh = $master_handler->dbh;
 $signedin = $master_handler->signedin;
 $id_google = $master_handler->id_google;
-$arrayMemberObjectsByIdGoogle = $master_handler->arrayMemberObjectsByIdGoogle;
+// $arrayMemberObjectsByIdGoogle = $master_handler->arrayMemberObjectsByIdGoogle;
 $arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
 $id_user = $master_handler->id_user;
 

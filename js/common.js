@@ -84,13 +84,6 @@
 //     console.log('Image URL: ' + profile.getImageUrl());
 //     console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 // }
-class Constants {
-    weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-}
-
-const _constants = new Constants();
-
 var $liAccount = $('#li-account');
 
 function pageMoveWithPost(url = undefined, paramsObject = undefined) {

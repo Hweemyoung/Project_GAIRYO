@@ -12,11 +12,13 @@ class MarketItemHandler extends DBHandler
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
         $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
         $this->date_objects_handler = new DateObjectsHandler($master_handler, $config_handler);
-        $this->load_market_items();
+        $this->date_objects_requested_handler = new DateObjectsHandler($master_handler, $config_handler);
+        $this->setArrIdRequestsByIdShift();
+        $this->setDateObjectsRequestedHandler();
         $this->setDateObjectsHandler();
     }
 
-    private function load_market_items()
+    private function setArrIdRequestsByIdShift()
     {
         $sql = "SELECT id_shift, id_request FROM requests_pending WHERE `status`=2 AND id_to IS NULL ORDER BY time_created ASC;";
         $stmt = $this->querySql($sql);
@@ -24,10 +26,24 @@ class MarketItemHandler extends DBHandler
         $stmt->closeCursor();
     }
 
+    private function setDateObjectsRequestedHandler()
+    {
+        // Call after setArrIdRequestsByIdShift
+        $sqlConditions = $this->genSqlConditions(array_keys($this->arrIdRequestsByIdShift), 'id_shift', 'OR');
+        $sql = "SELECT date_shift, date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE done=0 AND $sqlConditions;";
+        $stmt = $this->querySql($sql);
+        $arrShiftObjectsRequestedByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
+        $stmt->closeCursor();
+        $this->date_objects_requested_handler->setArrayDateObjects($arrShiftObjectsRequestedByDate);
+
+        // Save date_shifts. This will be used for loading All ShiftObjects of dates
+        $this->arrDateShifts = array_keys($arrShiftObjectsRequestedByDate);
+    }
+
     private function setDateObjectsHandler()
     {
-        // Call after load_market_items
-        $sqlConditions = $this->genSqlConditions(array_keys($this->arrIdRequestsByIdShift), 'id_shift', 'OR');
+        // Call after setDateObjectsRequestedHandler
+        $sqlConditions = $this->genSqlConditions($this->arrDateShifts, 'date_shift', 'OR');
         $sql = "SELECT date_shift, date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE done=0 AND $sqlConditions;";
         $stmt = $this->querySql($sql);
         $arrShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
@@ -37,15 +53,15 @@ class MarketItemHandler extends DBHandler
 
     public function echoMarketTimeline()
     {
-        foreach (array_keys($this->date_objects_handler->arrayDateObjects) as $key => $date) {
+        foreach (array_keys($this->date_objects_requested_handler->arrayDateObjects) as $key => $date) {
             if ($key % 2) {
                 // $key % 2 === 0:left, 1:right
                 $classFlexRowReverse = '';
             } else {
                 $classFlexRowReverse = 'flex-row-reverse';
             }
-            $this->echoSection($this->date_objects_handler->arrayDateObjects[$date], $classFlexRowReverse);
-            if ($key === count($this->date_objects_handler->arrayDateObjects) - 1) {
+            $this->echoSection($this->date_objects_requested_handler->arrayDateObjects[$date], $classFlexRowReverse);
+            if ($key === count($this->date_objects_requested_handler->arrayDateObjects) - 1) {
                 break;
             }
             $this->echoPath($classFlexRowReverse);
@@ -56,7 +72,7 @@ class MarketItemHandler extends DBHandler
     {
 
         echo "
-        <div class='div-timeline-section'>
+        <div id='$dateObject->date' class='div-timeline-section'>
         ";
         echo "
             <div class='row no-gutters align-items-center how-it-works d-flex $classFlexRowReverse'>";
@@ -152,7 +168,7 @@ $market_item_handler = new MarketItemHandler($master_handler, $config_handler);
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title">.modal-title</h1>
+                    <h1 class="modal-title">Confirm Purchase</h1>
                 </div>
                 <div class="modal-body">
                     <table class="table table-responsive-md text-center">
@@ -165,18 +181,24 @@ $market_item_handler = new MarketItemHandler($master_handler, $config_handler);
                                 <th>To</th>
                             </tr>
                         </thead>
-                        <tbody>
-
+                        <tbody id="#tbody-modal">
                         </tbody>
                     </table>
 
                 </div>
-                <div class="modal-footer"><button class="btn btn-danger" type="button" data-dismiss="modal">Close</button></div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" title="Back" data-dismiss="modal"><i class="fas fa-undo"></i></button>
+                    <form id="form" action="./process/market_purchase.php" method="post">
+                        <input id="input-id-request" type="hidden" name="id_request">
+                        <button class="btn btn-primary" type="submit" title="Confirm"><i class="fas fa-file-export"></i></button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<script src="./js/marketplace.js"></script>
+<script src="<?=$config_handler->http_host?>/js/constants.js"></script>
+<script src="<?=$config_handler->http_host?>/js/marketplace.js"></script>
 <script>
-const market_item_handler = new MarketItemHandler(<?=json_encode($master_handler->arrayMemberObjectsByIdUser[$master_handler->id_user])?>, <?=json_encode($market_item_handler->date_objects_handler->arrayDateObjects)?>, <?=json_encode($market_item_handler->arrIdRequestsByIdShift)?>, <?=json_encode(_arrDateObjectsRequested)?>);
+    const market_item_handler = new MarketItemHandler(<?= json_encode($master_handler->arrayMemberObjectsByIdUser[$master_handler->id_user]) ?>, <?= json_encode($market_item_handler->date_objects_handler->arrayDateObjects) ?>, <?= json_encode($market_item_handler->arrIdRequestsByIdShift) ?>, <?= json_encode($market_item_handler->date_objects_requested_handler->arrayDateObjects) ?>, _constants);
 </script>

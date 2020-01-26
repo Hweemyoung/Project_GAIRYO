@@ -2,10 +2,10 @@
 class ConfigHandler
 {
     // Server
-    public $host = 'sql304.epizy.com';
-    public $DBName = 'epiz_24956964_gairyo';
-    public $userName = 'epiz_24956964';
-    public $pw = 'STZDGxr4iOPDhv';
+    // public $host = 'sql304.epizy.com';
+    // public $DBName = 'epiz_24956964_gairyo';
+    // public $userName = 'epiz_24956964';
+    // public $pw = 'STZDGxr4iOPDhv';
 
     // DB
     public $cols_required_members = ['id_google', 'nickname', 'first_name', 'middle_name', 'last_name'];

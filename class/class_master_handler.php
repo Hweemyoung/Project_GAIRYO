@@ -17,6 +17,7 @@ class MasterHandler
     {
         $this->dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
         $this->test = $test;
+        $this->config_handler = $config_handler;
         $this->homedir = $config_handler->homedir;
         foreach (array_keys($params) as $prop) {
             $this->$prop = $params[$prop];
@@ -33,6 +34,10 @@ class MasterHandler
         if ($this->signedin) {
             $this->setArrayMemberObjects();
         }
+        $this->unsetPrivates();
+    }
+
+    private function unsetPrivates(){
     }
 
     private function newSignin($id_google)
@@ -74,10 +79,11 @@ class MasterHandler
 
     private function setArrayMemberObjects()
     {
-        $sql = 'SELECT id_user, members.* FROM members WHERE `status` = 1';
+        $stringLangs = implode(', ', $this->config_handler->arrayLangsShort);
+        $sql = "SELECT id_user, id_user, nickname, `status`, $stringLangs FROM members WHERE `status` = 1";
         $this->arrayMemberObjectsByIdUser = $this->dbh->query($sql)->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'MemberObject');
-        $sql = 'SELECT id_google, members.* FROM members WHERE `status` = 1';
-        $this->arrayMemberObjectsByIdGoogle = $this->dbh->query($sql)->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'MemberObject');
+        // $sql = 'SELECT id_google, members.* FROM members WHERE `status` = 1';
+        // $this->arrayMemberObjectsByIdGoogle = $this->dbh->query($sql)->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'MemberObject');
     }
     private function set_signedin()
     {
