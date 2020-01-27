@@ -191,6 +191,7 @@ class RequestsHandler extends DBHandler
         if ($this->mode === 'decline') {
             // exit;
             // $this->redirect(true, $this->url, ['f' => 1, 's' => 2]);
+            echo 'decline!';
             exit;
         }
         $this->SQLS = '';

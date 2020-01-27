@@ -95,7 +95,7 @@ if (window.innerWidth < 576) {
     // Manipulate modal
     $(document).ready(function () {
         $('.div-columns a').click(function () {
-            $('.modal-title').html('<h1>' + $(this).children('h5').html() + '</h1>');
+            $('.modal-title').html('<h3>' + $(this).children('h5').html() + '</h3>');
             $('.modal-body').empty();
             $(this).children('ul').clone().appendTo($('.modal-body'));
             $('.modal').modal();

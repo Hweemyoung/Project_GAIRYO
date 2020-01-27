@@ -1,18 +1,21 @@
 class MarketItemHandler {
 
-    constructor(_memberObjectOfUser, _arrDateObjects, _arrIdPutRequestsByIdShift, _arrIdCallRequestsByDate, _arrDateObjectsPut, _arrDateObjectsCall, _constants) {
-        this._constants = _constants;
+    constructor(_memberObjectOfUser, _arrDateObjects, _arrIdPutRequestsByIdShift, _arrIdCallRequestsByDate, _arrDateObjectsPut, _arrDateObjectsCall, _arrShiftsByPart, _constants) {
         this._memberObjectOfUser = _memberObjectOfUser;
         this._arrDateObjects = _arrDateObjects;
         this._arrIdPutRequestsByIdShift = _arrIdPutRequestsByIdShift;
         this._arrIdCallRequestsByDate = _arrIdCallRequestsByDate;
         this._arrDateObjectsPut = _arrDateObjectsPut;
+        this._arrDateObjectsCall = _arrDateObjectsCall;
+        this._arrShiftsByPart = _arrShiftsByPart;
+        this._constants = _constants;
         this.init();
     }
 
     init() {
         this._objTbodies = {};  // this._objTbodies[_date][_shift] = $('.modal-body')
-        this._$modalBodyDisabled = $('<tr><td colspan=5>一部の必要言語が足りなくなるため、応募できません。<i class="text-primary far fa-sad-tear fa-lg"></i></td><tr>');
+        this._$modalBodyDisabledLang = $('<tr><td colspan=5>一部の必要言語が足りなくなるため、購入できません。<i class="text-primary far fa-sad-tear fa-lg"></i></td><tr>');
+        this._$modalBodyDisabledOverlap = $('<tr><td colspan=5>いま持っているシフトとかぶるため、購入できません。<i class="text-primary far fa-surprise fa-lg"></i></td><tr>');
         this.addEvents();
         this.setArrModalBodies();
     }
@@ -28,19 +31,36 @@ class MarketItemHandler {
     }
 
     setArrModalBodies() {
-        // Language check
+        // Put
         for (var _date_shift in this._arrDateObjectsPut) {
             var _dateObject = this._arrDateObjects[_date_shift];
-            var _dateObjectRequested = this._arrDateObjectsPut[_date_shift];
+            var _dateObjectPut = this._arrDateObjectsPut[_date_shift];
             this._objTbodies[_date_shift] = {};
 
-            for (var _shift in _dateObjectRequested.arrayShiftObjectsByShift) {
-                var _arrShiftObjectsRequested = _dateObjectRequested.arrayShiftObjectsByShift[_shift];
+            for (var _shift in _dateObjectPut.arrayShiftObjectsByShift) {
+                // Part overlap check
+                for (var _currentPart in this._arrShiftsByPart) {
+                    if (this._arrShiftsByPart[_currentPart].includes(_shift)) {
+                        break;
+                    }
+                }
+                if (typeof (_dateObjectPut.shiftObjectsOfMemberByPart[_currentPart]) !== undefined) {
+                    // Overlapped. Skip this shift.
+                    continue;
+                }
 
-                for (var idx in _arrShiftObjectsRequested) {
+                var _arrShiftObjectsPut = _dateObjectPut.arrayShiftObjectsByShift[_shift];
+                for (var idx in _arrShiftObjectsPut) {
+                    var _shiftObjectRequested = _arrShiftObjectsPut[idx];
+                    // If this is user's, skip this ShiftObject.
+                    if (_shiftObjectRequested.id_user === this._memberObjectOfUser.id_user) {
+                        continue;
+                    }
+
                     var _found = false;
                     var _cloned_arrBalancesByPart = JSON.parse(JSON.stringify(_dateObject.arrBalancesByPart)); // This will be used for comparing before and after for every lang.
-                    var _shiftObjectRequested = _arrShiftObjectsRequested[idx];
+
+                    // Language check
                     var arrBalances = _cloned_arrBalancesByPart[_shiftObjectRequested.shiftPart];
                     var _acceptable = true;
                     for (var lang in arrBalances) {
@@ -76,9 +96,9 @@ class MarketItemHandler {
                     }
                 }
                 if (!_found) {
-                    console.log('_$modalBodyDisabled:', this._$modalBodyDisabled);
+                    console.log('_$modalBodyDisabledLang:', this._$modalBodyDisabledLang);
                     // No shiftObject found for this date+shift.
-                    this._objTbodies[_date_shift][_shift] = { 'ShiftObject': null, '_$tr': this._$modalBodyDisabled };
+                    this._objTbodies[_date_shift][_shift] = { 'ShiftObject': null, '_$tr': this._$modalBodyDisabledLang };
                 }
             }
         }

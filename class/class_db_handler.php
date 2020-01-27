@@ -87,9 +87,9 @@ class DBHandler
     public function beginTransactionIfNotIn()
     {
         if (!$this->dbh->inTransaction()) {
-            echo 'Starting transaction!';
             $this->dbh->beginTransaction();
-            var_dump($this->dbh->inTransaction());
+            // echo 'Starting transaction!';
+            // var_dump($this->dbh->inTransaction());
         }
     }
 }

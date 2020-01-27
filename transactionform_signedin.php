@@ -127,10 +127,10 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h1 class="modal-title">Confirm Requests</h1>
+                                <h3 class="modal-title">Confirm Requests</h3>
                             </div>
                             <div class="modal-body">
-                                <table class="table table-responsive-sm table-sm table-hover text-center">
+                                <table class="table table-sm table-hover text-center">
                                     <thead>
                                         <tr>
                                             <th>From</th>

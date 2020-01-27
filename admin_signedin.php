@@ -156,10 +156,10 @@ function echoRequestsList($requests)
         
         if (!$request->checkedUser) {
             echo '
-            <a href="#" class="list-group-item list-group-item-action list-group-item-info">';
+            <a href="#" class="list-group-item d-flex justify-content-between align-items-center list-group-item-action list-group-item-info">';
         } else {
             echo '
-            <a href="#" class="list-group-item list-group-item-action">';
+            <a href="#" class="list-group-item d-flex justify-content-between align-items-center list-group-item-action">';
         }
         echo strtr('
             <span>$scriptNotice</span>',
@@ -209,10 +209,10 @@ function echoBoardList($arrayBoardItems)
         
         if (!array_values($boardItem)[count($boardItem) - 1]) {
             echo '
-            <a href="#" class="list-group-item list-group-item-action list-group-item-info">';
+            <a href="#" class="list-group-item d-flex justify-content-between align-items-center list-group-item-action list-group-item-info">';
         } else {
             echo '
-            <a href="#" class="list-group-item list-group-item-action">';
+            <a href="#" class="list-group-item d-flex justify-content-between align-items-center list-group-item-action">';
         }
         echo strtr('
             <span>$title</span>',

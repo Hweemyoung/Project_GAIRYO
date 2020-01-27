@@ -20,6 +20,7 @@ $alertHandler = new AlertHandler(__FILE__, $config_handler);
 </head>
 
 <body>
+
     <?php
     require './transactions_header.php';
     if (!$signedin) {

@@ -44,6 +44,10 @@ class MarketItemHandler extends DBHandler
         }
     }
 
+    private function sampe(){
+
+    }
+
     private function setDateObjectsRequestedHandler()
     {
         // Call after setArrIdRequests

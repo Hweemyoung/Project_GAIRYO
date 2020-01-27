@@ -3,6 +3,7 @@ $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/config.php";
 require_once "$homedir/class/class_user_oriented_request.php";
 require_once "$homedir/class/class_db_handler.php";
+require_once "$homedir/class/class_request_object.php";
 require_once "$homedir/utils.php";
 
 class TransactionsLister extends DBHandler
@@ -14,7 +15,9 @@ class TransactionsLister extends DBHandler
         $this->http_host = $config_handler->http_host;
         $this->sleepSeconds = $config_handler->sleepSeconds;
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
+        $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
         $this->url = 'process/register_agree.php';
+        $this->process();
     }
 
     public function process()
@@ -117,11 +120,12 @@ class TransactionsLister extends DBHandler
         }
     }
 
-    private function setIdTransactionForShiftPutObjects($idRequestsByIdShift)
+    private function setIdTransactionForShiftPutObjects($requestObjectsByIdShift)
     {
         foreach ($this->arrShiftPutObjectsByDate as $arrShiftPutObjects) {
             foreach ($arrShiftPutObjects as $shiftPutObject) {
-                $shiftPutObject->id_request = $idRequestsByIdShift[$shiftPutObject->id_shift];
+                $shiftPutObject->id_transaction = $requestObjectsByIdShift[$shiftPutObject->id_shift]->id_transaction;
+                // echo '$shiftPutObject->id_transaction:' . $shiftPutObject->id_transaction . '<br>';
             }
         }
     }
@@ -130,19 +134,19 @@ class TransactionsLister extends DBHandler
     {
         // Load market item
         // Put
-        $sql = "SELECT id_shift, id_request FROM requests_pending WHERE `status`=2 AND (id_from=$this->id_user AND id_to IS NULL) ORDER BY time_created ASC;";
+        $sql = "SELECT id_shift, id_from, id_to, id_transaction FROM requests_pending WHERE `status`=2 AND (id_from=$this->id_user AND id_to IS NULL) ORDER BY time_created ASC;";
         $stmt = $this->querySql($sql);
-        $idRequestsByIdShift = $stmt->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'RequestObject');
+        $requestObjectsByIdShift = $stmt->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'RequestObject');
         $stmt->closeCursor();
-        if (count($idRequestsByIdShift)) {
+        if (count($requestObjectsByIdShift)) {
             // Put: load all put shifts
-            $sqlConditions = $this->genSqlConditions(array_keys($idRequestsByIdShift), 'id_shift', 'OR');
-            $sql = "SELECT date_shift, shift, id_shift FROM shifts_assigned WHERE done=0 AND $sqlConditions;";
+            $sqlConditions = $this->genSqlConditions(array_keys($requestObjectsByIdShift), 'id_shift', 'OR');
+            $sql = "SELECT date_shift, shift, id_user, id_shift FROM shifts_assigned WHERE done=0 AND $sqlConditions;";
             $stmt = $this->querySql($sql);
             $this->arrShiftPutObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
             $stmt->closeCursor();
             // Set id_request to every ShiftObject
-            $this->setIdTransactionForShiftPutObjects($idRequestsByIdShift);
+            $this->setIdTransactionForShiftPutObjects($requestObjectsByIdShift);
         }
 
         // Call
@@ -161,49 +165,56 @@ class TransactionsLister extends DBHandler
         }
     }
 
-    public function echoListGroupPuts()
-    {
-        if (!count($this->arrShiftPutObjectsByDate)) {
-            echo 'No put item!';
-        } else {
-            echo '
-        <ul class="list-group list-group-flush">';
-            foreach ($this->arrShiftPutObjectsByDate as $date_shift => $arrShiftPutObjects) {
-                $dateTime = DateTime::createFromFormat('Y-m-d', $date_shift);
-                $date = $dateTime->format('M j');
-                $day = $dateTime->format('D');
-                $classTextColor = utils\getClassTextColorForDay($day);
-                foreach ($arrShiftPutObjects as $shiftPutObject) {
-                    $hrefDecline = utils\genHref($this->http_host, $this->url, ['mode' => 'decline', 'id_user' => $this->id_user, 'id_transaction' => $shiftPutObject->id_transaction]);
-                    echo "
-            <li class='list-group-item d-flex justify-content-between align-items-center'>
-                <span><span class='$classTextColor'>$date $day</span> $shiftPutObject->shift</span>
-                <a href='$hrefDecline' class='btn btn-danger m-1' title='Decline'><i class='fas fa-ban'></i></a>
-            </li>";
-                }
-            }
-            echo '
-        </ul>';
-        }
-    }
+    // public function echoListGroupPuts()
+    // {
+    // if (!count($this->arrShiftPutObjectsByDate)) {
+    // echo 'No put item!';
+    // } else {
+    // echo '
+    // <ul class="list-group">';
+    // foreach ($this->arrShiftPutObjectsByDate as $date_shift => $arrShiftPutObjects) {
+    // $dateTime = DateTime::createFromFormat('Y-m-d', $date_shift);
+    // $date = $dateTime->format('M j');
+    // $day = $dateTime->format('D');
+    // $classTextColor = utils\getClassTextColorForDay($day);
+    // foreach ($arrShiftPutObjects as $shiftPutObject) {
+    // $hrefDecline = utils\genHref($this->http_host, $this->url, ['mode' => 'decline', 'id_user' => $this->id_user, 'id_transaction' => $shiftPutObject->id_transaction]);
+    // echo "
+    // <li class='list-group-item d-flex justify-content-between align-items-center'>
+    // <span><span class='$classTextColor'>$date ($day)</span> $shiftPutObject->shift</span>
+    // <a href='$hrefDecline' class='btn btn-danger m-1' title='Decline'><i class='fas fa-ban'></i></a>
+    // </li>";
+    // }
+    // }
+    // echo '
+    // </ul>';
+    // }
+    // }
 
-    public function echoListGroupCalls()
+    public function echoListGroup(string $mode, array $arrObjectsByDate)
     {
-        if (!count($this->arrCallRequestsByDate)) {
-            echo 'No call item!';
+        $title = ucfirst($mode);
+        $direction = ($mode === 'put') ? 'right' : 'left';
+        $color = ($mode === 'put') ? 'success' : 'danger';
+        echo "
+        <div class='div-list-title d-flex justify-content-center'><h5 class='mr-1'>$title</h5><i class='fas fa-lg fa-hand-holding-heart'></i><i class='fas fa-lg fa-long-arrow-alt-$direction text-$color'></i></div>
+        ";
+        // $mode: 'put' or 'call'
+        if (!count($arrObjectsByDate)) {
+            echo "<div class='d-flex'><span class='mx-auto'>No $mode item!</span></div>";
         } else {
             echo '
-        <ul class="list-group list-group-flush">';
-            foreach ($this->arrCallRequestsByDate as $date_shift => $arrCallRequests) {
+        <ul class="list-group">';
+            foreach ($arrObjectsByDate as $date_shift => $arrObjects) {
                 $dateTime = DateTime::createFromFormat('Y-m-d', $date_shift);
                 $date = $dateTime->format('M j');
                 $day = $dateTime->format('D');
                 $classTextColor = utils\getClassTextColorForDay($day);
-                foreach ($arrCallRequests as $callRequest) {
-                    $hrefDecline = utils\genHref($this->http_host, $this->url, ['mode' => 'decline', 'id_user' => $this->id_user, 'id_transaction' => $callRequest->id_transaction]);
+                foreach ($arrObjects as $Object) {
+                    $hrefDecline = utils\genHref($this->http_host, $this->url, ['mode' => 'decline', 'id_user' => $this->id_user, 'id_transaction' => $Object->id_transaction]);
                     echo "
-            <li class='list-group-item d-flex justify-content-between align-items-center'>
-                <span><span class='$classTextColor'>$date $day</span> $callRequest->shift</span>
+            <li class='list-group-item d-flex justify-content-between align-items-center py-0'>
+                <span><span class='$classTextColor'>$date ($day)</span> $Object->shift</span>
                 <a href='$hrefDecline' class='btn btn-danger m-1' title='Decline'><i class='fas fa-ban'></i></a>
             </li>";
                 }
@@ -212,24 +223,48 @@ class TransactionsLister extends DBHandler
         </ul>';
         }
     }
+    // public function echoListGroupCalls()
+    // {
+    // if (!count($this->arrCallRequestsByDate)) {
+    // echo 'No call item!';
+    // } else {
+    // echo '
+    // <ul class="list-group list-group-flush">';
+    // foreach ($this->arrCallRequestsByDate as $date_shift => $arrCallRequests) {
+    // $dateTime = DateTime::createFromFormat('Y-m-d', $date_shift);
+    // $date = $dateTime->format('M j');
+    // $day = $dateTime->format('D');
+    // $classTextColor = utils\getClassTextColorForDay($day);
+    // foreach ($arrCallRequests as $callRequest) {
+    // $hrefDecline = utils\genHref($this->http_host, $this->url, ['mode' => 'decline', 'id_user' => $this->id_user, 'id_transaction' => $callRequest->id_transaction]);
+    // echo "
+    // <li class='list-group-item d-flex justify-content-between align-items-center'>
+    // <span><span class='$classTextColor'>$date ($day)</span> $callRequest->shift</span>
+    // <a href='$hrefDecline' class='btn btn-danger m-1' title='Decline'><i class='fas fa-ban'></i></a>
+    // </li>";
+    // }
+    // }
+    // echo '
+    // </ul>';
+    // }
+    // }
 }
 
 $transactions_lister = new TransactionsLister($master_handler, $config_handler);
 ?>
 
 <main>
-    <div class="container px-1">
+    <div class="container">
         <section id="section-form-choices">
             <div class="row text-center">
                 <div class="col-md-6 my-1">
-                    <a href="<?= $config_handler->http_host ?>/transactionform.php" class="btn btn-primary d-block"><i class="fas fa-plus-square"> Create Transaction</i></a>
+                    <a href="<?= $config_handler->http_host ?>/transactionform.php" class="btn btn-primary d-block"><i class="fas fa-plus-square"></i> <strong>Create Requests</strong></a>
                 </div>
                 <div class="col-md-6 my-1">
-                    <a href="<?= $config_handler->http_host ?>/marketplace.php" class="btn btn-primary d-block"><i class="fas fa-search-dollar"> Marketplace</i></a>
+                    <a href="<?= $config_handler->http_host ?>/marketplace.php" class="btn btn-primary d-block"><i class="fas fa-search-dollar"></i> <strong>Go to Marketplace</strong></a>
                 </div>
             </div>
         </section>
-        <hr>
         <section id="section-transactions-list">
             <h2>Upcoming Requests</h2>
             <table class="table table-responsive-md text-center">
@@ -272,14 +307,14 @@ $transactions_lister = new TransactionsLister($master_handler, $config_handler);
         </section>
         <section id="section-market-items">
             <h2>Your Market Item</h2>
-            <div class="row no-gutters">
+            <div class="row">
                 <!-- Put -->
-                <div class="col-sm-6">
-                    <?php $transactions_lister->echoListGroupPuts();?>
+                <div class="col-sm-6 my-2">
+                    <?php $transactions_lister->echoListGroup('put', $transactions_lister->arrShiftPutObjectsByDate); ?>
                 </div>
                 <!-- Call -->
-                <div class="col-sm-6">
-                    <?php $transactions_lister->echoListGroupCalls();?>
+                <div class="col-sm-6 my-2">
+                    <?php $transactions_lister->echoListGroup('call', $transactions_lister->arrCallRequestsByDate); ?>
                 </div>
             </div>
         </section>

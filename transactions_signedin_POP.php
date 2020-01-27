@@ -136,7 +136,7 @@ $arrayRequestsByIdTrans = prepArrayIdShiftsByIdTrans($master_handler->id_user, $
         <hr>
         <h2>Upcoming Transactions</h2>
         <section id="section-transactions-list">
-            <table class="table table-responsive-md text-center">
+            <table class="table text-center">
                 <thead>
                     <tr>
                         <th>ID</th>

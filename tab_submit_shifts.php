@@ -65,7 +65,7 @@ $arrayRecords = getArrayRecords($Y, $m);
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title"><?php if ($arrayRecords){echo 'Modify To:';} else {echo 'Confirm';}?></h1>
+                        <h3 class="modal-title"><?php if ($arrayRecords){echo 'Modify To:';} else {echo 'Confirm';}?></h3>
                     </div>
                     <div class="modal-body">
                         <table class="table table-sm table-hover text-center">
