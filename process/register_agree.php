@@ -100,8 +100,8 @@ class RequestsHandler extends DBHandler
         $this->date_objects_handler->setArrayDateObjects($arrayShiftObjectsByDate);
         // var_dump($this->date_objects_handler->arrayDateObjects);
         $arr = [];
-        foreach (array_keys($this->date_objects_handler->arrayDateObjects) as $date) {
-            $arr[$date] = clone $this->date_objects_handler->arrayDateObjects[$date];
+        foreach ($this->date_objects_handler->arrayDateObjects as $date=>$dateObject) {
+            $arr[$date] = clone $dateObject;
         }
         return $arr;
     }
@@ -110,19 +110,27 @@ class RequestsHandler extends DBHandler
     {
         // For every shift in invalidated transactions, check if there is any other requests surrounding it and update under_request.
         $sql = 'SELECT id_shift FROM requests_pending WHERE ' . $sqlConditions;
-
+        $stmt = $this->querySql($sql);
+        $arrayByIdShift = $stmt->fetchAll(PDO::FETCH_GROUP);
+        $stmt->closeCursor();
+        // if call request
+        if (array_keys($arrayByIdShift) === [NULL]){
+            // No shift object to handle. Return.
+            echo 'This is CALL request. No shift object to handle. <br>';
+            return;
+        }
         // Lock. Dates will be used for checking language changes between before and after.
         $stmt = $this->querySql('SELECT date_shift, id_user FROM shifts_assigned WHERE id_shift in (' . $sql . ') FOR UPDATE;');
-        $arrayByDateShift = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->config_handler->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
+        $arrayByDateShift = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->config_handler->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]); // array(0) if call request
         $stmt->closeCursor();
         // Save Date Objects Before execution.
         $sqlConditions = $this->genSqlConditions(array_keys($arrayByDateShift), 'date_shift', 'OR');
+        // $sqlConditions === (0) if id_shift === NULL i.e. call request
         // This sql will be used again after execution.
         $this->sqlForNumLangs = "SELECT date_shift, date_shift, shift, id_user, id_shift FROM shifts_assigned WHERE $sqlConditions FOR UPDATE;";
         // echo '<br>$this->sqlForNumLangs = ' . $this->sqlForNumLangs . '<br>';
-        $this->arrayDateObjects_before = $this->saveDateObjects();
+        $this->arrayDateObjects_before = $this->saveDateObjects(); // === [] if call request
         // Get id_shifts
-        $arrayByIdShift = $this->querySql($sql)->fetchAll(PDO::FETCH_GROUP);
         $sqlConditions = [];
         foreach (array_keys($arrayByIdShift) as $idShift) {
             $sql = "SELECT EXISTS (SELECT 1 FROM requests_pending WHERE`status`=2 AND id_shift=$idShift LIMIT 1);";
