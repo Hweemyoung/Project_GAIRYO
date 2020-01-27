@@ -3,7 +3,7 @@ namespace utils;
 
 use Exception;
 
-$homedir = $homedir = '/var/www/html/gairyo_temp';
+$homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/config.php";
 
 function customVarDump(string $varName)
