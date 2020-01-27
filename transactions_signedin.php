@@ -75,18 +75,7 @@ class TransactionsLister extends DBHandler
                         // $classBg = 'font-weight-bold';
                         $classBg = 'mark';
                     }
-                    switch ($requestObject->dateTime->format('w')) {
-                        case '0':
-                            // Sun
-                            $classText = 'text-danger';
-                            break;
-                        case '6':
-                            // Sat
-                            $classText = 'text-primary';
-                            break;
-                        default:
-                            $classText = '';
-                    }
+                    $classTextColor = utils\getClassTextColorForDay($requestObject->dateTime->format('D'));
                     echo "
         <tr id='{$requestObject->idTrans}'>";
                     if ($i === 0) {
@@ -102,7 +91,7 @@ class TransactionsLister extends DBHandler
                     $idUser = $requestObject->idUser;
                     echo "
             <td class='align-middle $classBg'>$nicknameFrom</td>
-            <td class='align-middle $classBg $classText'>$dateShift</td>
+            <td class='align-middle $classBg $classTextColor'>$dateShift</td>
             <td class='align-middle $classBg'>$shift</td>
             <td class='align-middle $classBg'>$nicknameTo</td>";
                     if ($i === 0) {
@@ -188,7 +177,7 @@ class TransactionsLister extends DBHandler
                     $hrefDecline = utils\genHref($this->http_host, $this->url, ['mode' => 'decline', 'id_user' => $this->id_user, 'id_transaction' => $shiftPutObject->id_transaction]);
                     echo "
             <li class='list-group-item d-flex justify-content-between align-items-center'>
-                <span>$date <span class='$classTextColor'>$day</span> $shiftPutObject->shift</span>
+                <span><span class='$classTextColor'>$date $day</span> $shiftPutObject->shift</span>
                 <a href='$hrefDecline' class='btn btn-danger m-1' title='Decline'><i class='fas fa-ban'></i></a>
             </li>";
                 }
@@ -214,7 +203,7 @@ class TransactionsLister extends DBHandler
                     $hrefDecline = utils\genHref($this->http_host, $this->url, ['mode' => 'decline', 'id_user' => $this->id_user, 'id_transaction' => $callRequest->id_transaction]);
                     echo "
             <li class='list-group-item d-flex justify-content-between align-items-center'>
-                <span>$date <span class='$classTextColor'>$day</span> $callRequest->shift</span>
+                <span><span class='$classTextColor'>$date $day</span> $callRequest->shift</span>
                 <a href='$hrefDecline' class='btn btn-danger m-1' title='Decline'><i class='fas fa-ban'></i></a>
             </li>";
                 }
@@ -277,18 +266,7 @@ function echoTrsTrans($arrayRequestsByIdTrans, hrefGenerator $hrefGen)
                     // $classBg = 'font-weight-bold';
                     $classBg = 'mark';
                 }
-                switch ($requestObject->dateTime->format('w')) {
-                    case '0':
-                        // Sun
-                        $classText = 'text-danger';
-                        break;
-                    case '6':
-                        // Sat
-                        $classText = 'text-primary';
-                        break;
-                    default:
-                        $classText = '';
-                }
+                $classTextColor = utils\getClassTextColorForDay($requestObject->dateTime->format('D'));
                 echo "
         <tr id='{$requestObject->idTrans}'>";
                 if ($i === 0) {
@@ -304,7 +282,7 @@ function echoTrsTrans($arrayRequestsByIdTrans, hrefGenerator $hrefGen)
                 $idUser = $requestObject->idUser;
                 echo "
             <td class='align-middle $classBg'>$nicknameFrom</td>
-            <td class='align-middle $classBg $classText'>$dateShift</td>
+            <td class='align-middle $classBg $classTextColor'>$dateShift</td>
             <td class='align-middle $classBg'>$shift</td>
             <td class='align-middle $classBg'>$nicknameTo</td>";
                 if ($i === 0) {
