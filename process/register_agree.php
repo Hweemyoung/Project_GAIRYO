@@ -40,7 +40,7 @@ class RequestsHandler extends DBHandler
     {
         if (intval($this->idUser) !== intval($id_user)) {
             echo 'Error - No permission';
-            // $this->redirect(false, $this->url, array('f' => 1, 'e' => 0));
+            $this->redirect(false, $this->url, array('f' => 1, 'e' => 0));
             exit;
         }
     }
@@ -54,7 +54,7 @@ class RequestsHandler extends DBHandler
         if (in_array('0', array_keys($this->arrayRequestsInTransaction)) || in_array('1', array_keys($this->arrayRequestsInTransaction))) {
             echo "Fatal Error - Some requests had already been closed:<br>";
             // var_dump($results);OK
-            // $this->redirect(false, $this->url, array('f' => 1, 'e' => 1));
+            $this->redirect(false, $this->url, array('f' => 1, 'e' => 1));
             exit;
         }
         return true;
@@ -162,7 +162,7 @@ class RequestsHandler extends DBHandler
         }
         if (count($this->arrayErrors)) {
             echo "Fatal Error - The request had already been agreed with by the user.<br>Request ID:";
-            // $this->redirect(false, $this->url, array('f' => 1, 'e' => 2));
+            $this->redirect(false, $this->url, array('f' => 1, 'e' => 2));
             exit;
         }
     }
@@ -178,7 +178,7 @@ class RequestsHandler extends DBHandler
             $this->agree();
         } else {
             echo "Error - mode NOT understood<br>mode:";
-            // $this->redirect(false, $this->url, ['f' => 1, 'e' => 3]);
+            $this->redirect(false, $this->url, ['f' => 1, 'e' => 3]);
             exit;
         }
         echo $this->SQLS;
@@ -190,7 +190,7 @@ class RequestsHandler extends DBHandler
         $stmt->closeCursor();
         if ($this->mode === 'decline') {
             // exit;
-            // $this->redirect(true, $this->url, ['f' => 1, 's' => 2]);
+            $this->redirect(true, $this->url, ['f' => 1, 's' => 2]);
             echo 'decline!';
             exit;
         }
@@ -236,7 +236,7 @@ class RequestsHandler extends DBHandler
         } else {
             // echo "Awaiting agreements from other members.";
             $this->arrayQuery = ['f' => 1, 's' => 0];
-            // $this->redirect(true, $this->url, ['f' => 1, 's' => 0]);
+            $this->redirect(true, $this->url, ['f' => 1, 's' => 0]);
             exit;
         }
     }
@@ -287,12 +287,12 @@ class RequestsHandler extends DBHandler
             }
             // var_dump($this->arrayQuery);
             echo 'NOT ENOUGH LANGS!';
-            // $this->redirect(false, $this->url, $this->arrayQuery);
+            $this->redirect(false, $this->url, $this->arrayQuery);
             exit;
         } else {
             // var_dump($this->arrayQuery);
             echo 'All Good!';
-            // $this->redirect(true, $this->url, $this->arrayQuery);
+            $this->redirect(true, $this->url, $this->arrayQuery);
             exit;
         }
     }

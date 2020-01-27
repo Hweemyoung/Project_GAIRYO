@@ -123,7 +123,6 @@ class DateObject
             $this->arrayShiftObjectsByShift = [];
             foreach ($arrayShiftObjectsOfDate as $shiftObject) {
                 $this->pushArrayShiftObjectByShift($shiftObject);
-                $shiftObject->memberObject->shiftObjectsByPart[$shiftObject->shiftPart][$shiftObject->shift] = $shiftObject;
             }
         }
     }

@@ -1,6 +1,7 @@
 class MarketItemHandler {
 
     constructor(_memberObjectOfUser, _arrDateObjects, _arrIdPutRequestsByIdShift, _arrIdCallRequestsByDate, _arrDateObjectsPut, _arrDateObjectsCall, _arrShiftsByPart, _constants) {
+        this._constants = _constants;
         this._memberObjectOfUser = _memberObjectOfUser;
         this._arrDateObjects = _arrDateObjects;
         this._arrIdPutRequestsByIdShift = _arrIdPutRequestsByIdShift;
@@ -8,7 +9,7 @@ class MarketItemHandler {
         this._arrDateObjectsPut = _arrDateObjectsPut;
         this._arrDateObjectsCall = _arrDateObjectsCall;
         this._arrShiftsByPart = _arrShiftsByPart;
-        this._constants = _constants;
+        console.log(this._arrShiftsByPart);
         this.init();
     }
 
@@ -16,6 +17,8 @@ class MarketItemHandler {
         this._objTbodies = {};  // this._objTbodies[_date][_shift] = $('.modal-body')
         this._$modalBodyDisabledLang = $('<tr><td colspan=5>一部の必要言語が足りなくなるため、購入できません。<i class="text-primary far fa-sad-tear fa-lg"></i></td><tr>');
         this._$modalBodyDisabledOverlap = $('<tr><td colspan=5>いま持っているシフトとかぶるため、購入できません。<i class="text-primary far fa-surprise fa-lg"></i></td><tr>');
+
+
         this.addEvents();
         this.setArrModalBodies();
     }
@@ -43,10 +46,6 @@ class MarketItemHandler {
                     if (this._arrShiftsByPart[_currentPart].includes(_shift)) {
                         break;
                     }
-                }
-                if (typeof (_dateObjectPut.shiftObjectsOfMemberByPart[_currentPart]) !== undefined) {
-                    // Overlapped. Skip this shift.
-                    continue;
                 }
 
                 var _arrShiftObjectsPut = _dateObjectPut.arrayShiftObjectsByShift[_shift];

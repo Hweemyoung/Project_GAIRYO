@@ -7,7 +7,6 @@ require_once "$homedir/utils.php";
 require_once "$homedir/class/class_martket_item_handler.php";
 
 $market_item_handler = new MarketItemHandler($master_handler, $config_handler);
-var_dump($market_item_handler->date_objects_handler->arrayDateObjects);
 ?>
 
 <div class="container">
