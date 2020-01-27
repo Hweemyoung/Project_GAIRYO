@@ -311,7 +311,7 @@ function echoAccordion($arrayShiftsByDate)
                 ', array('$btnColor' => $arrayShiftTimes[$shift]['btn-color'], '$timeStart' => $arrayShiftTimes[$shift]['time-start'], '$timeEnd' => $arrayShiftTimes[$shift]['time-end'], '$shift' => $shift));
                 foreach ($arrayShiftsByDate[$date][$shift] as $arrayShift) {
                     // var_dump($arrayShift);
-                    $nickname = $arrayMembersByIdUser[intval($arrayShift["id_user"])]['nickname'];
+                    $nickname = $arrayMembersByIdUser[$arrayShift["id_user"]]['nickname'];
                     echo "
                                                     <li>$nickname</li>";
                 }

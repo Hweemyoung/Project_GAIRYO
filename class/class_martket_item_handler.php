@@ -24,12 +24,12 @@ class MarketItemHandler extends DBHandler
     private function setArrIdRequests()
     {
         // Put
-        $sql = "SELECT id_shift, id_shift, id_from, id_to, id_request FROM requests_pending WHERE `status`=2 AND id_created<>$this->id_user AND (id_from IS NOT NULL AND id_to IS NULL) ORDER BY time_created ASC;";
+        $sql = "SELECT id_shift, id_shift, id_from, id_to, id_request FROM requests_pending WHERE `status`=2 AND (id_from IS NOT NULL AND id_to IS NULL) ORDER BY time_created ASC;";
         $stmt = $this->querySql($sql);
         $this->arrIdPutRequestsByIdShift = $stmt->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'RequestObject');
         $stmt->closeCursor();
         // Call
-        $sql = "SELECT date_shift, date_shift, shift, id_from, id_to, id_request FROM requests_pending WHERE `status`=2 AND id_created<>$this->id_user AND (id_from IS NULL AND id_to IS NOT NULL AND id_shift=NULL) ORDER BY time_created ASC;";
+        $sql = "SELECT date_shift, date_shift, shift, id_from, id_to, id_request FROM requests_pending WHERE `status`=2 AND (id_from IS NULL AND id_to IS NOT NULL AND id_shift=NULL) ORDER BY time_created ASC;";
         $stmt = $this->querySql($sql);
         $this->arrIdCallRequestsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'RequestObject');
         $stmt->closeCursor();

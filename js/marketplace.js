@@ -17,6 +17,7 @@ class MarketItemHandler {
         this._objTbodies = {};  // this._objTbodies[_date][_shift] = $('.modal-body')
         this._$modalBodyDisabledLang = $('<tr><td colspan=5>一部の必要言語が足りなくなるため、購入できません。<i class="text-primary far fa-sad-tear fa-lg"></i></td><tr>');
         this._$modalBodyDisabledOverlap = $('<tr><td colspan=5>いま持っているシフトとかぶるため、購入できません。<i class="text-primary far fa-surprise fa-lg"></i></td><tr>');
+        // this._$modalBodyDisabledIsUsers = $('<tr><td colspan=5>これはあなたの出品したシフトです。<i class="text-primary far fa-surprise fa-lg"></i></td><tr>');
 
 
         this.addEvents();
@@ -33,71 +34,111 @@ class MarketItemHandler {
         });
     }
 
+    isOverlap(_shift, _dateObject) {
+        for (var _currentPart in this._arrShiftsByPart) {
+            if (this._arrShiftsByPart[_currentPart].includes(_shift)) {
+                break;
+            }
+        }
+        var _arrShiftObjects = _dateObject.arrayShiftObjectsByShift[_shift];
+        for (var idx in _arrShiftObjects) {
+            if (_arrShiftObjects[idx].id_user === this._memberObjectOfUser.id_user || _arrShiftObjects[idx].shiftPart === _currentPart) {
+                // Overlap found.
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // isUsers(_shiftObjectRequested) {
+        // return (_shiftObjectRequested.id_user === this._memberObjectOfUser.id_user);
+    // }
+
+    notEnoughLangs(_shiftObjectRequested, arrBalancesByPart) {
+        var _cloned_arrBalancesByPart = JSON.parse(JSON.stringify(arrBalancesByPart)); // This will be used for comparing before and after for every lang.
+        var arrBalances = _cloned_arrBalancesByPart[_shiftObjectRequested.shiftPart];
+        for (var lang in arrBalances) {
+            arrBalances[lang] -= Number(_shiftObjectRequested.memberObject[lang]);
+            arrBalances[lang] += Number(this._memberObjectOfUser[lang]);
+            console.log('lang:', lang, 'before:', arrBalancesByPart[_shiftObjectRequested.shiftPart][lang], 'after:', arrBalances[lang])
+            if (arrBalances[lang] < 0 && (arrBalances[lang] < arrBalancesByPart[_shiftObjectRequested.shiftPart][lang])) {
+                // Cannot take this shift.
+                // Skip rest of langs 
+                return true;
+            }
+        }
+        return false;
+    }
+
     setArrModalBodies() {
         // Put
         for (var _date_shift in this._arrDateObjectsPut) {
+            console.log('Now date_shift:', _date_shift);
             var _dateObject = this._arrDateObjects[_date_shift];
             var _dateObjectPut = this._arrDateObjectsPut[_date_shift];
             this._objTbodies[_date_shift] = {};
 
+            var _found = false;
             for (var _shift in _dateObjectPut.arrayShiftObjectsByShift) {
+                console.log('Shift:', _shift);
                 // Part overlap check
-                for (var _currentPart in this._arrShiftsByPart) {
-                    if (this._arrShiftsByPart[_currentPart].includes(_shift)) {
-                        break;
-                    }
+                var _isOverlap = false;
+                console.log('Overlap?', this.isOverlap(_shift, _dateObject));
+                if (this.isOverlap(_shift, _dateObject)) {
+                    // Go to next shift
+                    _isOverlap = true;
+                    continue;
                 }
-
                 var _arrShiftObjectsPut = _dateObjectPut.arrayShiftObjectsByShift[_shift];
                 for (var idx in _arrShiftObjectsPut) {
-                    var _shiftObjectRequested = _arrShiftObjectsPut[idx];
-                    // If this is user's, skip this ShiftObject.
-                    if (_shiftObjectRequested.id_user === this._memberObjectOfUser.id_user) {
-                        continue;
-                    }
-
-                    var _found = false;
-                    var _cloned_arrBalancesByPart = JSON.parse(JSON.stringify(_dateObject.arrBalancesByPart)); // This will be used for comparing before and after for every lang.
+                    var _shiftObjectPut = _arrShiftObjectsPut[idx];
+                    // If this is user's, skip this ShiftObject. <- This has already been filtered by overlap stage.
+                    // var _isUsers = false;
+                    // console.log('Is User\'s?', this.isUsers(_shiftObjectPut));
+                    // if (this.isUsers(_shiftObjectPut)) {
+                        // _isUsers = true;
+                        // Go to next shiftobject
+                        // continue;
+                    // }
 
                     // Language check
-                    var arrBalances = _cloned_arrBalancesByPart[_shiftObjectRequested.shiftPart];
-                    var _acceptable = true;
-                    for (var lang in arrBalances) {
-                        arrBalances[lang] -= Number(_shiftObjectRequested.memberObject[lang]);
-                        arrBalances[lang] += Number(this._memberObjectOfUser[lang]);
-                        console.log('lang:', lang, 'before:', _dateObject.arrBalancesByPart[_shiftObjectRequested.shiftPart][lang], 'after:', arrBalances[lang])
-                        if (arrBalances[lang] < 0 && (arrBalances[lang] < _dateObject.arrBalancesByPart[_shiftObjectRequested.shiftPart][lang])) {
-                            // Cannot take this shift.
-                            var _acceptable = false;
-                            // Skip rest of langs 
-                            break;
-                        }
+                    var _notEnoughLangs = false;
+                    console.log('Not enough langs?', this.notEnoughLangs(_shiftObjectPut, _dateObject.arrBalancesByPart));
+                    if (this.notEnoughLangs(_shiftObjectPut, _dateObject.arrBalancesByPart)) {
+                        _notEnoughLangs = true;
+                        // Go to next shiftobject
+                        continue;
                     }
-                    console.log('_acceptable:', _acceptable);
-                    if (_acceptable) {
-                        var _$tr = $('<tr></tr>');
-                        var _date = new Date(_date_shift);
-                        // console.log(_date);
-                        var _month = `${_date.getFullYear()} ${this._constants.months[_date.getMonth()]}`;
-                        var _day = `${_date.getDate()} (${this._constants.weekdays[_date.getDay()]})`;
-                        var _arrTds = [_shiftObjectRequested.memberObject.nickname, _month, _day, _shift, 'YOU'];
-                        // console.log(_arrTds);
-                        for (var i in _arrTds) {
-                            // $(`<td>${_arrTds[i]}</td>`).appendTo(_$tr);
-                            _$tr.append($(`<td>${_arrTds[i]}</td>`));
-                        }
-                        console.log(_$tr);
-                        this._objTbodies[_date_shift][_shift] = { 'ShiftObject': _shiftObjectRequested, '_$tr': _$tr };
-                        // Found shiftobject for this date and shift.
-                        _found = true;
-                        // Search for next shift.
-                        break;
+                    
+                    // ShiftObject found!
+                    _found = true;
+                    var _$tr = $('<tr></tr>');
+                    var _date = new Date(_date_shift);
+                    // console.log(_date);
+                    var _month = `${_date.getFullYear()} ${this._constants.months[_date.getMonth()]}`;
+                    var _day = `${_date.getDate()} (${this._constants.weekdays[_date.getDay()]})`;
+                    var _arrTds = [_shiftObjectPut.memberObject.nickname, _month, _day, _shift, 'YOU'];
+                    // console.log(_arrTds);
+                    for (var i in _arrTds) {
+                        // $(`<td>${_arrTds[i]}</td>`).appendTo(_$tr);
+                        _$tr.append($(`<td>${_arrTds[i]}</td>`));
                     }
+                    console.log(_$tr);
+                    this._objTbodies[_date_shift][_shift] = { 'ShiftObject': _shiftObjectPut, '_$tr': _$tr };
+                    
+                    // Search for next shift.
+                    break;
                 }
-                if (!_found) {
-                    console.log('_$modalBodyDisabledLang:', this._$modalBodyDisabledLang);
-                    // No shiftObject found for this date+shift.
+            }
+            if (!_found) {
+                if (_isOverlap) {
+                    console.log('Overlapped!')
+                    this._objTbodies[_date_shift][_shift] = { 'ShiftObject': null, '_$tr': this._$modalBodyDisabledOverlap };
+                } else if (_notEnoughLangs) {
+                    console.log('Not enough langs!');
                     this._objTbodies[_date_shift][_shift] = { 'ShiftObject': null, '_$tr': this._$modalBodyDisabledLang };
+                } else {
+                    console.log('Something is really wrong...')
                 }
             }
         }

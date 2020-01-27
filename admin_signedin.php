@@ -116,7 +116,7 @@ function echoShiftMemberElements($arrayMemberObjectsByIdUser, $arrayShiftMembers
         );
         foreach ($arrayShiftMembers[$shift] as $member) {
             // var_dump(intval($member["id_user"]));
-            $nickname = $arrayMemberObjectsByIdUser[intval($member["id_user"])]->nickname;
+            $nickname = $arrayMemberObjectsByIdUser[$member["id_user"]]->nickname;
             echo strtr(
                 '
                     <li class="list-group-item">
