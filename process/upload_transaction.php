@@ -14,10 +14,10 @@ class TransactionUploader extends DBHandler
     {
         $this->dbh = $master_handler->dbh;
         $this->idUser = $master_handler->id_user;
-        $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
+        $this->http_host = $config_handler->http_host;
         $this->sleepSeconds = $config_handler->sleepSeconds;
+        $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
         $this->SQLS = '';
-        $this->http_host = 'http://' . $_SERVER['HTTP_HOST'] . '/gairyo_temp';
         $this->url = "transactions.php";
         $this->sleepSeconds = 2;
         $this->arrayFormIds = explode(',', $_POST["formIDs"]);

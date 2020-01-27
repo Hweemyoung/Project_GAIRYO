@@ -55,3 +55,17 @@ function isAssoc(array $arr)
     if (array() === $arr) return 2;
     return array_keys($arr) !== range(0, count($arr) - 1);
 }
+
+function getClassTextColorForDay($day){
+    switch ($day){
+        case 'Sun':
+            $classTextColor = 'text-danger';
+            break;
+        case 'Sat':
+            $classTextColor = 'text-primary';
+            break;
+        default:
+            $classTextColor = '';
+    }
+    return $classTextColor;
+}

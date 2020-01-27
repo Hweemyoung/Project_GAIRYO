@@ -20,8 +20,10 @@ class DateObjectsHandler
 
     public function setArrayDateObjects($arrayShiftObjectsByDate)
     {
-        foreach ($arrayShiftObjectsByDate as $date => $arrShiftObjects) {
-            $this->arrayDateObjects[$date] = new DateObject($date, $arrShiftObjects, $this->config_handler);
+        if (count($arrayShiftObjectsByDate)) {
+            foreach ($arrayShiftObjectsByDate as $date => $arrShiftObjects) {
+                $this->arrayDateObjects[$date] = new DateObject($date, $arrShiftObjects, $this->config_handler);
+            }
         }
     }
 

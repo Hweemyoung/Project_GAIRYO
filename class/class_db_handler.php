@@ -13,6 +13,7 @@ class DBHandler
     public function __construct($master_handler, $config_handler)
     {
         $this->dbh = $master_handler->dbh;
+        $this->id_user = $master_handler->id_user;
         $this->http_host = $config_handler->http_host;
         $this->sleepSeconds = $config_handler->sleepSeconds;
     }

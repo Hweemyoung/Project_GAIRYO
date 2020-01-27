@@ -14,7 +14,6 @@ class ShiftsDistributor extends DBHandler
         $this->config_handler = $config_handler;
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
         $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
-        $this->http_host = $config_handler->http_host;
         $this->m = $config_handler->m;
         $this->init();
         $this->process();
