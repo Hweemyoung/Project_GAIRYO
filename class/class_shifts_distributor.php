@@ -765,3 +765,34 @@ class ShiftStatus
         }
     }
 }
+
+class ShiftPartStatus
+{
+    $numNeeded;
+    $vacancy;
+    $arrLangs;
+    public function __construct($shiftPart, $config_handler){
+        $this->shiftPart = $shiftPart;
+        $this->numNeeded = $config_hanfder->numNeededByPart[$shiftPart];
+        $this->arrNumLangs = [];
+        $this->initArrNumLangs();
+    }
+    
+    private function initProps{
+        
+    }
+    
+    private function initArrNumLangs(){
+        foreach(array_keys($this->arrLangs) as $lang){
+            $arrNumLangs[$lang] = 0;
+        }
+    }
+    
+    public function addNumLangs($memberObject){
+        foreach($arrLangs as $lang => $numNeeded){
+            if($numNeed !== NULL){
+                $arrNumLangs[$lang] += intval($memberObject->$lang);
+            }
+        }
+    }
+}
