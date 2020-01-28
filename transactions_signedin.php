@@ -147,6 +147,8 @@ class TransactionsLister extends DBHandler
             $stmt->closeCursor();
             // Set id_request to every ShiftObject
             $this->setIdTransactionForShiftPutObjects($requestObjectsByIdShift);
+        } else {
+            $this->arrShiftPutObjectsByDate = [];
         }
 
         // Call
