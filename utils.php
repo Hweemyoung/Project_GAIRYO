@@ -69,3 +69,9 @@ function getClassTextColorForDay($day){
     }
     return $classTextColor;
 }
+
+function array_intersect_objects($arr1, $arr2){
+    return array_uintersect($arr1, $arr2, function($arr1, $arr2) {
+        return strcmp(spl_object_hash($arr1), spl_object_hash($arr2));
+    });
+}

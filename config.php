@@ -18,7 +18,8 @@ class ConfigHandler
     public $numLangs = 8; // Includes 'other'
     public $arrayLangsShort = ['cn', 'kr', 'th', 'my', 'ru', 'fr', 'de', 'other'];
     public $arrayLangsLong = ['cn' => 'Chinese', 'kr' => 'Korean', 'th' => 'Thailand', 'my' => 'Malaysian', 'ru' => 'Russian', 'fr' => 'French', 'de' => 'Deutsche', 'other' => 'Others'];
-    public $arrayLangsByPart = [['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL], ['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL]];
+    public $defaultArrLangsByPart = [['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL], ['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL]];
+    public $arrLangsByDate = [];
 
     // Shifts
     public $numOfShiftsPart = 2;
@@ -26,6 +27,8 @@ class ConfigHandler
     public $shiftsPart1 = ['C', 'D'];
     public $arrayPartNames = ['午前', '午後'];
     public $numNeededByShift = ['A' => 1, 'B' => 4, 'H' => 2, 'C' => 2, 'D' => 4];
+    public $defaultNumNeededByPart = [5, 4];
+    public $arrNumNeededByDate = [];
 
     // ConfigHandler
     public $sleepSeconds = 2;
@@ -38,7 +41,8 @@ class ConfigHandler
     // ShiftsDistributor
     public $m = '202002';
     public $arr_mshifts = [];
-    public $arrScoreItems = ['numShiftAppObjects' => 'min', 'numAppNotEnough' => 'max', 'langScore' => 'max', 'deployRatio' => 'min'];
+    public $arrScoreItems = ['appForTargetPart' => 'max', 'numShiftAppObjects' => 'min', 'langScore' => 'max', 'deployRatio' => 'min'];
+    // public $arrScoreItems = ['appForTargetPart' => 'max', 'numShiftAppObjects' => 'min', 'numAppNotEnough' => 'max', 'langScore' => 'max', 'deployRatio' => 'min'];
     // public $arrScoreItems = ['numAppNotEnough' => 'min', 'langScore' => 'max', 'deployRatio' => 'min'];
 
     public $arrayShiftsByPart;
@@ -48,11 +52,20 @@ class ConfigHandler
     {
         $http_host = $_SERVER['HTTP_HOST'] . '/' . 'gairyo_temp';
         $this->http_host = "http://$http_host";
-        foreach ($this->arrayLangsByPart as $arrLangs) {
-            arsort($arrLangs);
-        }
+        $this->arsortArrLangs();
         $this->setArrayShiftsByPart();
         $this->setArrayShiftTimes();
+    }
+
+    private function arsortArrLangs(){
+        foreach ($this->defaultArrLangsByPart as $arrLangs) {
+            arsort($arrLangs);
+        }
+        foreach($this->arrLangsByDate as $arrLangsByPart){
+            foreach($arrLangsByPart as $arrLangs){
+                arsort($arrLangs);
+            }
+        }
     }
 
     public function setArrayShiftsByPart()
@@ -82,6 +95,23 @@ class ConfigHandler
             }
         }
         return $this;
+    }
+
+    public function getNumNeeded($date, $shiftPart)
+    {
+        if (isset($this->arrNumNeededByDate[$date])) {
+            return $this->arrNumNeededByDate[$date][$shiftPart];
+        } else {
+            return $this->defaultNumNeededByPart[$shiftPart];
+        }
+    }
+
+    public function getArrayLangsByPart($date){
+        if (isset($this->arrLangsByDate[$date])) {
+            return $this->arrLangsByDate[$date];
+        } else {
+            return $this->defaultArrLangsByPart;
+        }
     }
 }
 

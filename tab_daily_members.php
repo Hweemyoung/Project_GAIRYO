@@ -31,7 +31,6 @@ class DailyMembersHandler extends DateObjectsHandler
         $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
         $this->arrayShiftTimes = $config_handler->arrayShiftTimes;
         $this->arrayPartNames = $config_handler->arrayPartNames;
-        $this->arrayLangsByPart = $config_handler->arrayLangsByPart;
         $this->arrayDateObjects = [];
         $this->setProps();
     }
@@ -403,11 +402,11 @@ class DailyMembersHandler extends DateObjectsHandler
                 echo "
                                     <div class='row no-gutters'><div class='div-grid-lang col-2'><p>$partName</p></div><div class='col-10 d-flex justify-content-center flex-wrap'>";
                 foreach ($dateObject->arrayNumLangsByPart[$idxPart] as $lang => $num) {
-                    $numNeeded = $dateObject->arrayLangsByPart[$idxPart][$lang];
-                    // $numNeeded === NULL doesn't matter
-                    if ($num === $numNeeded) {
+                    $numLangNeeded = $dateObject->arrayLangsByPart[$idxPart][$lang];
+                    // $numLangNeeded === NULL doesn't matter
+                    if ($num === $numLangNeeded) {
                         $classTextColor = 'text-warning';
-                    } elseif ($num < $numNeeded) {
+                    } elseif ($num < $numLangNeeded) {
                         $classTextColor = 'text-danger';
                     } else {
                         $classTextColor = 'text-light';

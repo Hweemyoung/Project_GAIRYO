@@ -14,7 +14,6 @@ class DateObjectsHandler
         $this->config_handler = $config_handler;
         $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
         $this->arrayShiftTimes = $config_handler->arrayShiftTimes;
-        $this->arrayLangsByPart = $config_handler->arrayLangsByPart;
         $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
     }
 
@@ -68,7 +67,7 @@ class DateObject
     {
         $this->date = $date;
         $this->config_handler = $config_handler;
-        $this->arrayLangsByPart = $config_handler->arrayLangsByPart;
+        $this->arrayLangsByPart = $config_handler->getArrayLangsByPart($date);
         $this->arrayNumLangsByPart = [];
         $this->arrayShiftObjectsByShift = [];
         $this->enoughLangsByPart = [];
@@ -133,27 +132,26 @@ class DateObject
         $this->enoughLangsByPart = [];
         $this->arrBalancesByPart = [];
         // echo $this->date .'<br>';
-
         if (count($this->arrayNumLangsByPart)) {
-            foreach ($this->arrayLangsByPart as $part => $arrLangs) {
+            foreach ($this->arrayLangsByPart as $shiftPart => $arrLangs) {
                 $partEnough = true;
-                foreach ($arrLangs as $lang => $numNeeded) {
-                    if ($numNeeded === NULL) {
+                foreach ($arrLangs as $lang => $numLangNeeded) {
+                    if ($numLangNeeded === NULL) {
                         continue;
                     }
-                    if (!isset($this->arrayNumLangsByPart[$part][$lang])) {
-                        $balance = -$numNeeded;
-                        $this->enoughLangsByPart[$part] = false;
+                    if (!isset($this->arrayNumLangsByPart[$shiftPart][$lang])) {
+                        $balance = -$numLangNeeded;
+                        $this->enoughLangsByPart[$shiftPart] = false;
                     } else {
-                        $balance = $this->arrayNumLangsByPart[$part][$lang] - $numNeeded;
+                        $balance = $this->arrayNumLangsByPart[$shiftPart][$lang] - $numLangNeeded;
                     }
                     // Negative value means not enough
-                    $this->arrBalancesByPart[$part][$lang] = $balance;
+                    $this->arrBalancesByPart[$shiftPart][$lang] = $balance;
                     if ($balance < 0) {
                         $partEnough = false;
                     }
                 }
-                $this->enoughLangsByPart[$part] = $partEnough;
+                $this->enoughLangsByPart[$shiftPart] = $partEnough;
             }
         }
         $partEnough = NULL;
