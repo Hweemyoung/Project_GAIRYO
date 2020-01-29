@@ -15,7 +15,7 @@ function randFloat()
 {
     return mt_rand(0, mt_getrandmax() - 1) / mt_getrandmax();
 }
-$sql = "SELECT id_user FROM members WHERE id_user<>0;";
+$sql = "SELECT id_user FROM members WHERE id_user<>0 AND `status`=1;";
 $stmt = $dbh->query($sql);
 $arrIdUsers = $stmt->fetchAll(PDO::FETCH_COLUMN);
 $stmt->closeCursor();

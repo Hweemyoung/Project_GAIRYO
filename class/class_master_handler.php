@@ -42,7 +42,7 @@ class MasterHandler
 
     private function newSignin($id_google)
     {
-        $sql = "SELECT id_user FROM members WHERE valid=1 AND id_google=$id_google LIMIT 1;";
+        $sql = "SELECT id_user FROM members WHERE `status`=1 AND id_google=$id_google LIMIT 1;";
         $stmt = $this->dbh->query($sql);
         $exists = $stmt->fetchAll(PDO::FETCH_COLUMN);
         $stmt->closeCursor();
