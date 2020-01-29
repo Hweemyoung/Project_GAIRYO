@@ -21,7 +21,7 @@ class DateShiftsDeployer extends DateObject
         $this->arrayShiftObjectsByShift = [];
         $this->enoughLangsByPart = [];
         $this->arrBalancesByPart = [];
-        // $this->arrShiftStatusByShift = [];
+        // $this->arrShiftStatus = [];
         $this->arrShiftAppObjectsByIdUser = [];
         $this->arrScoresByIdUser = [];
         $this->arrShiftPartStatus = [];
@@ -55,6 +55,7 @@ class DateShiftsDeployer extends DateObject
         }
         array_push($this->arrShiftAppObjectsByIdUser[$shiftObject->memberObject->id_user], $shiftObject);
         $this->pushShiftAppObjectToShiftPartStatus($shiftObject);
+        $this->pushShiftAppObjectToShiftStatus($shiftObject);
         // echo "Pushing shiftAppObject to DateShiftsDeployer... $shiftObject->date $shiftObject->shift<br>";
         // echo 'Now id_user ' . $shiftObject->memberObject->id_user . ' has ' . count($shiftObject->memberObject->arrShiftAppObjects) . ' shiftAppObjects.<br>';
         // var_dump($shiftObject->memberObjects->arrShiftAppObjects);
@@ -68,21 +69,22 @@ class DateShiftsDeployer extends DateObject
         $this->arrShiftPartStatus[$shiftObject->shiftPart]->updateProps();
     }
 
-    // public function pushShiftAppObjectToShiftStatus($shiftObject)
-    // {
-    //     if (!isset($this->arrShiftStatusByShift[$shiftObject->shift])) {
-    //         $this->arrShiftStatusByShift[$shiftObject->shift] = new ShiftStatus($shiftObject->shift, $this->config_handler);
-    //     }
-    //     $this->arrShiftStatusByShift[$shiftObject->shift]->pushArrShiftAppObjectsByIdUser($shiftObject);
-    //     $this->arrShiftStatusByShift[$shiftObject->shift]->updateProps();
-    // }
+    public function pushShiftAppObjectToShiftStatus($shiftObject)
+    {
+        $this->arrShiftStatus[$shiftObject->shift]->pushArrShiftAppObjectsByIdUser($shiftObject);
+        $this->arrShiftStatus[$shiftObject->shift]->updateProps();
+    }
 
     public function deployAllShifts()
     {
+        // Update MemberObjects: add 1 to numDaysProceeded
+        $this->addNumDaysProceeded();
         // If there is candidates AND not all parts are full
         while (count($this->arrShiftAppObjectsByIdUser) && $this->targetPart !== NULL) {
             $this->deployShift();
         }
+        // Set enough langs
+        $this->setEnoughLangsByPart(); // DateObject method
     }
 
     private function deployShift()
@@ -115,8 +117,8 @@ class DateShiftsDeployer extends DateObject
             // Push to arrayShiftObjectsByShift
             $this->pushArrayShiftObjectByShift($shiftObjectDeployed); // DateObject method
             $this->pushArrayNumLangsByPart($shiftObjectDeployed); // DateObject method: update numLangs
-            // echo 'keys of arrShiftStatusByShift<br>';
-            // var_dump($this->arrShiftStatusByShift);
+            // echo 'keys of arrShiftStatus<br>';
+            // var_dump($this->arrShiftStatus);
             // echo '<br>';
 
             // Push to ShiftPartStatus
@@ -157,7 +159,7 @@ class DateShiftsDeployer extends DateObject
             }
 
             // Update prop of MemberObject;
-            $shiftObjectDeployed->memberObject->numDaysDeployed++;
+            $shiftObjectDeployed->memberObject->addNumDaysDeployed();
         }
     }
 
@@ -239,7 +241,7 @@ class DateShiftsDeployer extends DateObject
                     continue;
                 }
                 // Check if this shift is already filled out.
-                if ($this->arrShiftStatusByShift[$shiftObject->shift]->vacancy >= 1) {
+                if ($this->arrShiftStatus[$shiftObject->shift]->vacancy >= 1) {
                     echo 'This shift is already full.<br>';
                     // Unset this shiftApp from DateShiftsDeployer::arrShiftAppObjectsByIdUser and ShiftStatus::arrShiftAppObjectsByIdUser. This can no longer be used.
                     $this->unsetShiftAppObject($shiftObject);
@@ -339,7 +341,7 @@ class DateShiftsDeployer extends DateObject
         } else {
             // echo '<br>ShiftPriority<br>';
             // echo 'Before sort:<br>';
-            // var_dump(array_keys($this->arrShiftStatusByShift));
+            // var_dump(array_keys($this->arrShiftStatus));
             // echo '<br>';
             echo 'Getting shift part priority<br>';
             uasort($arrShiftPartStatus, function ($a, $b) {
@@ -484,7 +486,7 @@ class DateShiftsDeployer extends DateObject
     {
         $this->setAppForTargetPart($id_user);
         $this->setNumShiftAppObjects($id_user);
-        // $this->setNumAppNotEnough($id_user);
+        $this->setNumAppNotEnough($id_user);
         $this->setLangScore($id_user);
         $this->setDeployRatio($id_user);
     }
@@ -531,8 +533,8 @@ class DateShiftsDeployer extends DateObject
     {
         $this->arrScoresByIdUser[$id_user]['numAppNotEnough'] = 0;
         foreach ($this->arrShiftAppObjectsByIdUser[$id_user] as $shiftObject) {
-            // echo "$this->date $shiftObject->shift" . ' Percentage:' . $this->arrShiftStatusByShift[$shiftObject->shift]->vacancy . '<br>';
-            if ($this->arrShiftStatusByShift[$shiftObject->shift]->vacancy < 1) {
+            // echo "$this->date $shiftObject->shift" . ' Percentage:' . $this->arrShiftStatus[$shiftObject->shift]->vacancy . '<br>';
+            if ($this->arrShiftStatus[$shiftObject->shift]->ratioMin < 1) {
                 $this->arrScoresByIdUser[$id_user]['numAppNotEnough']++;
             }
         }
@@ -543,7 +545,7 @@ class DateShiftsDeployer extends DateObject
         if ($this->arrayMemberObjectsByIdUser[$id_user]->numDaysProceeded === 0) {
             $this->arrScoresByIdUser[$id_user]['deployRatio'] = INF;
         } else {
-            $this->arrScoresByIdUser[$id_user]['deployRatio'] = $this->arrayMemberObjectsByIdUser[$id_user]->numDaysDeployed / $this->arrayMemberObjectsByIdUser[$id_user]->numDaysProceeded;
+            $this->arrScoresByIdUser[$id_user]['deployRatio'] = $this->arrayMemberObjectsByIdUser[$id_user]->deployRatio;
         }
     }
 
@@ -621,11 +623,11 @@ class DateShiftsDeployer extends DateObject
 
     private function setArrNumLangsAppByPart()
     {
-        if (count($this->arrShiftStatusByShift)) {
+        if (count($this->arrShiftStatus)) {
             // Initialize array
             $this->arrNumLangsAppByPart = [];
-            // var_dump($this->arrShiftStatusByShift);
-            foreach ($this->arrShiftStatusByShift as $shiftStatus) {
+            // var_dump($this->arrShiftStatus);
+            foreach ($this->arrShiftStatus as $shiftStatus) {
                 // echo $shiftObject->date . '<br>';
                 // echo '$arrShiftObjects = ';
                 // var_dump($arrShiftObjects);
@@ -642,7 +644,7 @@ class DateShiftsDeployer extends DateObject
         }
     }
 
-    public function addNumDaysProceeded()
+    private function addNumDaysProceeded()
     {
         foreach (array_keys($this->arrShiftAppObjectsByIdUser) as $id_user) {
             $this->arrayMemberObjectsByIdUser[$id_user]->numDaysProceeded++;

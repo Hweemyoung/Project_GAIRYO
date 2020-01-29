@@ -177,16 +177,12 @@ class ShiftsDistributor extends DBHandler
         shuffle($this->arrDateRange);
         foreach ($this->arrDateRange as $date) {
             echo "Deploying date $date<br>";
-            // Update MemberObjects
-            $this->arrDateShiftsDeployerByDate[$date]->addNumDaysProceeded();
             // Deploy all shifts
             $this->arrDateShiftsDeployerByDate[$date]->deployAllShifts();
-            // Set enough langs
-            $this->arrDateShiftsDeployerByDate[$date]->setEnoughLangsByPart();
             // Statistics
             $this->arrStats[$date] = $this->arrDateShiftsDeployerByDate[$date]->getStatistics();
             // Assign all shifts
-            $this->arrDateShiftsDeployerByDate[$date]->assignAllShifts($this);
+            // $this->arrDateShiftsDeployerByDate[$date]->assignAllShifts($this);
         }
         $this->getTotalStats();
     }
@@ -200,8 +196,8 @@ class ShiftsDistributor extends DBHandler
         $arrSumBalances = [];
         $arrSumDividers = [];
         $arrNumPartsNotEnoughLang = [];
-        
-        $numDays=0;
+
+        $numDays = 0;
         foreach ($this->arrStats as $date => $stats) {
             $numDays++;
             foreach ($stats[0] as $shiftPart => $shiftPartStatus) {
@@ -210,14 +206,14 @@ class ShiftsDistributor extends DBHandler
             }
             foreach ($stats[1] as $shiftPart => $arrBalances) {
                 foreach ($arrBalances as $lang => $balance) {
-                    if(!isset($arrSumBalances[$lang])){
+                    if (!isset($arrSumBalances[$lang])) {
                         $arrSumBalances[$lang] = 0;
                         $arrSumDividers[$lang] = 0;
                     }
                     $arrSumBalances[$lang] += $balance;
                     $arrSumDividers[$lang]++;
-                    if ($balance < 0){
-                        if (!isset($arrNumPartsNotEnoughLang[$lang])){
+                    if ($balance < 0) {
+                        if (!isset($arrNumPartsNotEnoughLang[$lang])) {
                             $arrNumPartsNotEnoughLang[$lang] = 0;
                             $arrNumPartsNotEnoughLangDividers[$lang] = 0;
                         }
@@ -229,13 +225,36 @@ class ShiftsDistributor extends DBHandler
 
         $aveVacancy = $aveVacancy / $divider_1;
         echo "Average vacancy: $aveVacancy<br>";
-        foreach($arrSumBalances as $lang => $sumBalance){
+        foreach ($arrSumBalances as $lang => $sumBalance) {
             $aveBal = $sumBalance / $arrSumDividers[$lang];
             echo "Average balance of part for $lang: $aveBal<br>";
         }
-        foreach($arrNumPartsNotEnoughLang as $lang => $numPartsNotEnoughLang){
+        foreach ($arrNumPartsNotEnoughLang as $lang => $numPartsNotEnoughLang) {
             $notEnoughPartRatio = $numPartsNotEnoughLang / $numDays / 2;
             echo "Not enough part ratio for $lang: $notEnoughPartRatio<br>";
         }
+        $sumDeployRatio = 0;
+        $sumSquareDeployRatio = 0;
+        $DRMin = [1];
+        $DRMax = [0];
+        foreach ($this->arrayMemberObjectsByIdUser as $id_user => $memberObject) {
+            if (in_array($id_user, ['1', '2', '25'])){
+                continue;
+            }
+            $sumDeployRatio += $memberObject->deployRatio;
+            $sumSquareDeployRatio += $memberObject->deployRatio ** 2;
+            $DRMin = ($memberObject->deployRatio < array_values($DRMin)[0]) ? [$id_user => $memberObject->deployRatio] : $DRMin;
+            $DRMax = ($memberObject->deployRatio > array_values($DRMax)[0]) ? [$id_user => $memberObject->deployRatio] : $DRMax;
+        }
+        $aveDR = $sumDeployRatio / count($this->arrayMemberObjectsByIdUser);
+        $stdevDR = sqrt($sumSquareDeployRatio / count($this->arrayMemberObjectsByIdUser) - $aveDR ** 2);
+        echo "Average DR: $aveDR<br>";
+        echo "stdev DR: $stdevDR<br>";
+        $DRMinVal = array_values($DRMin)[0];
+        $DRMinUser = array_keys($DRMin)[0];
+        $DRMaxVal = array_values($DRMax)[0];
+        $DRMaxUser = array_keys($DRMax)[0];
+        echo "DR Min: User $DRMinUser Value: $DRMinVal<br>";
+        echo "DR Min: User $DRMaxUser Value: $DRMaxVal<br>";
     }
 }

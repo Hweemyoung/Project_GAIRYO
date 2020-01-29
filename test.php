@@ -7,4 +7,4 @@ $temp1 = new TempClass();
 $temp2 = new TempClass();
 $temp3 = new TempClass();
 
-var_dump($temp1->prop1);
+var_dump(3**2);

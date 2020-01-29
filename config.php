@@ -42,8 +42,8 @@ class ConfigHandler
     // ShiftsDistributor
     public $m = '202002';
     public $arr_mshifts = [];
-    public $arrScoreItems = ['appForTargetPart' => 'max', 'numShiftAppObjects' => 'min', 'langScore' => 'max', 'deployRatio' => 'min'];
-    // public $arrScoreItems = ['appForTargetPart' => 'max', 'numShiftAppObjects' => 'min', 'numAppNotEnough' => 'max', 'langScore' => 'max', 'deployRatio' => 'min'];
+    // public $arrScoreItems = ['appForTargetPart' => 'max', 'numShiftAppObjects' => 'min', 'langScore' => 'max', 'deployRatio' => 'min'];
+    public $arrScoreItems = ['appForTargetPart' => 'max', 'numShiftAppObjects' => 'min', 'numAppNotEnough' => 'max', 'langScore' => 'max', 'deployRatio' => 'min'];
     // public $arrScoreItems = ['numAppNotEnough' => 'min', 'langScore' => 'max', 'deployRatio' => 'min'];
 
     public $arrayShiftsByPart;

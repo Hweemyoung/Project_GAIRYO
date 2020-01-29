@@ -22,7 +22,7 @@ $market_item_handler = new MarketItemHandler($master_handler, $config_handler);
                     <h3 class="modal-title">Confirm Purchase</h3>
                 </div>
                 <div class="modal-body">
-                    <table class="table text-center">
+                    <table class="table table-responsive-sm text-center">
                         <thead>
                             <tr>
                                 <th>From</th>

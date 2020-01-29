@@ -75,27 +75,28 @@ class ShiftPartStatus
     {
         // Call after loop of pushArrShiftAppObjectsByIdUser method.
         // Update properties
+        $this->currentNum = count($this->arrShiftObjectsByIdUser);
+        $this->numApplicants = count($this->arrShiftAppObjectsByIdUser);
         $this->setVacancy();
         $this->setPercentApp();
-        $this->numApplicants = count($this->arrShiftAppObjectsByIdUser);
     }
 
     private function setVacancy()
     {
         // echo $this->numNeeded;
-        if (count($this->arrShiftObjectsByIdUser) === $this->numNeeded) {
+        if ($this->currentNum === $this->numNeeded) {
             $this->vacancy = 1;
         } else {
-            $this->vacancy = count($this->arrShiftObjectsByIdUser) / $this->numNeeded;
+            $this->vacancy = $this->currentNum / $this->numNeeded;
         }
     }
 
     private function setPercentApp()
     {
-        if (count($this->arrShiftAppObjectsByIdUser) === ($this->numNeeded - count($this->arrShiftObjectsByIdUser))) {
-            $this->percentApp = 1;
+        if ($this->numNeeded === $this->currentNum){
+            $this->percentApp = INF;
         } else {
-            $this->percentApp = count($this->arrShiftAppObjectsByIdUser) / ($this->numNeeded - count($this->arrShiftObjectsByIdUser));
+            $this->percentApp = ($this->numApplicants === ($this->numNeeded - $this->currentNum)) ? 1 : $this->numApplicants / ($this->numNeeded - $this->currentNum);
         }
     }
 }
