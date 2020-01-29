@@ -19,8 +19,8 @@ class MasterHandler
         $this->test = $test;
         $this->config_handler = $config_handler;
         $this->homedir = $config_handler->homedir;
-        foreach (array_keys($params) as $prop) {
-            $this->$prop = $params[$prop];
+        foreach ($params as $prop => $val) {
+            $this->$prop = $val;
         }
         if ($this->test) {
             // id_user, id_google must be given via array params

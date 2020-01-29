@@ -29,6 +29,7 @@ class DBHandler
         } else {
             $this->dbh->rollBack();
         }
+        $this->executeSql('UNLOCK TABLES;');
         $this->dbh = NULL;
         $url = utils\genHref($this->http_host, $url, $query);
         echo $url;

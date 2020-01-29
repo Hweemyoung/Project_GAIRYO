@@ -3,8 +3,4 @@ class TempClass{
     public $prop1;
 }
 
-$temp1 = new TempClass();
-$temp2 = new TempClass();
-$temp3 = new TempClass();
-
-var_dump(3**2);
+var_dump(intval(' '));
