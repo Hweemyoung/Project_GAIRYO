@@ -182,7 +182,7 @@ class ShiftsDistributor extends DBHandler
             // Statistics
             $this->arrStats[$date] = $this->arrDateShiftsDeployerByDate[$date]->getStatistics();
             // Assign all shifts
-            // $this->arrDateShiftsDeployerByDate[$date]->assignAllShifts($this);
+            $this->arrDateShiftsDeployerByDate[$date]->assignAllShifts($this);
         }
         $this->getTotalStats();
     }
@@ -238,7 +238,7 @@ class ShiftsDistributor extends DBHandler
         $DRMin = [1];
         $DRMax = [0];
         foreach ($this->arrayMemberObjectsByIdUser as $id_user => $memberObject) {
-            if (in_array($id_user, ['1', '2', '25'])){
+            if ($id_user === 0){
                 continue;
             }
             $sumDeployRatio += $memberObject->deployRatio;
@@ -255,6 +255,6 @@ class ShiftsDistributor extends DBHandler
         $DRMaxVal = array_values($DRMax)[0];
         $DRMaxUser = array_keys($DRMax)[0];
         echo "DR Min: User $DRMinUser Value: $DRMinVal<br>";
-        echo "DR Min: User $DRMaxUser Value: $DRMaxVal<br>";
+        echo "DR Max: User $DRMaxUser Value: $DRMaxVal<br>";
     }
 }

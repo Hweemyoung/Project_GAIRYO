@@ -14,7 +14,7 @@ function randomDateTimeInRange(DateTime $start, DateTime $end){
 }
 
 $start = new DateTime();
-$end = new DateTime('2020-01-15');
+$end = new DateTime('2020-02-15');
 $shifts = ['A', 'B', 'H', 'C', 'D'];
 $num_shifts = 30;
 

@@ -40,7 +40,7 @@ class ConfigHandler
     public $dayEnd = 'Sun';
 
     // ShiftsDistributor
-    public $m = '202002';
+    public $m = '202001';
     public $arr_mshifts = [];
     // public $arrScoreItems = ['appForTargetPart' => 'max', 'numShiftAppObjects' => 'min', 'langScore' => 'max', 'deployRatio' => 'min'];
     public $arrScoreItems = ['appForTargetPart' => 'max', 'numShiftAppObjects' => 'min', 'numAppNotEnough' => 'max', 'langScore' => 'max', 'deployRatio' => 'min'];

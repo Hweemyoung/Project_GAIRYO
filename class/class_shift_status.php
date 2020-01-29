@@ -6,7 +6,7 @@ class ShiftStatus
     public $numMax; // Could be NULL
     public $numNeeded;// Could be NULL
     public $numApplicants;
-    public $vacancy; // <1: insufficient int(1): full. Could be INF
+    public $vacancy; // <1: vacant or unlimited int(1): full.
     public $ratioMin; // <1: insufficient int(1): fitted. Could be INF
 
     public function __construct($shift, $shiftPart, $config_handler)
@@ -75,7 +75,7 @@ class ShiftStatus
                 $this->vacancy = count($this->arrShiftObjectsByIdUser) / $this->numMax;
             }
         } else {
-            $this->vacancy = INF;
+            $this->vacancy = 0;
         }
     }
 

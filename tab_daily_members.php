@@ -47,11 +47,12 @@ class DailyMembersHandler extends DateObjectsHandler
         $this->setPageMaxAndMaxYear();
         $this->setPage();
         $this->setDateRange();
-        $this->setArrayMemberObjectsByIdUser();
+        // $this->setArrayMemberObjectsByIdUser();
         $sql = "SELECT date_shift, date_shift, id_user, shift FROM shifts_assigned WHERE date_shift >= ? AND date_shift <= ? ORDER BY date_shift ASC";
         $stmt = $this->dbh->prepare($sql);
         $stmt->execute(array($this->dateStart, $this->dateEnd));
         // var_dump($stmt->errorInfo());
+        // var_dump($this->arrayMemberObjectsByIdUser);
         $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
         $this->setArrayDateObjects($arrayShiftObjectsByDate);
     }
@@ -104,12 +105,6 @@ class DailyMembersHandler extends DateObjectsHandler
         // calculate searched day
         $dateTimeOfDay = new DateTime(date('Y-m-d', strtotime("+$weeksOffset week", $firstDate)));
         return $dateTimeOfDay;
-    }
-
-    private function setArrayMemberObjectsByIdUser()
-    {
-        $sql = 'SELECT id_user, members.* FROM members WHERE `status` = 1';
-        $this->arrayMemberObjectsByIdUser = $this->dbh->query($sql)->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'MemberObject');
     }
 
     // public function setArrayDateObjects()

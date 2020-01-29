@@ -12,7 +12,7 @@ class MasterHandler
     public $signedin;
     public $id_google;
     public $arrayMemberObjectsByIdUser;
-    public $arrayMemberObjectsByIdGoogle;
+    // public $arrayMemberObjectsByIdGoogle;
     public function __construct($test, string $host, string $DBName, string $userName, string $pw, ConfigHandler $config_handler, array $params)
     {
         $this->dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
@@ -80,7 +80,7 @@ class MasterHandler
     private function setArrayMemberObjects()
     {
         $stringLangs = implode(', ', $this->config_handler->arrayLangsShort);
-        $sql = "SELECT id_user, id_user, nickname, `status`, $stringLangs FROM members WHERE `status` = 1";
+        $sql = "SELECT id_user, id_user, nickname, $stringLangs FROM members WHERE `status`=1;";
         $this->arrayMemberObjectsByIdUser = $this->dbh->query($sql)->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'MemberObject');
         // $sql = 'SELECT id_google, members.* FROM members WHERE `status` = 1';
         // $this->arrayMemberObjectsByIdGoogle = $this->dbh->query($sql)->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'MemberObject');

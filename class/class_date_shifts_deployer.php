@@ -114,6 +114,8 @@ class DateShiftsDeployer extends DateObject
             // No valid shift found for this member.
             return;
         } else {
+            $currentVac = $this->arrShiftStatus[$shiftObjectDeployed->shift]->vacancy;
+            echo "Shift deployed: $shiftObjectDeployed->shift, current shift status vacancy: $currentVac<br>";
             // Push to arrayShiftObjectsByShift
             $this->pushArrayShiftObjectByShift($shiftObjectDeployed); // DateObject method
             $this->pushArrayNumLangsByPart($shiftObjectDeployed); // DateObject method: update numLangs
@@ -310,29 +312,61 @@ class DateShiftsDeployer extends DateObject
         return [$shiftPart, $arrShiftObjectsFiltered];
     }
 
-    private function getVacantShiftParts()
+    private function getVacantShiftPartStatus()
     {
-        $arrShiftPartStatus = $this->arrShiftPartStatus;
-        foreach ($arrShiftPartStatus as $shiftPart => $shiftPartStatus) {
-            if ($shiftPartStatus->vacancy >= 1) {
-                unset($arrShiftPartStatus[$shiftPart]);
+        $arrShiftPartStatusVacant = $this->arrShiftPartStatus;
+        foreach ($arrShiftPartStatusVacant as $shiftPart => $shiftPartStatus) {
+            if ($shiftPartStatus->vacancy === 1 || $shiftPartStatus->vacancy > 1) {
+                unset($arrShiftPartStatusVacant[$shiftPart]);
             }
         }
-        // if(!count($arrShiftPartStatus)){
+        // if(!count($arrShiftPartStatusVacant)){
         // echo "All shift parts are full: No options to decide shift.<br>";
         // return false;
         // }
-        return $arrShiftPartStatus;
+        return $arrShiftPartStatusVacant;
+    }
+
+    private function getVacantShiftStatus(){
+        $arrShiftStatusVacant = $this->arrShiftStatus;
+        foreach ($arrShiftStatusVacant as $shift => $shiftStatus) {
+            if ($shiftStatus->vacancy === 1 || $shiftStatus->vacancy > 1) {
+                $hasShift = in_array($shift, array_keys($arrShiftStatusVacant));
+                echo "arrShiftStatusVacant has $shift: ";
+                var_dump($hasShift);
+                echo "Shift $shift is already full: Vacancy = $shiftStatus->vacancy<br>";
+
+                unset($arrShiftStatusVacant[$shift]);
+
+                $hasShift = in_array($shift, array_keys($arrShiftStatusVacant));
+                echo "arrShiftStatusVacant has $shift: ";
+                var_dump($hasShift);
+                echo '<br>';
+            }
+        }
+        echo 'num of vacant shift status: ' . count($arrShiftStatusVacant) . '<br>';
+        return $arrShiftStatusVacant;
     }
 
     private function decideShift($arrShiftObjectsFiltered)
     {
         // Get vacant ShiftPartStatus
-        $arrShiftPartStatus = $this->getVacantShiftParts();
+        $arrShiftPartStatusVacant = $this->getVacantShiftPartStatus();
         // Filter $arrShiftObjectsFiltered
-        array_filter($arrShiftObjectsFiltered, function ($shiftObject) use ($arrShiftPartStatus) {
-            return in_array($shiftObject->shiftPart, array_keys($arrShiftPartStatus));
-        });
+        foreach($arrShiftObjectsFiltered as $key => $shiftObject){
+            if (!array_key_exists($shiftObject->shiftPart, $arrShiftPartStatusVacant)){
+                unset($arrShiftObjectsFiltered[$key]);
+            }
+        }
+        // Get vacant ShiftStatus
+        $arrShiftStatusVacant = $this->getVacantShiftStatus();
+        // Filter $arrShiftObjectsFiltered
+        foreach($arrShiftObjectsFiltered as $key => $shiftObject){
+            if (!array_key_exists($shiftObject->shift, $arrShiftStatusVacant)){
+                unset($arrShiftObjectsFiltered[$key]);
+            }
+        }
+
         if (count($arrShiftObjectsFiltered) === 0) {
             echo 'All shifts have been filtered and no valid shift found.<br>';
             return false;
@@ -344,33 +378,33 @@ class DateShiftsDeployer extends DateObject
             // var_dump(array_keys($this->arrShiftStatus));
             // echo '<br>';
             echo 'Getting shift part priority<br>';
-            uasort($arrShiftPartStatus, function ($a, $b) {
+            uasort($arrShiftPartStatusVacant, function ($a, $b) {
                 if ($a->percentApp == $b->percentApp) {
                     return 0;
                 }
                 return ($a->percentApp < $b->percentApp) ? -1 : 1;
             });
             echo 'After sort:<br>';
-            foreach ($arrShiftPartStatus as $shiftPartStatus) {
+            foreach ($arrShiftPartStatusVacant as $shiftPartStatus) {
                 echo "$shiftPartStatus->shiftPart $shiftPartStatus->percentApp<br>";
             }
             echo '<br>';
-            $shiftPartPriority = array_keys($arrShiftPartStatus);
+            $shiftPartPriority = array_keys($arrShiftPartStatusVacant);
 
             // Shift prioirity
             echo 'Getting shift priority by ratioMin<br>';
-            uasort($this->arrShiftStatus, function ($a, $b) {
+            uasort($arrShiftStatusVacant, function ($a, $b) {
                 if ($a->ratioMin == $b->ratioMin) {
                     return 0;
                 }
                 return ($a->ratioMin < $b->ratioMin) ? -1 : 1;
             });
             echo 'After sort:<br>';
-            foreach ($this->arrShiftStatus as $shiftStatus) {
+            foreach ($arrShiftStatusVacant as $shiftStatus) {
                 echo "$shiftStatus->shift $shiftStatus->ratioMin<br>";
             }
             echo '<br>';
-            $shiftPriority = array_keys($this->arrShiftStatus);
+            $shiftPriority = array_keys($arrShiftStatusVacant);
             // echo '$arrShiftObjectsFiltered';
             // echo 'Before sort:<br>';
             // var_dump($arrShiftObjectsFiltered);

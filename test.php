@@ -2,5 +2,6 @@
 class TempClass{
     public $prop1;
 }
-
-var_dump(intval(' '));
+$homedir = '/var/www/html/gairyo_temp';
+$csv = array_map('str_getcsv', file("$homedir/data/csv/members_new.csv"));
+var_dump($csv);

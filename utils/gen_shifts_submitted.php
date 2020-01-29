@@ -15,17 +15,20 @@ function randFloat()
 {
     return mt_rand(0, mt_getrandmax() - 1) / mt_getrandmax();
 }
-
-foreach (range(3, 24) as $id_user) {
+$sql = "SELECT id_user FROM members WHERE id_user<>0;";
+$stmt = $dbh->query($sql);
+$arrIdUsers = $stmt->fetchAll(PDO::FETCH_COLUMN);
+$stmt->closeCursor();
+foreach ($arrIdUsers as $id_user) {
     $columns = 'id_user, m';
-    $m = '202002';
+    $m = '202001';
     $fields = "$id_user, '$m'";
     foreach ($arrayDates as $date) {
-        if (randFloat() > .5) {
+        if (randFloat() > .72) {
             continue;
         } else {
             foreach ($arrayShifts as $shift) {
-                if (randFloat() > .5) {
+                if (randFloat() > .6) {
                     $column = strval($date) . $shift;
                     $columns = $columns . ',' . $column;
                     $fields = $fields . ',' . '1';
