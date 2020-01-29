@@ -230,8 +230,16 @@ class DateShiftsDeployer extends DateObject
             $arrKeyPartsApp = [];
             $arrShiftAppObjectsByPart = [];
             foreach ($this->arrShiftAppObjectsByIdUser[$id_user_seleted] as $shiftObject) {
+                // Check if this shift part is already filled out.
+                if ($this->arrShiftPartStatus[$shiftObject->shiftPart]->vacancy >= 1 ) {
+                    echo 'This shift PART is already full.<br>';
+                    // Unset this shiftApp from DateShiftsDeployer::arrShiftAppObjectsByIdUser and ShiftStatus::arrShiftAppObjectsByIdUser. This can no longer be used.
+                    $this->unsetShiftAppObject($shiftObject);
+                    // Search for next shift
+                    continue;
+                }
                 // Check if this shift is already filled out.
-                if ($this->arrShiftPartStatus[$shiftObject->shiftPart]->vacancy >= 1) {
+                if ($this->arrShiftStatusByShift[$shiftObject->shift]->vacancy >= 1) {
                     echo 'This shift is already full.<br>';
                     // Unset this shiftApp from DateShiftsDeployer::arrShiftAppObjectsByIdUser and ShiftStatus::arrShiftAppObjectsByIdUser. This can no longer be used.
                     $this->unsetShiftAppObject($shiftObject);
