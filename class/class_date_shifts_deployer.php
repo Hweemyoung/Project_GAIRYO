@@ -2,6 +2,7 @@
 $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/class/class_date_object.php";
 require_once "$homedir/class/class_shift_part_status.php";
+require_once "$homedir/class/class_shift_status.php";
 require_once "$homedir/config.php";
 require_once "$homedir/utils.php";
 
@@ -24,7 +25,9 @@ class DateShiftsDeployer extends DateObject
         $this->arrShiftAppObjectsByIdUser = [];
         $this->arrScoresByIdUser = [];
         $this->arrShiftPartStatus = [];
+        $this->arrShiftStatus = [];
         $this->setArrShiftPartStatus();
+        $this->setArrShiftStatus();
     }
 
     private function setArrShiftPartStatus()
@@ -32,6 +35,16 @@ class DateShiftsDeployer extends DateObject
         for ($shiftPart = 0; $shiftPart < $this->config_handler->numOfShiftsPart; $shiftPart++) {
             echo "shiftPart = $shiftPart <br>";
             $this->arrShiftPartStatus[$shiftPart] = new ShiftPartStatus($shiftPart, $this->date, $this->config_handler);
+        }
+    }
+
+    private function setArrShiftStatus()
+    {
+        // ShiftStatus is needed only for shift with numMax.
+        foreach ($this->config_handler->arrayShiftsByPart as $shiftPart => $arrShifts) {
+            foreach ($arrShifts as $shift) {
+                $this->arrShiftStatus[$shift] = new ShiftStatus($shift, $shiftPart, $this->config_handler);
+            }
         }
     }
 
@@ -105,16 +118,28 @@ class DateShiftsDeployer extends DateObject
             // echo 'keys of arrShiftStatusByShift<br>';
             // var_dump($this->arrShiftStatusByShift);
             // echo '<br>';
+
+            // Push to ShiftPartStatus
             $this->arrShiftPartStatus[$shiftObjectDeployed->shiftPart]->pushArrShiftObjectByIdUser($shiftObjectDeployed); // For ShiftPartStatus
 
-            // Unset from ShiftPartStatus::arrShiftAppObjects. For DateShiftsDeployer, already done above.
+            // Push to ShiftStatus
+            $this->arrShiftStatus[$shiftObjectDeployed->shift]->pushArrShiftObjectByIdUser($shiftObjectDeployed);
+
+            // Unset from ShiftPartStatus::arrShiftAppObjectsByIdUser. For DateShiftsDeployer, already done above.
             $this->arrShiftPartStatus[$shiftObjectDeployed->shiftPart]->unsetShiftAppObjectsByIdUser($shiftObjectDeployed);
+
+            // Unset from ShiftStatus::$arrShiftAppObjectsByIdUser.
+            $this->arrShiftStatus[$shiftObjectDeployed->shift]->unsetShiftAppObjectsByIdUser($shiftObjectDeployed);
 
             // Update props for ShiftPartStatus
             $this->arrShiftPartStatus[$shiftObjectDeployed->shiftPart]->updateProps();
-            if ($this->arrShiftPartStatus[$shiftObjectDeployed->shiftPart]->vacancy === 1) {
 
-                // If this shift part is full, unset rest of ShiftAppObjects for this shift part from DateShiftsDeployer
+            // Update props for ShiftStatus
+            $this->arrShiftStatus[$shiftObjectDeployed->shift]->updateProps();
+
+            // If this shift part is full, unset rest of ShiftAppObjects for this shift part from DateShiftsDeployer
+            // 
+            if ($this->arrShiftPartStatus[$shiftObjectDeployed->shiftPart]->vacancy === 1) {
                 foreach ($this->arrShiftAppObjectsByIdUser as $id_user => $arrShiftAppObjects) {
                     foreach ($this->arrShiftPartStatus[$shiftObjectDeployed->shiftPart]->arrShiftAppObjectsByIdUser as $id_user => $arrShiftAppObjectsPartStatus) {
                         foreach (array_keys(utils\array_intersect_objects($arrShiftAppObjects, $arrShiftAppObjectsPartStatus)) as $key) {
@@ -174,6 +199,7 @@ class DateShiftsDeployer extends DateObject
         if ($filteredValues === false) {
             return false;
         } else {
+            // Here we consider ShiftPartStatus->vacancy === 1;
             $shiftObjectDeployed = $this->decideShift($filteredValues[1]);
             return $shiftObjectDeployed;
         }
@@ -194,7 +220,7 @@ class DateShiftsDeployer extends DateObject
                 return false;
             } else {
                 echo 'Part and Shift decided!<br>';
-                $part = $this->arrShiftAppObjectsByIdUser[$id_user_seleted][0]->shiftPart;
+                $shiftPart = $this->arrShiftAppObjectsByIdUser[$id_user_seleted][0]->shiftPart;
                 $arrShiftObjectsFiltered = $this->arrShiftAppObjectsByIdUser[$id_user_seleted];
                 // var_dump($arrShiftObjectsFiltered);
             }
@@ -223,12 +249,12 @@ class DateShiftsDeployer extends DateObject
                 // This member is out.
                 return false;
             } elseif (count($arrKeyPartsApp) === 1) {
-                $part = array_keys($arrKeyPartsApp)[0];
+                $shiftPart = array_keys($arrKeyPartsApp)[0];
                 $arrShiftObjectsFiltered = $this->arrShiftAppObjectsByIdUser[$id_user_seleted];
             } else {
                 echo 'Multiple part candidates.<br>';
                 // Splited.
-                // Select part accordingto lang contribution
+                // Select part according to lang contribution
                 // Compare in order of lang priority in each part
                 $arrLingualities = [];
                 foreach ($this->config_handler->arrayLangsShort as $lang) {
@@ -239,71 +265,119 @@ class DateShiftsDeployer extends DateObject
                 // $i: i th priority of language
                 for ($i = 0; $i < $this->config_handler->numLangs; $i++) {
                     $arrLangVacancyByPart = [];
-                    foreach (array_keys($arrKeyPartsApp) as $part) {
-                        $arrLangs = $this->arrShiftPartStatus[$part]->arrLangs;
+                    foreach (array_keys($arrKeyPartsApp) as $shiftPart) {
+                        $arrLangs = $this->arrShiftPartStatus[$shiftPart]->arrLangs;
                         $lang = array_keys($arrLangs)[$i];
                         if (!in_array($lang, $arrLingualities) || $arrLangs[$lang] === NULL) {
                             // Search for next part
                             continue;
                         }
-                        if (!isset($this->arrayNumLangsByPart[$part][$lang])) {
-                            $arrLangVacancyByPart[$part] = 0;
+                        if (!isset($this->arrayNumLangsByPart[$shiftPart][$lang])) {
+                            $arrLangVacancyByPart[$shiftPart] = 0;
                         } else {
-                            $arrLangVacancyByPart[$part] = $this->arrayNumLangsByPart[$part][$lang] / $arrLangs[$lang];
+                            $arrLangVacancyByPart[$shiftPart] = $this->arrayNumLangsByPart[$shiftPart][$lang] / $arrLangs[$lang];
                         }
                     }
                     if (count($arrLangVacancyByPart)) {
                         if (min($arrLangVacancyByPart) < 1) {
                             // Insufficient
-                            $part = array_keys($arrLangVacancyByPart, min($arrLangVacancyByPart));
-                            if (is_array($part)) {
-                                // part selected: $part
-                                $part = $part[mt_rand(0, count($part) - 1)];
+                            $shiftPart = array_keys($arrLangVacancyByPart, min($arrLangVacancyByPart));
+                            if (is_array($shiftPart)) {
+                                // part selected: $shiftPart
+                                $shiftPart = $shiftPart[mt_rand(0, count($shiftPart) - 1)];
                             }
                             break;
                         }
                     }
                     // This will give randomly selected part if not decided until last priority
-                    $part = array_keys($arrKeyPartsApp)[mt_rand(0, count($arrKeyPartsApp) - 1)];
+                    $shiftPart = array_keys($arrKeyPartsApp)[mt_rand(0, count($arrKeyPartsApp) - 1)];
                     // If not break, search for next priority
                 }
             }
-            $arrShiftObjectsFiltered = $arrShiftAppObjectsByPart[$part];
+            $arrShiftObjectsFiltered = $arrShiftAppObjectsByPart[$shiftPart];
         }
-        echo "Selected part: $part";
-        return [$part, $arrShiftObjectsFiltered];
+        echo "Selected part: $shiftPart";
+        return [$shiftPart, $arrShiftObjectsFiltered];
+    }
+
+    private function getVacantShiftParts()
+    {
+        $arrShiftPartStatus = $this->arrShiftPartStatus;
+        foreach ($arrShiftPartStatus as $shiftPart => $shiftPartStatus) {
+            if ($shiftPartStatus->vacancy >= 1) {
+                unset($arrShiftPartStatus[$shiftPart]);
+            }
+        }
+        // if(!count($arrShiftPartStatus)){
+        // echo "All shift parts are full: No options to decide shift.<br>";
+        // return false;
+        // }
+        return $arrShiftPartStatus;
     }
 
     private function decideShift($arrShiftObjectsFiltered)
     {
-        if (count($arrShiftObjectsFiltered) > 1) {
+        // Get vacant ShiftPartStatus
+        $arrShiftPartStatus = $this->getVacantShiftParts();
+        // Filter $arrShiftObjectsFiltered
+        array_filter($arrShiftObjectsFiltered, function ($shiftObject) use ($arrShiftPartStatus) {
+            return in_array($shiftObject->shiftPart, array_keys($arrShiftPartStatus));
+        });
+        if (count($arrShiftObjectsFiltered) === 0) {
+            echo 'All shifts have been filtered and no valid shift found.<br>';
+            return false;
+        } elseif (count($arrShiftObjectsFiltered) === 1) {
+            echo 'One shift passed. No sorting needed.<br>';
+        } else {
             // echo '<br>ShiftPriority<br>';
             // echo 'Before sort:<br>';
             // var_dump(array_keys($this->arrShiftStatusByShift));
             // echo '<br>';
-            uasort($this->arrShiftPartStatus, function ($a, $b) {
+            echo 'Getting shift part priority<br>';
+            uasort($arrShiftPartStatus, function ($a, $b) {
                 if ($a->percentApp == $b->percentApp) {
                     return 0;
                 }
                 return ($a->percentApp < $b->percentApp) ? -1 : 1;
             });
             echo 'After sort:<br>';
-            foreach ($this->arrShiftPartStatus as $shiftPartStatus) {
+            foreach ($arrShiftPartStatus as $shiftPartStatus) {
                 echo "$shiftPartStatus->shiftPart $shiftPartStatus->percentApp<br>";
             }
             echo '<br>';
-            $shiftPartPriority = array_keys($this->arrShiftPartStatus);
+            $shiftPartPriority = array_keys($arrShiftPartStatus);
+
+            // Shift prioirity
+            echo 'Getting shift priority by ratioMin<br>';
+            uasort($this->arrShiftStatus, function ($a, $b) {
+                if ($a->ratioMin == $b->ratioMin) {
+                    return 0;
+                }
+                return ($a->ratioMin < $b->ratioMin) ? -1 : 1;
+            });
+            echo 'After sort:<br>';
+            foreach ($this->arrShiftStatus as $shiftStatus) {
+                echo "$shiftStatus->shift $shiftStatus->ratioMin<br>";
+            }
+            echo '<br>';
+            $shiftPriority = array_keys($this->arrShiftStatus);
             // echo '$arrShiftObjectsFiltered';
             // echo 'Before sort:<br>';
             // var_dump($arrShiftObjectsFiltered);
             // echo '<br>';
-            usort($arrShiftObjectsFiltered, function ($a, $b) use ($shiftPartPriority) {
-                $pos_a = array_search($a->shiftPart, $shiftPartPriority);
-                $pos_b = array_search($b->shiftPart, $shiftPartPriority);
-                return $pos_a - $pos_b;
+
+            shuffle($arrShiftObjectsFiltered);
+            // Sort by Part priority then Shift prioirity
+            usort($arrShiftObjectsFiltered, function ($a, $b) use ($shiftPartPriority, $shiftPriority) {
+                $pos_part_a = array_search($a->shiftPart, $shiftPartPriority);
+                $pos_part_b = array_search($b->shiftPart, $shiftPartPriority);
+                if ($pos_part_a === $pos_part_b) {
+                    $pos_shift_a = array_search($a->shift, $shiftPriority);
+                    $pos_shift_b = array_search($b->shift, $shiftPriority);
+                    return $pos_shift_a - $pos_shift_b;
+                }
+                return $pos_part_a - $pos_part_b;
             });
-        } else {
-            echo 'One shift passed. No sorting needed.';
         }
         return $arrShiftObjectsFiltered[0];
     }

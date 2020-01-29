@@ -26,7 +26,8 @@ class ConfigHandler
     public $shiftsPart0 = ['A', 'B', 'H'];
     public $shiftsPart1 = ['C', 'D'];
     public $arrayPartNames = ['午前', '午後'];
-    public $numNeededByShift = ['A' => 1, 'B' => 4, 'H' => 2, 'C' => 2, 'D' => 4];
+    public $numMaxByShift = ['A' => 1, 'B' => 4, 'H' => 2, 'C' => 2, 'D' => 4];
+    public $numNeededByShift = ['H' => 1, 'C' => 1];
     public $defaultNumNeededByPart = [5, 4];
     public $arrNumNeededByDate = [];
 

@@ -10,8 +10,8 @@ class ShiftPartStatus
     public $arrShiftObjectsByIdUser;
     // public $numNeeded;
     public $numApplicants;
-    public $vacancy; // <1: insufficient int(1): full
-    public $percentApp; // <1: insufficient int(1): fitted >1: Over
+    public $vacancy; // <1: insufficient int(1): full. Always defined.
+    public $percentApp; // <1: insufficient int(1): fitted >1: Over. Always defined.
     public function __construct($shiftPart, $date, $config_handler)
     {
         $this->shiftPart = $shiftPart;
@@ -92,10 +92,10 @@ class ShiftPartStatus
 
     private function setPercentApp()
     {
-        if (count($this->arrShiftAppObjectsByIdUser) === $this->numNeeded) {
+        if (count($this->arrShiftAppObjectsByIdUser) === ($this->numNeeded - count($this->arrShiftObjectsByIdUser))) {
             $this->percentApp = 1;
         } else {
-            $this->percentApp = count($this->arrShiftAppObjectsByIdUser) / $this->numNeeded;
+            $this->percentApp = count($this->arrShiftAppObjectsByIdUser) / ($this->numNeeded - count($this->arrShiftObjectsByIdUser));
         }
     }
 }
