@@ -10,16 +10,24 @@ class MemberObject
 
     public function initProps()
     {
+        $this->arrShiftObjectsByDate = [];
         $this->arrShiftAppObjects = [];
         $this->numDaysApplied = 0;
         $this->numDaysProceeded = 0;
         $this->numDaysDeployed = 0;
         $this->deployRatio = 0;
+        $this->workedMins = 0;
     }
     
     public function pushShiftAppObjects($shiftObject)
     {
         array_push($this->arrShiftAppObjects, $shiftObject);
+    }
+
+    public function pushShiftObjects($shiftObject){
+        $this->arrShiftObjectsByDate[$shiftObject->date_shift] = $shiftObject;
+        // Add workedMins
+        $this->workedMins += $shiftObject->workingMins;
     }
 
     public function addNumDaysProceeded(){
