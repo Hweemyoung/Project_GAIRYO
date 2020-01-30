@@ -524,7 +524,7 @@ class DateShiftsDeployer extends DateObject
     public function setArrScores($id_user)
     {
         $this->setAppForTargetPart($id_user);
-        $this->setNumShiftAppObjects($id_user);
+        // $this->setNumShiftAppObjects($id_user);
         $this->setNumAppNotEnough($id_user);
         $this->setLangScore($id_user);
         $this->setDeployRatio($id_user);
