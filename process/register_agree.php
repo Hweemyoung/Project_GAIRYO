@@ -6,7 +6,7 @@ $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/config.php";
 require_once "$homedir/check_session.php";
 require_once "$homedir/class/class_db_handler.php";
-require_once "$homedir/class/class_date_object.php";
+require_once "$homedir/class/class_date_objects_handler.php";
 
 class RequestsHandler extends DBHandler
 {

@@ -1,7 +1,7 @@
 <?php
 $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/config.php";
-require_once "$homedir/class/class_date_object.php";
+require_once "$homedir/class/class_date_objects_handler.php";
 
 $transactionform_handler = new DateObjectsHandler($master_handler, $config_handler);
 $sql = "SELECT date_shift, id_user, shift FROM shifts_assigned WHERE done=0 ORDER BY date_shift ASC";
