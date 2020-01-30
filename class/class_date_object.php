@@ -2,6 +2,7 @@
 $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/utils.php";
 require_once "$homedir/class/class_member_object.php";
+require_once "$homedir/class/class_shift_object.php";
 
 class DateObjectsHandler
 {
@@ -160,41 +161,5 @@ class DateObject
             }
         }
         $partEnough = NULL;
-    }
-}
-
-class ShiftObject
-{
-    public $id_user;
-    public $date_shift;
-    public $shift;
-    public $memberObject;
-    public static $arrayShiftsByPart;
-    function __construct($arrayShiftsByPart, $arrayMemberObjectsByIdUser)
-    {
-        $this->setShiftPart($arrayShiftsByPart);
-        $this->setMemberObj($arrayMemberObjectsByIdUser);
-    }
-    public function setMemberObj($arrayMemberObjectsByIdUser)
-    {
-        $this->memberObject = $arrayMemberObjectsByIdUser[$this->id_user];
-    }
-    public function setShiftPart($arrayShiftsByPart)
-    {
-        for ($i = 0; $i < count($arrayShiftsByPart); $i++) {
-            if (in_array($this->shift, $arrayShiftsByPart[$i])) {
-                $this->shiftPart = $i;
-                break;
-            }
-        }
-    }
-    public function set_Ym()
-    {
-        $this->YM = date('Y m', $this->date_shift);
-    }
-
-    public function set_d()
-    {
-        $this->d = date('d', $this->date_shift);
     }
 }

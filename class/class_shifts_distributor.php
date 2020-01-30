@@ -196,7 +196,7 @@ class ShiftsDistributor extends DBHandler
             // Statistics
             $this->arrStats[$date] = $this->arrDateShiftsDeployerByDate[$date]->getStatistics();
             // Assign all shifts
-            $this->arrDateShiftsDeployerByDate[$date]->assignAllShifts($this);
+            // $this->arrDateShiftsDeployerByDate[$date]->assignAllShifts($this);
         }
         $this->getTotalStats();
     }
