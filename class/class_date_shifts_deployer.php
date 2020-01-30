@@ -43,7 +43,7 @@ class DateShiftsDeployer extends DateObject
         // ShiftStatus is needed only for shift with numMax.
         foreach ($this->config_handler->arrayShiftsByPart as $shiftPart => $arrShifts) {
             foreach ($arrShifts as $shift) {
-                $this->arrShiftStatus[$shift] = new ShiftStatus($shift, $shiftPart, $this->config_handler);
+                $this->arrShiftStatus[$shift] = new ShiftStatus($this->date, $shift, $shiftPart, $this->config_handler);
             }
         }
     }
@@ -524,7 +524,7 @@ class DateShiftsDeployer extends DateObject
     public function setArrScores($id_user)
     {
         $this->setAppForTargetPart($id_user);
-        // $this->setNumShiftAppObjects($id_user);
+        $this->setNumShiftAppObjects($id_user);
         $this->setNumAppNotEnough($id_user);
         $this->setLangScore($id_user);
         $this->setDeployRatio($id_user);
@@ -595,9 +595,8 @@ class DateShiftsDeployer extends DateObject
         foreach ($this->arrShiftAppObjectsByIdUser[$id_user] as $shiftObject) {
             foreach ($this->config_handler->arrayLangsShort as $lang) {
                 // For every lang
-                if (isset($arr[$shiftObject->shiftPart][$lang])) {
-                    // If the lang in this part already considered
-                } else {
+                if (!isset($arr[$shiftObject->shiftPart][$lang])) {
+                    // If the lang in this part wasn't considered
                     if ($this->arrShiftPartStatus[$shiftObject->shiftPart]->arrLangs[$lang] !== NULL) {
                         // If the lang is required in this part
                         if (isset($this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang])) {
@@ -686,7 +685,7 @@ class DateShiftsDeployer extends DateObject
     private function addNumDaysProceeded()
     {
         foreach (array_keys($this->arrShiftAppObjectsByIdUser) as $id_user) {
-            $this->arrayMemberObjectsByIdUser[$id_user]->numDaysProceeded++;
+            $this->arrayMemberObjectsByIdUser[$id_user]->addNumDaysProceeded();
         }
     }
 

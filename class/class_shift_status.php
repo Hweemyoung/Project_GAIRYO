@@ -9,23 +9,19 @@ class ShiftStatus
     public $vacancy; // <1: vacant or unlimited int(1): full.
     public $ratioMin; // <1: insufficient int(1): fitted. Could be INF
 
-    public function __construct($shift, $shiftPart, $config_handler)
+    public function __construct($date, $shift, $shiftPart, $config_handler)
     {
         $this->shift = $shift;
         $this->shiftPart = $shiftPart;
         $this->config_handler = $config_handler;
-        $this->init();
+        $this->init($date, $shift);
     }
 
-    private function init()
+    private function init($date, $shift)
     {
         // Not set if not exist.
-        if (isset($this->config_handler->numMaxByShift[$this->shift])){
-            $this->numMax = $this->config_handler->numMaxByShift[$this->shift];
-        }
-        if(isset($this->config_handler->numNeededByShift[$this->shift])){
-            $this->numNeeded = $this->config_handler->numNeededByShift[$this->shift];
-        }
+        $this->numMax = $this->config_handler->getNumMaxByShift($date, $shift);
+        $this->numNeeded = $this->config_handler->getNumNeededByShift($date, $shift);
     }
 
     public function pushArrShiftAppObjectsByIdUser($shiftObject)

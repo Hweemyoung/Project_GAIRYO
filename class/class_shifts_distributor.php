@@ -24,6 +24,7 @@ class ShiftsDistributor extends DBHandler
         $this->arrDateRange = [];
         $this->arrStats = [];
         $this->addPropsToMemberObjects(); // memberObject->numDaysApplied = 0; memberObject->numDaysDeployed = 0; memberObject->arrShiftAppObjects = [];
+        $this->arrIdUserAppByDate = [];
     }
 
     private function addPropsToMemberObjects()
@@ -43,7 +44,8 @@ class ShiftsDistributor extends DBHandler
         $this->dbh->commit();
     }
 
-    private function deleteAllIfAny(){
+    private function deleteAllIfAny()
+    {
         $sql = "DELETE FROM shifts_assigned WHERE m='$this->m';";
         $this->executeSql($sql);
     }
@@ -119,8 +121,10 @@ class ShiftsDistributor extends DBHandler
                     $this->updateNumDaysApplied($id_user, $appliedForDate);
                 }
             }
-            // Update 
+            // Save id_user of applicants for this date
+            $this->addArrIdUserApp($date);
         }
+        
         // echo 'keys of arrShiftStatusByShift<br>';
         // var_dump(array_keys($this->arrDateShiftsDeployerByDate[16]->arrShiftStatusByShift));
         // echo '<br>';
@@ -141,6 +145,10 @@ class ShiftsDistributor extends DBHandler
         // var_dump($this->arrDateShiftsDeployerByDate[16]->arrShiftAppObjectsByIdUser);
         // var_dump($this->arrDateShiftsDeployerByDate['2020-02-10']->arrShiftAppObjectsByIdUser);
         // var_dump(($this->arrDateShiftsDeployerByDate)['2020-02-16']);
+    }
+
+    private function addArrIdUserApp($date){
+        $this->arrIdUserAppByDate[$date] = array_keys($this->arrDateShiftsDeployerByDate[$date]->arrShiftAppObjectsByIdUser);
     }
 
     private function updateNumDaysApplied($id_user, $appliedForDate)
@@ -188,7 +196,7 @@ class ShiftsDistributor extends DBHandler
             // Statistics
             $this->arrStats[$date] = $this->arrDateShiftsDeployerByDate[$date]->getStatistics();
             // Assign all shifts
-            // $this->arrDateShiftsDeployerByDate[$date]->assignAllShifts($this);
+            $this->arrDateShiftsDeployerByDate[$date]->assignAllShifts($this);
         }
         $this->getTotalStats();
     }
@@ -243,17 +251,27 @@ class ShiftsDistributor extends DBHandler
         $sumSquareDeployRatio = 0;
         $DRMin = [1];
         $DRMax = [0];
-        foreach ($this->arrayMemberObjectsByIdUser as $id_user => $memberObject) {
+        // Get applicants ids.
+        $arrIdUsersAppMerged = [];
+        foreach ($this->arrIdUserAppByDate as $date => $arrIdUsersApp) {
+            $arrIdUsersAppMerged = array_unique(array_merge($arrIdUsersAppMerged, $arrIdUsersApp));
+            
+        }
+        $numTotalApplicants = count($arrIdUsersAppMerged);
+        echo "Total num of applicants: " . $numTotalApplicants . '<br>';
+
+        foreach ($arrIdUsersAppMerged as $id_user) {
             if ($id_user === 0) {
                 continue;
             }
+            $memberObject = $this->arrayMemberObjectsByIdUser[$id_user];
             $sumDeployRatio += $memberObject->deployRatio;
             $sumSquareDeployRatio += $memberObject->deployRatio ** 2;
             $DRMin = ($memberObject->deployRatio < array_values($DRMin)[0]) ? [$id_user => $memberObject->deployRatio] : $DRMin;
             $DRMax = ($memberObject->deployRatio > array_values($DRMax)[0]) ? [$id_user => $memberObject->deployRatio] : $DRMax;
         }
-        $aveDR = $sumDeployRatio / count($this->arrayMemberObjectsByIdUser);
-        $stdevDR = sqrt($sumSquareDeployRatio / count($this->arrayMemberObjectsByIdUser) - $aveDR ** 2);
+        $aveDR = $sumDeployRatio / $numTotalApplicants;
+        $stdevDR = sqrt($sumSquareDeployRatio / $numTotalApplicants - $aveDR ** 2);
         echo "Average DR: $aveDR<br>";
         echo "stdev DR: $stdevDR<br>";
         $DRMinVal = array_values($DRMin)[0];
