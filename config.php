@@ -19,17 +19,22 @@ class ConfigHandler
     public $arrayLangsShort = ['cn', 'kr', 'th', 'my', 'ru', 'fr', 'de', 'other'];
     public $arrayLangsLong = ['cn' => 'Chinese', 'kr' => 'Korean', 'th' => 'Thailand', 'my' => 'Malaysian', 'ru' => 'Russian', 'fr' => 'French', 'de' => 'Deutsche', 'other' => 'Others'];
     public $defaultArrLangsByPart = [['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL], ['cn' => 2, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL]];
-    public $arrLangsByDate = [];
+    public $arrLangsByDate = [16 => [['cn' => 4, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL], ['cn' => 4, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL]]];
 
     // Shifts
     public $numOfShiftsPart = 2;
     public $shiftsPart0 = ['A', 'B', 'H'];
     public $shiftsPart1 = ['C', 'D'];
     public $arrayPartNames = ['午前', '午後'];
-    public $numMaxByShift = ['A' => 1, 'B' => 4, 'H' => 2, 'C' => 2, 'D' => 4];
-    public $numNeededByShift = ['H' => 1, 'C' => 1];
+    
+    public $defaultNumMaxByShift = ['A' => 1, 'B' => 4, 'H' => 2, 'C' => 2, 'D' => 4];
+    public $arrNumMaxByShiftByDate = [16 => ['A' => 1, 'B' => 6, 'H' => 4, 'C' => 3, 'D' => 6]];
+    
+    public $defaultNumNeededByShift = ['H' => 1, 'C' => 1];
+    public $arrNumNeededByShiftByDate = [16 => ['B' => 3, 'H' => 2, 'C' => 2, 'D' => 4]];
+    
     public $defaultNumNeededByPart = [5, 4];
-    public $arrNumNeededByDate = [];
+    public $arrNumNeededByPartByDate = [16 => [8, 8]];
 
     // ConfigHandler
     public $sleepSeconds = 2;
@@ -40,10 +45,13 @@ class ConfigHandler
     public $dayEnd = 'Sun';
 
     // ShiftsDistributor
-    public $m = '202001';
+    public $m = '202002';
     public $arr_mshifts = [];
+    // public $arrScoreItems = ['appForTargetPart' => 'max', 'langScore' => 'max', 'deployRatio' => 'min'];
     // public $arrScoreItems = ['appForTargetPart' => 'max', 'numShiftAppObjects' => 'min', 'langScore' => 'max', 'deployRatio' => 'min'];
-    public $arrScoreItems = ['appForTargetPart' => 'max', 'numShiftAppObjects' => 'min', 'numAppNotEnough' => 'max', 'langScore' => 'max', 'deployRatio' => 'min'];
+    public $arrScoreItems = ['deployRatio' => 'min', 'appForTargetPart' => 'max', 'numAppNotEnough' => 'max', 'langScore' => 'max']; // BEST?
+    // public $arrScoreItems = ['deployRatio' => 'min', 'appForTargetPart' => 'max', 'langScore' => 'max'];
+    // public $arrScoreItems = ['appForTargetPart' => 'max', 'numShiftAppObjects' => 'min', 'numAppNotEnough' => 'max', 'langScore' => 'max', 'deployRatio' => 'min'];
     // public $arrScoreItems = ['numAppNotEnough' => 'min', 'langScore' => 'max', 'deployRatio' => 'min'];
 
     public $arrayShiftsByPart;
@@ -58,12 +66,13 @@ class ConfigHandler
         $this->setArrayShiftTimes();
     }
 
-    private function arsortArrLangs(){
+    private function arsortArrLangs()
+    {
         foreach ($this->defaultArrLangsByPart as $arrLangs) {
             arsort($arrLangs);
         }
-        foreach($this->arrLangsByDate as $arrLangsByPart){
-            foreach($arrLangsByPart as $arrLangs){
+        foreach ($this->arrLangsByDate as $arrLangsByPart) {
+            foreach ($arrLangsByPart as $arrLangs) {
                 arsort($arrLangs);
             }
         }
@@ -98,16 +107,42 @@ class ConfigHandler
         return $this;
     }
 
-    public function getNumNeeded($date, $shiftPart)
+    public function getNumNeededByPart($date, $shiftPart)
     {
-        if (isset($this->arrNumNeededByDate[$date])) {
-            return $this->arrNumNeededByDate[$date][$shiftPart];
-        } else {
+        if (isset($this->arrNumNeededByPartByDate[$date])) {
+            return $this->arrNumNeededByPartByDate[$date][$shiftPart];
+        } elseif($this->defaultNumNeededByPart[$shiftPart]) {
             return $this->defaultNumNeededByPart[$shiftPart];
+        } else {
+            echo 'numNeededByPart cannot be NULL!';
+            exit;
         }
     }
 
-    public function getArrayLangsByPart($date){
+    public function getNumMaxByShift($date, $shift)
+    {
+        if (isset($this->arrNumMaxByShiftByDate[$date][$shift])) {
+            return $this->arrNumMaxByShiftByDate[$date][$shift];
+        } elseif (isset($this->defaultNumMaxByShift[$shift])) {
+            return $this->defaultNumMaxByShift[$shift];
+        } else {
+            return NULL;
+        }
+    }
+
+    public function getNumNeededByShift($date, $shift)
+    {
+        if (isset($this->arrNumNeededByShiftByDate[$date][$shift])) {
+            return $this->arrNumNeededByShiftByDate[$date][$shift];
+        } elseif (isset($this->defaultNumNeededByShift[$shift])) {
+            return $this->defaultNumNeededByShift[$shift];
+        } else {
+            return NULL;
+        }
+    }
+
+    public function getArrayLangsByPart($date)
+    {
         if (isset($this->arrLangsByDate[$date])) {
             return $this->arrLangsByDate[$date];
         } else {

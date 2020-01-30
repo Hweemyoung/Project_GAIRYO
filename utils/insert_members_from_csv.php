@@ -1,8 +1,12 @@
 <?php
 $homedir = '/var/www/html/gairyo_temp';
-require_once "$homedir/check_session.php";
+$host = 'localhost';
+$DBName = 'gairyo';
+$userName = 'root';
+$pw = '9957';
+$dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
 $sql = 'DELETE FROM members_new WHERE 1';
-$master_handler->dbh->exec($sql);
+$dbh->exec($sql);
 $csv = array_map('str_getcsv', file("$homedir/data/csv/members_new.csv"));
 $arrCols = $csv[0];
 $sqlCols = implode(', ', $arrCols);
@@ -13,7 +17,7 @@ for ($i = 1; $i < count($csv) - 1; $i++) {
     echo '<br>';
     $sql = "INSERT INTO members_new ($sqlCols) VALUES (?,?,?,?,?,?,?,?,?,?);";
     echo $sql . '<br>';
-    $stmt = $master_handler->dbh->prepare($sql);
+    $stmt = $dbh->prepare($sql);
     $stmt->execute($arrVals);
     var_dump($stmt->errorInfo());
     echo '<br>';

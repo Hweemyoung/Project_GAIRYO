@@ -43,7 +43,7 @@ class DateShiftsDeployer extends DateObject
         // ShiftStatus is needed only for shift with numMax.
         foreach ($this->config_handler->arrayShiftsByPart as $shiftPart => $arrShifts) {
             foreach ($arrShifts as $shift) {
-                $this->arrShiftStatus[$shift] = new ShiftStatus($shift, $shiftPart, $this->config_handler);
+                $this->arrShiftStatus[$shift] = new ShiftStatus($this->date, $shift, $shiftPart, $this->config_handler);
             }
         }
     }
@@ -80,6 +80,9 @@ class DateShiftsDeployer extends DateObject
         // Update MemberObjects: add 1 to numDaysProceeded
         $this->addNumDaysProceeded();
         // If there is candidates AND not all parts are full
+        // echo '$this->arrShiftAppObjectsByIdUser <br>';
+        // var_dump($this->arrShiftAppObjectsByIdUser);
+
         while (count($this->arrShiftAppObjectsByIdUser) && $this->targetPart !== NULL) {
             $this->deployShift();
         }
@@ -91,6 +94,8 @@ class DateShiftsDeployer extends DateObject
     {
         // Set target part
         $this->setTargetPart();
+        echo 'HERE $this->targetPart<br>';
+        // var_dump($this->targetPart);
         if ($this->targetPart === NULL) {
             // If all parts are full
             return;
@@ -332,16 +337,16 @@ class DateShiftsDeployer extends DateObject
         foreach ($arrShiftStatusVacant as $shift => $shiftStatus) {
             if ($shiftStatus->vacancy === 1 || $shiftStatus->vacancy > 1) {
                 $hasShift = in_array($shift, array_keys($arrShiftStatusVacant));
-                echo "arrShiftStatusVacant has $shift: ";
-                var_dump($hasShift);
-                echo "Shift $shift is already full: Vacancy = $shiftStatus->vacancy<br>";
+                // echo "arrShiftStatusVacant has $shift: ";
+                // var_dump($hasShift);
+                // echo "Shift $shift is already full: Vacancy = $shiftStatus->vacancy<br>";
 
                 unset($arrShiftStatusVacant[$shift]);
 
-                $hasShift = in_array($shift, array_keys($arrShiftStatusVacant));
-                echo "arrShiftStatusVacant has $shift: ";
-                var_dump($hasShift);
-                echo '<br>';
+                // $hasShift = in_array($shift, array_keys($arrShiftStatusVacant));
+                // echo "arrShiftStatusVacant has $shift: ";
+                // var_dump($hasShift);
+                // echo '<br>';
             }
         }
         echo 'num of vacant shift status: ' . count($arrShiftStatusVacant) . '<br>';
@@ -590,9 +595,8 @@ class DateShiftsDeployer extends DateObject
         foreach ($this->arrShiftAppObjectsByIdUser[$id_user] as $shiftObject) {
             foreach ($this->config_handler->arrayLangsShort as $lang) {
                 // For every lang
-                if (isset($arr[$shiftObject->shiftPart][$lang])) {
-                    // If the lang in this part already considered
-                } else {
+                if (!isset($arr[$shiftObject->shiftPart][$lang])) {
+                    // If the lang in this part wasn't considered
                     if ($this->arrShiftPartStatus[$shiftObject->shiftPart]->arrLangs[$lang] !== NULL) {
                         // If the lang is required in this part
                         if (isset($this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang])) {
@@ -681,13 +685,13 @@ class DateShiftsDeployer extends DateObject
     private function addNumDaysProceeded()
     {
         foreach (array_keys($this->arrShiftAppObjectsByIdUser) as $id_user) {
-            $this->arrayMemberObjectsByIdUser[$id_user]->numDaysProceeded++;
+            $this->arrayMemberObjectsByIdUser[$id_user]->addNumDaysProceeded();
         }
     }
 
     public function getStatistics()
     {
-        var_dump($this->arrayNumLangsByPart);
+        // var_dump($this->arrayNumLangsByPart);
         echo "<br>Statistics: $this->date<br>";
         foreach ($this->arrShiftPartStatus as $shiftPart => $shiftPartStatus) {
             echo "[Shift PART $shiftPart]<br>";

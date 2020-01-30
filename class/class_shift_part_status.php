@@ -15,7 +15,7 @@ class ShiftPartStatus
     public function __construct($shiftPart, $date, $config_handler)
     {
         $this->shiftPart = $shiftPart;
-        $this->numNeeded = $config_handler->getNumNeeded($date, $shiftPart);
+        $this->numNeeded = $config_handler->getNumNeededByPart($date, $shiftPart);
         $this->arrLangs = $config_handler->getArrayLangsByPart($date)[$shiftPart];
         $this->arrShiftAppObjectsByIdUser = [];
         $this->arrShiftObjectsByIdUser = [];
