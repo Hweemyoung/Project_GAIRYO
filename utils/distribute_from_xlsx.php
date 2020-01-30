@@ -30,8 +30,8 @@ class XlsxRespondsUploader extends DBHandler
         $this->worksheet = $this->spreadsheet->getActiveSheet();
 
         $this->m = $_GET['m'];
-        $this->setArrDate();
         $this->setIdxRange();
+        $this->setArrDate();
         $this->process();
     }
 
@@ -116,8 +116,7 @@ $host = 'localhost';
 $DBName = 'gairyo';
 $userName = 'root';
 $pw = '111111';
-$params = ['id_google' => '315977953185055105728', 'id_user' => '2'];
-$master_handler = new MasterHandler($test, $host, $DBName, $userName, $pw, $config_handler, $params);
+$dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
 
 // Upload responds to shifts_submitted
 $xlsx_responds_uploader = new XlsxRespondsUploader($master_handler, $config_handler);

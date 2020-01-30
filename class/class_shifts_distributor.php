@@ -36,10 +36,16 @@ class ShiftsDistributor extends DBHandler
     public function process()
     {
         $this->beginTransactionIfNotIn();
+        $this->deleteAllIfAny();
         $this->loadShiftsSubmitted();
         $this->setArrDateShiftsHandlerByDate();
         $this->distributeAllShifts();
         $this->dbh->commit();
+    }
+
+    private function deleteAllIfAny(){
+        $sql = "DELETE FROM shifts_assigned WHERE m='$this->m';";
+        $this->executeSql($sql);
     }
 
     private function loadShiftsSubmitted()
@@ -48,7 +54,7 @@ class ShiftsDistributor extends DBHandler
         $stmt = $this->querySql($sql);
         $this->arrMemberApplicationsByIdUser = $stmt->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
         // echo $sql .'<br>';
-        // var_dump($this->arrMemberApplicationsByIdUser['3']);
+        // var_dump(array_keys($this->arrMemberApplicationsByIdUser));
         // Some values (e.g. 31st) could be NULL
         $stmt->closeCursor();
         return $this;
@@ -110,9 +116,9 @@ class ShiftsDistributor extends DBHandler
                         }
                         $appliedForDate = true;
                     }
+                    $this->updateNumDaysApplied($id_user, $appliedForDate);
                 }
             }
-            $this->updateNumDaysApplied($id_user, $appliedForDate);
             // Update 
         }
         // echo 'keys of arrShiftStatusByShift<br>';
@@ -182,7 +188,7 @@ class ShiftsDistributor extends DBHandler
             // Statistics
             $this->arrStats[$date] = $this->arrDateShiftsDeployerByDate[$date]->getStatistics();
             // Assign all shifts
-            $this->arrDateShiftsDeployerByDate[$date]->assignAllShifts($this);
+            // $this->arrDateShiftsDeployerByDate[$date]->assignAllShifts($this);
         }
         $this->getTotalStats();
     }
@@ -238,7 +244,7 @@ class ShiftsDistributor extends DBHandler
         $DRMin = [1];
         $DRMax = [0];
         foreach ($this->arrayMemberObjectsByIdUser as $id_user => $memberObject) {
-            if ($id_user === 0){
+            if ($id_user === 0) {
                 continue;
             }
             $sumDeployRatio += $memberObject->deployRatio;

@@ -80,7 +80,7 @@ class MasterHandler
     private function setArrayMemberObjects()
     {
         $stringLangs = implode(', ', $this->config_handler->arrayLangsShort);
-        $sql = "SELECT id_user, id_user, nickname, $stringLangs FROM members WHERE `status`=1;";
+        $sql = "SELECT id_user, id_user, nickname, $stringLangs FROM members_new;";
         $this->arrayMemberObjectsByIdUser = $this->dbh->query($sql)->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'MemberObject');
         // $sql = 'SELECT id_google, members.* FROM members WHERE `status` = 1';
         // $this->arrayMemberObjectsByIdGoogle = $this->dbh->query($sql)->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'MemberObject');

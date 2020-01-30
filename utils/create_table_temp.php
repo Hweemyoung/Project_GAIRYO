@@ -8,7 +8,11 @@ for ($i = 0; $i < count($days); $i++) {
     }
 }
 try {
-    $dbh = new PDO('mysql:host=localhost;dbname=gairyo', 'root', '111111', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+    $host = 'localhost';
+$DBName = 'gairyo';
+$userName = 'root';
+$pw = '9957';
+$dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
 } catch (PDOException $e){
     echo 'Connection failed: ' . $e->getMessage();
 }
@@ -16,7 +20,7 @@ try {
 for ($i = 0; $i < count($combined); $i++) {
     $colname = $combined[$i];
     echo $colname;
-    $sql = 'ALTER TABLE shifts_submitted_temp ADD '.$colname.' boolean NOT NULL DEFAULT FALSE';
+    $sql = 'ALTER TABLE shifts_submitted ADD '.$colname.' boolean NOT NULL DEFAULT FALSE';
     $stmt = $dbh->prepare($sql);
     $result = $stmt->execute();
     echo '<br>';

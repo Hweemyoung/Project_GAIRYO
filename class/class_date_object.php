@@ -80,6 +80,7 @@ class DateObject
 
     public function pushArrayNumLangsByPart($shiftObject)
     {
+        echo 'HERE pushArrayNumLangsByPart<br>';
         // echo $shiftObject->date_shift . '<br>';
         if (!isset($this->arrayNumLangsByPart[$shiftObject->shiftPart])) {
             $this->arrayNumLangsByPart[$shiftObject->shiftPart] = [];
@@ -128,9 +129,13 @@ class DateObject
 
     public function setEnoughLangsByPart()
     {
-        // Initialize arrays   
+        // Initialize arrays
+        echo 'HERE setEnoughLangsByPart<br>';
         $this->enoughLangsByPart = [];
         $this->arrBalancesByPart = [];
+        echo '$this->arrayNumLangsByPart<br>';
+        var_dump($this->arrayNumLangsByPart);
+        echo '<br>';
         // echo $this->date .'<br>';
         if (count($this->arrayNumLangsByPart)) {
             foreach ($this->arrayLangsByPart as $shiftPart => $arrLangs) {
