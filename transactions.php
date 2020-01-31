@@ -1,7 +1,7 @@
 <?php
 $signedin = false;
 $homedir = '/var/www/html/gairyo_temp';
-require "$homedir/check_session.php";
+require_once "$homedir/check_session.php";
 require_once "$homedir/class/class_alert_handler.php";
 require_once "$homedir/config.php";
 

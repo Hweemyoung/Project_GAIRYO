@@ -67,9 +67,6 @@ function echoRequestWarning($nicksAndAd)
                         <a href="#" class="dropdown-item">
                             Details
                         </a>
-                        <a href="#" class="dropdown-item">
-                            Decline ALL
-                        </a>
                     </div>
                 </div>';
     }
@@ -85,15 +82,12 @@ function echoAdvertisingWarning($nicksAndAd)
                 <div class="">
                     <p>
                         <i class="fas fa-exclamation-triangle"></i>
-                        Being Advertised<br>
+                        On Market<br>
                     </p>
                 </div>
             </div>
             <div class="dropdown-menu">
-                <div class="dropdown-header">ADVERTISING</div>
-                <a href="#" class="dropdown-item">
-                    Pull back
-                </a>
+                <div class="dropdown-header">On Market</div>
                 <div class="dropdown-divider"></div>
                 <a href="#" class="dropdown-item">
                     Details
@@ -126,10 +120,7 @@ function echoShiftMemberElements($arrayMemberObjectsByIdUser, $arrayShiftMembers
                             $nickname
                             <div class="dropdown-menu dropdown-menu-right">
                                 <div class="dropdown-header">$nickname</div>
-                                <a class="dropdown-item" href="#">Call this
-                                    shift</a>
-                                <a class="dropdown-item" href="#">Send
-                                    message</a>
+                                <a class="dropdown-item" href="#">Create request</a>
                             </div>
                         </div>
                     </li>',

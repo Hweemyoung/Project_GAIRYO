@@ -12,6 +12,7 @@ class DBHandler
 
     public function __construct($master_handler, $config_handler)
     {
+        $this->master_handler = $master_handler;
         $this->dbh = $master_handler->dbh;
         $this->id_user = $master_handler->id_user;
         $this->http_host = $config_handler->http_host;
@@ -31,7 +32,7 @@ class DBHandler
         }
         $this->executeSql('UNLOCK TABLES;');
         $this->dbh = NULL;
-        $url = utils\genHref($this->http_host, $url, $query);
+        $url = utils\genHref($this->http_host, $url, $this->master_handler->arrPseudoUser + $query);
         echo $url;
         header('Location: ' . $url);
     }

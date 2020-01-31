@@ -2,6 +2,7 @@
 $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/config.php";
 require_once "$homedir/class/class_date_objects_handler.php";
+require_once "$homedir/utils.php";
 
 $transactionform_handler = new DateObjectsHandler($master_handler, $config_handler);
 $sql = "SELECT date_shift, id_user, shift FROM shifts_assigned WHERE done=0 ORDER BY date_shift ASC";
@@ -36,7 +37,7 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
     <hr>
     <section>
     <a class="a-popover" data-toggle="popover" data-content="PHP loads requests that exists in DB and gives them to JS, checking everytime if requests trying to create is valid or not. If invalid, JS prevents users from confirming creation. Check out if it works!" data-trigger="hover" data-placement="bottom">User-oriented form</a>
-        <form action="./process/upload_transaction.php" method="POST">
+        <form action="<?=utils\genHref($config_handler->http_host, 'process/upload_transaction.php', $master_handler->arrPseudoUser) ?>" method="POST">
             <input id="input-ids" type="hidden" name="formIDs" value="1">
             <div class="form-item" id="1">
                 <div class="row no-gutters">

@@ -16,6 +16,8 @@ $DBName = 'gairyo';
 $userName = 'root';
 $pw = '111111';
 $params = ['id_user' => '4'];
+if (isset($_GET['pseudo_user'])){
+    $params = [];
 $master_handler = new MasterHandler($test, $host, $DBName, $userName, $pw, $config_handler, $params);
 $dbh = $master_handler->dbh;
 $signedin = $master_handler->signedin;

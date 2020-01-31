@@ -1,14 +1,17 @@
 <?php
 $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/class/class_user_oriented_request.php";
+require_once "$homedir/utils.php";
+
 class CommonNavHandler
 {
-    function genHref(array $params){
-        if ($params['status'] == 2){
+    function genHref(array $params)
+    {
+        if ($params['status'] == 2) {
             return strtr('
-            ./transactions.php#$idTrans', array('$idTrans'=>$params['idTrans']));
-        } elseif($params['status'] == 1) {
-            return strtr('./shifts.php#$idRequest', array('$idRequest'=>$params['idRequest']));
+            ./transactions.php#$idTrans', array('$idTrans' => $params['idTrans']));
+        } elseif ($params['status'] == 1) {
+            return strtr('./shifts.php#$idRequest', array('$idRequest' => $params['idRequest']));
         } else {
             return '';
         }
@@ -16,7 +19,6 @@ class CommonNavHandler
 }
 
 $common_nav_handler = new CommonNavHandler();
-
 // Get requests
 $sql = 'SELECT id_transaction, id_request, id_from, id_to, id_shift, id_created, time_proceeded, agreed_from, agreed_to, checked_from, checked_to, `status` FROM requests_pending WHERE (id_from=:id_user OR id_to=:id_user) AND (id_from IS NOT NULL AND id_to IS NOT NULL) ORDER BY time_proceeded DESC LIMIT 5';
 $stmt = $dbh->prepare($sql);
@@ -37,8 +39,8 @@ for ($i = 0; $i < count($requests); $i++) {
 <section id="section-nav">
     <nav class="navbar navbar-expand-sm bg-light fixed-top">
         <!-- logo -->
-        <a href="#" class="navbar-brand order-sm-1 d-flex">
-            <img class="d-none d-md-block mr-md-3" src="<?=$config_handler->http_host?>/data/png/logo_travel_color_large.png" alt="imgLogo">
+        <a href="<?= utils\genHref($config_handler->http_host, 'admin.php', $master_handler->arrPseudoUser) ?>" class="navbar-brand order-sm-1 d-flex">
+            <img class="d-none d-md-block mr-md-3" src="<?= $config_handler->http_host ?>/data/png/logo_travel_color_large.png" alt="imgLogo">
             <p class="d-none d-sm-block mr-md-2 small">外国人旅行センター</p>
             <p class="d-sm-none">外旅</p>
         </a>
@@ -64,14 +66,12 @@ for ($i = 0; $i < count($requests); $i++) {
                 <div class="dropdown-menu dropdown-menu-right">
                     <div class="dropdown-header">Requests</div>
                     <?php
-                    for ($i = 0; $i < count($requests); $i++) {
-                        $request = $requests[$i];
-                        $href = $common_nav_handler->genHref(array('status'=>$request->status, 'idTrans'=>$request->idTrans, 'idRequest'=>$request->idRequest));
-                        echo strtr('<a href="$href" class="dropdown-item">$scriptNotice</a>', array('$href' => $href, '$scriptNotice'=>$requests[$i]->scriptNotice));
+                    foreach ($requests as $request) {
+                        echo "<a href='#' class='dropdown-item'>$request->scriptNotice</a>";
                     }
                     ?>
                     <div class="dropdown-divider"></div>
-                    <a href="<?=$config_handler->http_host?>/transactions.php" class="dropdown-item">More</a>
+                    <a href="<?= utils\genHref($config_handler->http_host, 'transactions.php', ['id_user' => $_GET['id_user']]) ?>" class="dropdown-item">More transactions</a>
                 </div>
             </li>
             <!-- Account -->
@@ -91,17 +91,15 @@ for ($i = 0; $i < count($requests); $i++) {
         </ul>
         <!-- nav-menu toggler -->
         <button class="navbar-toggler btn" data-toggle="collapse" data-target="#navMenu">
-            <!-- <img src="<?=$config_handler->http_host?>/data/png/list-2x.png" alt="navbar-toggler-icon"> -->
+            <!-- <img src="<?= $config_handler->http_host ?>/data/png/list-2x.png" alt="navbar-toggler-icon"> -->
             <i class="fas fa-bars"></i>
         </button>
         <!-- menu -->
         <div class="collapse navbar-collapse order-sm-2" id="navMenu">
             <ul class="navbar-nav">
-                <li class="nav-item"><a href="<?=$config_handler->http_host?>/admin.php" class="nav-link">Overview</a></li>
-                <li class="nav-item"><a href="<?=$config_handler->http_host?>/shifts.php" class="nav-link">Shifts</a></li>
-                <li class="nav-item"><a href="<?=$config_handler->http_host?>/transactions.php" class="nav-link">Transactions</a></li>
-                <li class="nav-item"><a href="<?=$config_handler->http_host?>/logs.php" class="nav-link">Logs</a></li>
-                <li class="nav-item"><a href="<?=$config_handler->http_host?>/forms.php" class="nav-link">Board</a></li>
+                <li class="nav-item"><a href="<?= utils\genHref($config_handler->http_host, 'admin.php', $master_handler->arrPseudoUser) ?>" class="nav-link">Overview</a></li>
+                <li class="nav-item"><a href="<?=utils\genHref($config_handler->http_host, 'shifts.php', $master_handler->arrPseudoUser)?>" class="nav-link">Shifts</a></li>
+                <li class="nav-item"><a href="<?=utils\genHref($config_handler->http_host, 'transactions.php', $master_handler->arrPseudoUser)?>" class="nav-link">Transactions</a></li>
             </ul>
         </div>
     </nav>

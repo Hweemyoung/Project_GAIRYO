@@ -1,6 +1,6 @@
 <?php
 $homedir = '/var/www/html/gairyo_temp';
-require "$homedir/check_session.php";
+require_once "$homedir/check_session.php";
 function submitShifts($id_user, $Ym){
     global $dbh;
     $columns = 'id_user, m';

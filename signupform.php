@@ -1,6 +1,6 @@
 <?php
 $homedir = '/var/www/html/gairyo_temp';
-require "$homedir/check_session.php";
+require_once "$homedir/check_session.php";
 $signedin = false;
 ?>
 

@@ -2,6 +2,7 @@
 $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/config.php";
 require_once "$homedir/class/class_date_objects_handler.php";
+require_once "$homedir/utils.php";
 
 class DailyMembersHandler extends DateObjectsHandler
 {
@@ -124,22 +125,6 @@ class DailyMembersHandler extends DateObjectsHandler
     //     }
     // }
 
-    private function genHref(array $params)
-    {
-        if (!isset($params['Y'])) {
-            $params['Y'] = $this->Y;
-        }
-        $href = "./shifts.php";
-        for ($i = 0; $i < count(array_keys($params)); $i++) {
-            if ($i) {
-                $href = $href . '&' . array_keys($params)[$i] . '=' . $params[array_keys($params)[$i]];
-            } else {
-                $href = $href . '?' . array_keys($params)[$i] . '=' . $params[array_keys($params)[$i]];
-            }
-        }
-        return $href;
-    }
-
     public function echoSearchBar()
     {
         echo '
@@ -152,20 +137,19 @@ class DailyMembersHandler extends DateObjectsHandler
                     <button class='btn btn-outline-primary dropdown-toggle' type='button' data-toggle='dropdown'>{$this->Y}</button>
                     <div class='dropdown-menu'>";
         if (($this->Y - 1) >= $this->YLowerBound) {
-            $href = $this->genHref(array('Y' => ($this->Y - 1)));
-            echo strtr('
-                        <a href="$href" class="dropdown-item">$YPrev</a>
-    ', array('$href' => $href, '$YPrev' => ($this->Y - 1)));
+            $YPrev = $this->Y - 1;
+            $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + ['Y' => $YPrev]);
+            echo "
+                        <a href='$href' class='dropdown-item'>$YPrev</a>";
         }
-        $href = $this->genHref(array());
-        echo strtr('
-                        <a href="$href" class="dropdown-item active">$Y</a>
-    ', array('$href' => $href, '$Y' => $this->Y));
+        $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser);
+        echo "
+                        <a href='$href' class='dropdown-item active'>$this->Y</a>";
         if (($this->Y + 1) <= $this->YMax) {
-            $href = $this->genHref(array('Y' => ($this->Y + 1)));
-            echo strtr('
-                        <a href="$href" class="dropdown-item">$YNext</a>
-        ', array('$href' => $href, '$YNext' => ($this->Y + 1)));
+            $YNext = $this->Y + 1;
+            $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + ['Y' => $YNext]);
+            echo "
+                        <a href='$href' class='dropdown-item'>$YNext</a>";
         }
         echo '
                     </div>
@@ -181,49 +165,42 @@ class DailyMembersHandler extends DateObjectsHandler
             $href = '';
         } else {
             $disabled = '';
-            $href = $this->genHref(array('page' => 1));
+            $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + ['page' => 1]);
         }
-        echo strtr(
-            '
-                    <li class="page-item $disabled"><a class="page-link" href="$href"><i class="fas fa-angle-double-left"></i></a></li>
-                    ',
-            array('$disabled' => $disabled, '$href' => $href)
-        );
+        echo "
+                    <li class='page-item $disabled'><a class='page-link' href='$href'><i class='fas fa-angle-double-left'></i></a></li>
+        ";
         if ($this->currentPage > 3) {
             $disabled = '';
-            $href = $this->genHref(array('page' => $this->currentPage - 3));
+            $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + ['page' => $this->currentPage - 3]);
         } else {
             $disabled = 'disabled';
             $href = '';
         }
-        echo strtr('
-                    <li class="page-item $disabled"><a class="page-link" href="$href"><i class="fas fa-angle-left"></i></a></li>
-    ', array('$disabled' => $disabled, '$href' => $href));
+        echo "
+                    <li class='page-item $disabled'><a class='page-link' href='$href'><i class='fas fa-angle-left'></i></a></li>";
         for ($i = 2; $i > 0; $i--) {
             if (($this->currentPage - $i) > 0) {
                 $page = $this->currentPage - $i;
-                $href = $this->genHref(array('page' => $page));
-                echo strtr('
-                    <li class="page-item"><a class="page-link" href="$href">$page</a></li>
-            ', array('$href' => $href, '$page' => $page));
+                $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + array('page' => $page));
+                echo "
+                    <li class='page-item'><a class='page-link' href='$href'>$page</a></li>";
             }
         }
-        echo strtr('
-                    <li class="page-item active"><a class="page-link" href="#">$currentPage</a></li>
-    
-    ', array('$currentPage' => $this->currentPage));
+        echo "
+                    <li class='page-item active'><a class='page-link' href='#'>$this->currentPage</a></li>";
         for ($i = 1; $i <= 2; $i++) {
             $page = $this->currentPage + $i;
             if ($page <= $this->pageUpperBound) {
                 if ($page <= $this->pageMax) {
-                    $href = $this->genHref(array('page' => $page));
-                    echo strtr('
-                    <li class="page-item"><a class="page-link" href="$href">$page</a></li>
-                ', array('$href' => $href, '$page' => $page));
+                    $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + array('page' => $page));
+                    echo "
+                    <li class='page-item'><a class='page-link' href='$href'>$page</a></li>
+                ";
                 } else {
-                    echo strtr('
-                    <li class="page-item disabled"><a class="page-link" href="$href">$page</a></li>
-                ', array('$href' => $href, '$page' => $page));
+                    echo "
+                    <li class='page-item disabled'><a class='page-link' href='#'>$page</a></li>
+                ";
                 }
             } else {
                 break;
@@ -231,24 +208,23 @@ class DailyMembersHandler extends DateObjectsHandler
         }
         if ($this->currentPage < $this->pageMax - 2) {
             $disabled = '';
-            $href = $this->genHref(array('page' => $this->currentPage + 3));
+            $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + array('page' => $this->currentPage + 3));
         } else {
             $disabled = 'disabled';
             $href = '';
         }
-        echo strtr('
-                    <li class="page-item $disabled"><a class="page-link" href="$href"><i class="fas fa-angle-right"></i></a></li>
-                    ', array('$disabled' => $disabled, '$href' => $href));
+        echo "
+                    <li class='page-item $disabled'><a class='page-link' href='$href'><i class='fas fa-angle-right'></i></a></li>";
         if ($this->currentPage == $this->pageMax) {
             $disabled = 'disabled';
             $href = '';
         } else {
             $disabled = '';
-            $href = $this->genHref(array('page' => $this->pageMax));
+            $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + array('page' => $this->pageMax));
         }
-        echo strtr('
-                    <li class="page-item $disabled"><a class="page-link" href="$href"><i class="fas fa-angle-double-right"></i></a></li>
-                    ', array('$disabled' => $disabled, '$href' => $href));
+        echo "
+                    <li class='page-item $disabled'><a class='page-link' href='$href'><i class='fas fa-angle-double-right'></i></a></li>
+        ";
         echo '
                 </ul>
             </div>
