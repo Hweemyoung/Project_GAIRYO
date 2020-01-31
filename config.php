@@ -26,24 +26,30 @@ class ConfigHandler
     public $shiftsPart0 = ['A', 'B', 'H'];
     public $shiftsPart1 = ['C', 'D'];
     public $arrayPartNames = ['午前', '午後'];
-    
+
     public $defaultNumMaxByShift = ['A' => 1, 'B' => 4, 'H' => 2, 'C' => 2, 'D' => 4];
     public $arrNumMaxByShiftByDate = [16 => ['A' => 1, 'B' => 6, 'H' => 4, 'C' => 3, 'D' => 6]];
-    
+
     public $defaultNumNeededByShift = ['H' => 1, 'C' => 1];
     public $arrNumNeededByShiftByDate = [16 => ['B' => 3, 'H' => 2, 'C' => 2, 'D' => 4]];
-    
+
     public $defaultNumNeededByPart = [5, 4];
     public $arrNumNeededByPartByDate = [16 => [8, 8]];
 
+    
     // ConfigHandler
     public $sleepSeconds = 2;
-
+    
     // DailyMembersHandler
     public $YLowerBound = 2020;
     public $dayStart = 'Mon';
     public $dayEnd = 'Sun';
-
+    
+    // tab_submit_shifts
+    public $enableSubmit = 1;
+    public $m_submit = '202002';
+    public $message = 'シフト希望は2020年2月2日から受け付けます';
+    
     // ShiftsDistributor
     public $m = '202002';
     public $arr_mshifts = [];
@@ -111,7 +117,7 @@ class ConfigHandler
     {
         if (isset($this->arrNumNeededByPartByDate[$date])) {
             return $this->arrNumNeededByPartByDate[$date][$shiftPart];
-        } elseif($this->defaultNumNeededByPart[$shiftPart]) {
+        } elseif ($this->defaultNumNeededByPart[$shiftPart]) {
             return $this->defaultNumNeededByPart[$shiftPart];
         } else {
             echo 'numNeededByPart cannot be NULL!';

@@ -7,6 +7,7 @@
   border-radius: .5rem;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  min-height: 300px;
 }
 
 .bs4-timeline::after {

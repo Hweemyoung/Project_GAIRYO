@@ -10,8 +10,10 @@ class TransactionsLister extends DBHandler
 {
     public function __construct($master_handler, $config_handler)
     {
+        $this->master_handler = $master_handler;
         $this->dbh = $master_handler->dbh;
         $this->id_user = $master_handler->id_user;
+        $this->config_handler = $config_handler;
         $this->http_host = $config_handler->http_host;
         $this->sleepSeconds = $config_handler->sleepSeconds;
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
@@ -143,7 +145,7 @@ class TransactionsLister extends DBHandler
             $sqlConditions = $this->genSqlConditions(array_keys($requestObjectsByIdShift), 'id_shift', 'OR');
             $sql = "SELECT date_shift, shift, id_user, id_shift FROM shifts_assigned WHERE done=0 AND $sqlConditions;";
             $stmt = $this->querySql($sql);
-            $this->arrShiftPutObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
+            $this->arrShiftPutObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->master_handler, $this->config_handler]);
             $stmt->closeCursor();
             // Set id_request to every ShiftObject
             $this->setIdTransactionForShiftPutObjects($requestObjectsByIdShift);
@@ -256,36 +258,32 @@ $transactions_lister = new TransactionsLister($master_handler, $config_handler);
 ?>
 
 <main>
-    <div class="container">
-        <section id="section-form-choices">
-            <div class="row text-center">
-                <div class="col-md-6 my-1">
-                    <a href="<?= $config_handler->http_host ?>/transactionform.php" class="btn btn-primary d-block"><i class="fas fa-plus-square"></i> <strong>Create Requests</strong></a>
-                </div>
-                <div class="col-md-6 my-1">
-                    <a href="<?= $config_handler->http_host ?>/marketplace.php" class="btn btn-primary d-block"><i class="fas fa-search-dollar"></i> <strong>Go to Marketplace</strong></a>
-                </div>
+
+    <section id="section-transactions-list">
+        <a class="a-popover" data-toggle="popover" data-content="Lists requests awaiting for agreements from concerned members. Here users can always agree or decline requests, as long as transaction hasn't been executed." data-trigger="hover" data-placement="bottom">Requests list</a>
+        <div class="section-title row no-gutters mb-3">
+            <div class="col-md-8 my-1">
+                <h2>Upcoming Requests</h2>
             </div>
-        </section>
-        <section id="section-transactions-list">
-            <h2>Upcoming Requests</h2>
-            <table class="table table-responsive-md text-center">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>From</th>
-                        <th>Date</th>
-                        <th>Shift</th>
-                        <th>To</th>
-                        <th>Creater</th>
-                        <th>Answer</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $transactions_lister->echoTrsTrans();
-                    ?>
-                    <!-- <tr>
+            <div class="col-md-4 my-1"><a href="<?= $config_handler->http_host ?>/transactionform.php" class="btn btn-primary d-block"><i class="fas fa-plus-square"></i> <strong>Create Requests</strong></a></div>
+        </div>
+        <table class="table table-responsive-md text-center">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>From</th>
+                    <th>Date</th>
+                    <th>Shift</th>
+                    <th>To</th>
+                    <th>Creater</th>
+                    <th>Answer</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $transactions_lister->echoTrsTrans();
+                ?>
+                <!-- <tr>
                         <td rowspan="2">$idTrans</td>
                         <td>$nicknameFrom</td>
                         <td>$dateShift</td>
@@ -304,21 +302,27 @@ $transactions_lister = new TransactionsLister($master_handler, $config_handler);
                         <td>$shift</td>
                         <td>$nicknameTo</td>
                     </tr> -->
-                </tbody>
-            </table>
-        </section>
-        <section id="section-market-items">
-            <h2>Your Market Item</h2>
-            <div class="row">
-                <!-- Put -->
-                <div class="col-sm-6 my-2">
-                    <?php $transactions_lister->echoListGroup('put', $transactions_lister->arrShiftPutObjectsByDate); ?>
-                </div>
-                <!-- Call -->
-                <div class="col-sm-6 my-2">
-                    <?php $transactions_lister->echoListGroup('call', $transactions_lister->arrCallRequestsByDate); ?>
-                </div>
+            </tbody>
+        </table>
+    </section>
+    <section id="section-market-items">
+        <a class="a-popover" data-toggle="popover" data-content="Just like stock exchange, users can put or call their shifts in the market. Here users cannot designate specific user for product. For same product(i.e same date, same shift), first come, first served." data-trigger="hover" data-placement="bottom">Market item lists</a>
+        <div class="section-title row no-gutters mb-3">
+            <div class="col-md-8 my-1">
+                <h2>Your Market Item</h2>
             </div>
-        </section>
-    </div>
+            <div class="col-md-4 my-1"><a href="<?= $config_handler->http_host ?>/marketplace.php" class="btn btn-primary d-block"><i class="fas fa-search-dollar"></i> <strong>Go to Marketplace</strong></a></div>
+        </div>
+        <div class="row">
+            <!-- Put -->
+            <div class="col-sm-6 my-2">
+                <?php $transactions_lister->echoListGroup('put', $transactions_lister->arrShiftPutObjectsByDate); ?>
+            </div>
+            <!-- Call -->
+            <div class="col-sm-6 my-2">
+                <?php $transactions_lister->echoListGroup('call', $transactions_lister->arrCallRequestsByDate); ?>
+            </div>
+        </div>
+    </section>
+
 </main>

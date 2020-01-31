@@ -278,7 +278,7 @@ $nicksAndAd = getNicksAndAd($nextShift, $master_handler->arrayMemberObjectsByIdU
 // var_dump($nicksAndAd); OK
 
 // Get Shift members
-if (count($nextShift)){
+if (count($nextShift)) {
 
     $date_shift = $nextShift[0]["date_shift"];
     // var_dump($date_shift); OK
@@ -303,117 +303,118 @@ $arrayBoardItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <main>
-    <div class="container px-1">
-        <section id="section-shift">
-            <div class="card" id="card-shift">
-                <div class="card-header d-flex align-middle">
-                    <a href="#shift-content" class="card-link mr-auto" data-toggle="collapse">
-                        <?php
-                        if (count($nextShift)) {
-                            $nextDate = date('M j(D)', strtotime($nextShift[0]["date_shift"]));
-                            echo "Next: {$nextDate} {$nextShift[0]["shift"]}";
-                            // Like 'Next: Jan 23(Thu) A'
-                        } else {
-                            echo "No upcoming shifts!";
-                        }
-                        ?>
-                    </a>
+    <section id="section-shift">
+        <a class="a-popover" data-toggle="popover" title="Upcoming shift" data-content="Selects closest upcoming shift and coleagues from DB!" data-trigger="hover" data-placement="bottom">FEATURE</a>
+        <h2>Upcoming Shift</h2>
+        <div class="card" id="card-shift">
+            <div class="card-header d-flex align-middle">
+                <a href="#shift-content" class="card-link mr-auto" data-toggle="collapse">
                     <?php
-                    echoExclamations($nicksAndAd);
+                    if (count($nextShift)) {
+                        $nextDate = date('M j (D)', strtotime($nextShift[0]["date_shift"]));
+                        echo "Next: {$nextDate} {$nextShift[0]["shift"]}";
+                        // Like 'Next: Jan 23(Thu) A'
+                    } else {
+                        echo "No upcoming shifts!";
+                    }
                     ?>
-                </div>
+                </a>
+                <?php
+                echoExclamations($nicksAndAd);
+                ?>
+            </div>
 
-                <div class="collapse show" id="shift-content">
-                    <div class="card-body">
-                        <?php if (count($nextShift)) { ?>
-                            <h5 class="mb-0 text-center">
-                                <?php
-                                echo date('Y/n/j(D)', strtotime($nextShift[0]["date_shift"])) . ' ' . $nextShift[0]["shift"];
-                                // Like: '2020/1/3(Mon) A'
-                                ?>
-                            </h5>
-                            <!-- row 1 -->
-                            <div class="row no-gutters pb-2">
-                                <div class="col-6 px-1 text-center d-flex">
-                                    <div id="div-your-shift">
-                                        <h1 class="display-3">
-                                            <?php
-                                            echo $nextShift[0]["shift"];
-                                            // Like: B
-                                            ?>
-                                        </h1>
-                                        <p class="">
-                                            <?php
-                                            echo $shifts[$nextShift[0]["shift"]]['time-start'] . '~' . $shifts[$nextShift[0]["shift"]]['time-end'];
-                                            // Like '08:00~13:00'
-                                            ?>
-                                        </p>
-                                        <div class="d-block d-md-flex" id="div-warnings">
-                                            <?php
-                                            // <!-- Request warning -->
-                                            echoRequestWarning($nicksAndAd);
-                                            //<!-- Advertising warning -->
-                                            echoAdvertisingWarning($nicksAndAd);
-                                            ?>
-                                        </div>
+            <div class="collapse show" id="shift-content">
+                <div class="card-body">
+                    <?php if (count($nextShift)) { ?>
+                        <h5 class="mb-0 text-center">
+                            <?php
+                            echo date('Y M j (D)', strtotime($nextShift[0]["date_shift"])) . ' ' . $nextShift[0]["shift"];
+                            // Like: '2020/1/3(Mon) A'
+                            ?>
+                        </h5>
+                        <!-- row 1 -->
+                        <div class="row no-gutters pb-2">
+                            <div class="col-6 px-1 text-center d-flex">
+                                <div id="div-your-shift">
+                                    <h1 class="display-3">
+                                        <?php
+                                        echo $nextShift[0]["shift"];
+                                        // Like: B
+                                        ?>
+                                    </h1>
+                                    <p class="">
+                                        <?php
+                                        echo $shifts[$nextShift[0]["shift"]]['time-start'] . '~' . $shifts[$nextShift[0]["shift"]]['time-end'];
+                                        // Like '08:00~13:00'
+                                        ?>
+                                    </p>
+                                    <div class="d-block d-md-flex" id="div-warnings">
+                                        <?php
+                                        // <!-- Request warning -->
+                                        echoRequestWarning($nicksAndAd);
+                                        //<!-- Advertising warning -->
+                                        echoAdvertisingWarning($nicksAndAd);
+                                        ?>
                                     </div>
                                 </div>
-                                <!-- row 2 -->
-                                <div class="col-6 px-0">
-                                    <div id="shift-member-table">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <?php
-                                                // var_dump($master_handler->arrayMemberObjectsByIdUser);
-                                                echoShiftMemberElements($master_handler->arrayMemberObjectsByIdUser, array_slice($arrayShiftMembers, 0, 3));
-                                                // 'A', 'H', 'B'
-                                                ?>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <?php
-                                                echoShiftMemberElements($master_handler->arrayMemberObjectsByIdUser, array_slice($arrayShiftMembers, 3));
-                                                // 'C', 'D'
-                                                ?>
-                                            </div>
+                            </div>
+                            <!-- row 2 -->
+                            <div class="col-6 px-0">
+                                <div id="shift-member-table">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <?php
+                                            // var_dump($master_handler->arrayMemberObjectsByIdUser);
+                                            echoShiftMemberElements($master_handler->arrayMemberObjectsByIdUser, array_slice($arrayShiftMembers, 0, 3));
+                                            // 'A', 'H', 'B'
+                                            ?>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <?php
+                                            echoShiftMemberElements($master_handler->arrayMemberObjectsByIdUser, array_slice($arrayShiftMembers, 3));
+                                            // 'C', 'D'
+                                            ?>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        <?php } ?>
-                    </div>
+                        </div>
+                    <?php } ?>
                 </div>
-                <div class="card-footer p-2">
-                    <div class="row no-gutters text-center">
-                        <div class="col-4 px-0">
-                            <button class="btn btn-sm btn-danger" type="button">Request</button>
-                        </div>
-                        <div class="col-4 px-0">
-                            <button class="btn btn-sm btn-warning" type="button">Advertise</button>
-                        </div>
-                        <div class="col-4 px-0">
-                            <button class="btn btn-sm btn-secondary" type="button">Details</button>
-                        </div>
+            </div>
+            <div class="card-footer p-2">
+                <div class="row no-gutters text-center">
+                    <div class="col-4 px-0">
+                        <button class="btn btn-sm btn-danger" type="button">Request</button>
+                    </div>
+                    <div class="col-4 px-0">
+                        <button class="btn btn-sm btn-warning" type="button">Advertise</button>
+                    </div>
+                    <div class="col-4 px-0">
+                        <button class="btn btn-sm btn-secondary" type="button">Details</button>
                     </div>
                 </div>
             </div>
-        </section>
-        <hr>
-        <section id="section-boards">
-            <div class="row">
-                <div class="col-md-6">
-                    <?php
-                    echoRequestsList($requests);
-                    ?>
-                </div>
-                <div class="col-md-6">
-                    <?php
-                    echoBoardList($arrayBoardItems);
-                    ?>
-                </div>
+        </div>
+    </section>
+    <hr>
+    <section id="section-boards">
+        <a class="a-popover" data-toggle="popover" title="Notices" data-content="New features are bg-colored. Loading this page handles DB, setting status of item to 'checked' status, and will lose bg-colors further." data-trigger="hover" data-placement="bottom">FEATURE</a>
+        <div class="row">
+            <div class="col-md-6">
+                <?php
+                echoRequestsList($requests);
+                ?>
             </div>
-        </section>
-        <hr>
-        <section id="section-history">
-        </section>
-    </div>
+            <div class="col-md-6">
+                <?php
+                echoBoardList($arrayBoardItems);
+                ?>
+            </div>
+        </div>
+    </section>
+    <hr>
+    <section id="section-history">
+    </section>
 </main>

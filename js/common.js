@@ -176,4 +176,5 @@ function init() {
 
 $('.btn-sign').click(clickSignButton);
 
+$('[data-toggle="popover"]').popover();
 // $('a').click(pageMoveWithPost);

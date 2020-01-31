@@ -9,10 +9,10 @@ function getArrayRecords($Y, $m)
     $stmt = $dbh->prepare($sql);
     $stmt->bindParam(':Ym', $Ym);
     $stmt->execute();
-    $arrayRecords = ($stmt->fetchAll(PDO::FETCH_ASSOC))[0];
-    if ($arrayRecords) {
-        unset($arrayRecords["id_user"]);
-        unset($arrayRecords["m"]);
+    $arrayRecords = ($stmt->fetchAll(PDO::FETCH_ASSOC));
+    if (count($arrayRecords)) {
+        unset($arrayRecords[0]["id_user"]);
+        unset($arrayRecords[0]["m"]);
         return $arrayRecords;
     } else {
         return array();
@@ -23,7 +23,8 @@ $arrayRecords = getArrayRecords($Y, $m);
 ?>
 
 <div id="div-form">
-    <h2 class="my-2"><?php if ($arrayRecords){echo 'Modify Application';} else {echo 'Submit Application';}?></h2>
+    <a class="a-popover" data-toggle="popover" data-content="Users can both submit and modify application form for shifts of next months. DB saves and modifies all applications from users, which will be used distributing shifts after submit-deadline." data-trigger="hover" data-placement="bottom">Submit&Modify</a>
+    <h2 class="my-2"><?php if ($arrayRecords){echo 'Modify';} else {echo 'Submit';}?> application form</h2>
     <form action="./process/submitshifts.php?mode=<?php if ($arrayRecords){echo 'modify';} else {echo 'submit';}?>" method="POST" id="form-application">
         <?php echo strtr('
         <input type="hidden" name="id_user" value="$id_user">
@@ -32,7 +33,7 @@ $arrayRecords = getArrayRecords($Y, $m);
         <!-- .row.no-gutters>.col-sm-6>h3+hr+table.table.table-hover>(thead>tr>th{Date}+th{Day}+th{Shift})+tbody>tr>td*2+td>.form-group>form-check-inline>label.form-check-label>input.form-check-input[type="checkbox"
                         name value] -->
         <div class="row no-gutters">
-            <div class="col-sm-6">
+            <div class="col-md-6 col-month">
                 <h3></h3>
                 <hr>
                 <table class="table table-hover text-center">

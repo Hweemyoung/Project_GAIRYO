@@ -21,6 +21,7 @@ class RequestsHandler extends DBHandler
         $this->mode = $mode;
         $this->idUser = $idUser;
         $this->idTrans = $idTrans;
+        $this->master_handler = $master_handler;
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
         $this->dbh = $master_handler->dbh;
         $this->url = 'transactions.php';
@@ -95,7 +96,7 @@ class RequestsHandler extends DBHandler
     private function saveDateObjects()
     {
         $stmt = $this->querySql($this->sqlForNumLangs);
-        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->config_handler->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
+        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->master_handler, $this->config_handler]);
         $stmt->closeCursor();
         $this->date_objects_handler->setArrayDateObjects($arrayShiftObjectsByDate);
         // var_dump($this->date_objects_handler->arrayDateObjects);
@@ -121,7 +122,7 @@ class RequestsHandler extends DBHandler
         }
         // Lock. Dates will be used for checking language changes between before and after.
         $stmt = $this->querySql('SELECT date_shift, id_user FROM shifts_assigned WHERE id_shift in (' . $sql . ') ;');
-        $arrayByDateShift = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->config_handler->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]); // array(0) if call request
+        $arrayByDateShift = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->master_handler, $this->config_handler]); // array(0) if call request
         $stmt->closeCursor();
         // Save Date Objects Before execution.
         $sqlConditions = $this->genSqlConditions(array_keys($arrayByDateShift), 'date_shift', 'OR');

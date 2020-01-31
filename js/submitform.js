@@ -44,9 +44,9 @@ const rowFrame = $('#div-form form .row table tbody tr').clone();
 // Remove original row
 $('#div-form form>.row table tbody tr').remove();
 // Create right column
-$("#div-form form>.row .col-sm-6").clone().appendTo($('#div-form form>.row'));
-var tBodyLeft = $('#div-form form>.row .col-sm-6:first-child table tbody');
-var tBodyRight = $('#div-form form>.row .col-sm-6:last-child table tbody');
+$("#div-form form>.row .col-month").clone().appendTo($('#div-form form>.row'));
+var tBodyLeft = $('#div-form form>.row .col-month:first-child table tbody');
+var tBodyRight = $('#div-form form>.row .col-month:last-child table tbody');
 // Fill out headings
 tBodyRight.closest('table').siblings('h3').html(monthShift);
 var lastMonth = new Date(d);

@@ -171,7 +171,7 @@ class ShiftsDistributor extends DBHandler
         $shiftObject->date = intval($dateTime->format('j')); // int(23)
         $shiftObject->date_shift = $dateTime->format('Y-m-d'); // '2020-02-23'
         $shiftObject->shift = $shift;
-        $shiftObject->__construct($this->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser);
+        $shiftObject->__construct($this->master_handler, $this->config_handler);
         return $shiftObject;
     }
 

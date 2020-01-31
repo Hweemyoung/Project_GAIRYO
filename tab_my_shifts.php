@@ -37,8 +37,8 @@ $arrayShifts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
-
-<h5 class="text-center">Shifts Assigned</h5>
+<a class="a-popover" data-toggle="popover" title="Notices" data-content="Lists all valid shifts of user. Can create transaction at once!" data-trigger="hover" data-placement="bottom">My Shifts</a>
+<h2>My Shifts</h2>
 <table class="table table-striped">
     <tbody>
         <?php

@@ -14,6 +14,7 @@ $signedin = false;
 </head>
 <header>Welcome to Odakyu Gairyo!</header>
 <body>
+    <div class="container px-1">
     <?php
     if (!$signedin) {
         require './common_nav_signedout.php';
@@ -26,5 +27,6 @@ $signedin = false;
     ?>
     <!-- Custom JS -->
     <script src="<?=$config_handler->http_host?>/js/signupform.js"></script>
+    </div>
 </body>
 </html>

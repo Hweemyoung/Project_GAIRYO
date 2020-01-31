@@ -9,9 +9,11 @@ class MarketItemHandler extends DBHandler
 {
     public function __construct($master_handler, $config_handler)
     {
+        $this->master_handler = $master_handler;
         $this->dbh = $master_handler->dbh;
         $this->id_user = $master_handler->id_user;
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
+        $this->config_handler = $config_handler;
         $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
         $this->date_objects_handler = new DateObjectsHandler($master_handler, $config_handler);
         $this->date_objects_put_handler = new DateObjectsHandler($master_handler, $config_handler);
@@ -44,10 +46,6 @@ class MarketItemHandler extends DBHandler
         }
     }
 
-    private function sampe(){
-
-    }
-
     private function setDateObjectsRequestedHandler()
     {
         // Call after setArrIdRequests
@@ -56,7 +54,7 @@ class MarketItemHandler extends DBHandler
             $sqlConditions = $this->genSqlConditions(array_keys($this->arrIdPutRequestsByIdShift), 'id_shift', 'OR');
             $sql = "SELECT date_shift, date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE done=0 AND $sqlConditions;";
             $stmt = $this->querySql($sql);
-            $arrShiftPutObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
+            $arrShiftPutObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->master_handler, $this->config_handler]);
             $stmt->closeCursor();
             $this->date_objects_put_handler->setArrayDateObjects($arrShiftPutObjectsByDate);
             $arrDateShiftsPut = array_keys($arrShiftPutObjectsByDate);
@@ -76,7 +74,7 @@ class MarketItemHandler extends DBHandler
             $sql = "SELECT date_shift, date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE done=0 AND $sqlConditions;";
             echo 'Put sql:' .  $sql . '<br>';
             $stmt = $this->querySql($sql);
-            $arrShiftCallObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
+            $arrShiftCallObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->master_handler, $this->config_handler]);
             $this->date_objects_call_handler->setArrayDateObjects($arrShiftCallObjectsByDate);
             $arrDateShiftsCall = array_keys($arrShiftCallObjectsByDate);
         } else {
@@ -96,7 +94,7 @@ class MarketItemHandler extends DBHandler
         $sqlConditions = $this->genSqlConditions($this->arrDateShifts, 'date_shift', 'OR');
         $sql = "SELECT date_shift, date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE done=0 AND $sqlConditions;";
         $stmt = $this->querySql($sql);
-        $arrShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
+        $arrShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->master_handler, $this->config_handler]);
         $stmt->closeCursor();
         $this->date_objects_handler->setArrayDateObjects($arrShiftObjectsByDate);
     }

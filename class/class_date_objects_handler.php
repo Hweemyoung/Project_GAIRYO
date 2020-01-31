@@ -6,6 +6,7 @@ class DateObjectsHandler
 {
     public function __construct($master_handler, $config_handler)
     {
+        $this->master_handler = $master_handler;
         $this->id_user = $master_handler->id_user;
         $this->dbh = $master_handler->dbh;
         $this->arrayDateObjects = [];
@@ -47,7 +48,7 @@ class DateObjectsHandler
         $sql = "SELECT date_shift, id_user, shift FROM shifts_assigned WHERE " . '(' . implode('AND', $array_conditions) . ')' . " ORDER BY date_shift ASC;";
         $stmt = $this->dbh->query($sql);
         // var_dump($stmt->errorInfo());
-        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
+        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->master_handler, $this->config_handler]);
         $stmt->closeCursor();
         foreach ($arrayShiftObjectsByDate as $date => $arrShiftObjects) {
             $this->arrayDateObjects[$date] = new DateObject($date, $arrShiftObjects, $this->config_handler);

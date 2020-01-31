@@ -20,6 +20,7 @@ class DailyMembersHandler extends DateObjectsHandler
 
     public function __construct($master_handler, $config_handler)
     {
+        $this->master_handler = $master_handler;
         $this->id_user = $master_handler->id_user;
         $this->dbh = $master_handler->dbh;
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
@@ -53,7 +54,7 @@ class DailyMembersHandler extends DateObjectsHandler
         $stmt->execute(array($this->dateStart, $this->dateEnd));
         // var_dump($stmt->errorInfo());
         // var_dump($this->arrayMemberObjectsByIdUser);
-        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->arrayShiftsByPart, $this->arrayMemberObjectsByIdUser]);
+        $arrayShiftObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->master_handler, $this->config_handler]);
         $this->setArrayDateObjects($arrayShiftObjectsByDate);
     }
 
@@ -288,6 +289,7 @@ class DailyMembersHandler extends DateObjectsHandler
                         <div class="row no-gutters">
                             <!-- col left -->
                             <div class="col-md-8 col-left">
+                                <a style="left: -10rem" class="a-popover" data-toggle="popover" data-content="Cozy and neat schedule design provides users quick grasp of assigned coleagues" data-trigger="hover" data-placement="bottom">Beautiful schedule</a>
                                 <div class="div-schedule">
                                     <!-- timeline -->
                                     <div class="timeline">
@@ -389,6 +391,7 @@ class DailyMembersHandler extends DateObjectsHandler
                                 </div>
                                 </div>'; // .shift-member-table .col-12 .row
             echo '
+                                <a style="left: -10rem" class="a-popover" data-toggle="popover" data-content="Loads member\'s specific information from DB and summarises them for every date." data-trigger="hover" data-placement="bottom">Summary</a>
                                 <div class="row">
                                     <div class="col-12">';
             foreach (array_keys($dateObject->arrayNumLangsByPart) as $idxPart) {
@@ -451,10 +454,12 @@ $daily_member_handler = new DailyMembersHandler($master_handler, $config_handler
     </div>
 </div>
 <!-- Search bar -->
+<a class="a-popover" data-toggle="popover" data-content="Choose year and n-th week to search shifts!" data-trigger="hover" data-placement="bottom">SEARCH BAR</a>
 <?php $daily_member_handler->echoSearchBar() ?>
 <!-- Accordion -->
+<a class="a-popover" data-toggle="popover" data-content="Custom schedule design provides users quick grasp of assigned coleagues" data-trigger="hover" data-placement="bottom">Shifts on Date</a>
 <?php $daily_member_handler->echoAccordion() ?>
-<script src="<?=$config_handler->http_host?>/js/custom_schedule.js"></script>
+<script src="<?= $config_handler->http_host ?>/js/custom_schedule.js"></script>
 <script>
     // text color of card-headers
     $('#accordion .card-header a').addClass('text-dark')
