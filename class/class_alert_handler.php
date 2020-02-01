@@ -23,7 +23,7 @@ class AlertHandler
 
     private function init()
     {
-        if ($this->_from !== 0) {
+        if ($this->_from) {
             $this->setStatus();
             $this->setMsg();
             echo $this->basename;
@@ -120,6 +120,29 @@ class AlertHandler
                                 switch ($this->_value) {
                                     case 0:
                                         $this->alertMsg = 'Transaction successfully created.';
+                                        break;
+                                }
+                        }
+                        // From upload_market_item.php
+                    case 3:
+                        switch($this->_status){
+                            case 0:
+                                switch ($this->_value) {
+                                    case 0:
+                                        $this->alertMsg = 'Mode not set.';
+                                        break;
+                                    case 1:
+                                        $this->alertMsg = "Mode not understood.";
+                                        break;
+                                }
+                                break;
+                            case 1:
+                                switch ($this->_value) {
+                                    case 0:
+                                        $this->alertMsg = 'Shift successfully put to market.';
+                                        break;
+                                    case 1:
+                                        $this->alertMsg = 'Call successfully echoed to market.';
                                         break;
                                 }
                         }

@@ -156,7 +156,7 @@ class TransactionsLister extends DBHandler
         }
 
         // Call
-        $sql = "SELECT date_shift, shift, id_transaction FROM requests_pending WHERE `status`=2 AND (id_from IS NULL AND id_to=$this->id_user) AND id_shift=NULL ORDER BY time_created ASC;";
+        $sql = "SELECT date_shift, shift, id_transaction FROM requests_pending WHERE `status`=2 AND (id_from IS NULL AND id_to=$this->id_user) AND id_shift IS NULL ORDER BY time_created ASC;";
         $stmt = $this->querySql($sql);
         $this->arrCallRequestsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'RequestObject');
         $stmt->closeCursor();

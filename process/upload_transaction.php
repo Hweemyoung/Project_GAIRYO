@@ -7,20 +7,19 @@ require_once "$homedir/class/class_db_handler.php";
 class TransactionUploader extends DBHandler
 {
     private $arrayFormIds;
-    private $idUser;
+    private $id_user;
     private static $arrayNames = array('id_from', 'month', 'day', 'shift', 'id_to');
 
     public function __construct($master_handler, $config_handler)
     {
         $this->master_handler = $master_handler;
         $this->dbh = $master_handler->dbh;
-        $this->idUser = $master_handler->id_user;
+        $this->id_user = $master_handler->id_user;
         $this->http_host = $config_handler->http_host;
         $this->sleepSeconds = $config_handler->sleepSeconds;
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
         $this->SQLS = '';
         $this->url = "transactions.php";
-        $this->sleepSeconds = 2;
         $this->arrayFormIds = explode(',', $_POST["formIDs"]);
         $this->process();
     }
@@ -28,8 +27,8 @@ class TransactionUploader extends DBHandler
     public function process()
     {
         $this->beginTransactionIfNotIn();
-        var_dump($_POST);
-        $sql = "SELECT id_transaction FROM requests_pending ORDER BY id_transaction DESC LIMIT 1;";
+        $this->lockTablesIfNotInnoDB(['shifts_assigned']);
+        $sql = "SELECT id_transaction FROM requests_pending ORDER BY id_transaction DESC LIMIT 1 FOR UPDATE;";
         $stmt = $this->querySql($sql);
         // Set next id_transaction
         $arrayIdtrans = $stmt->fetchAll(PDO::FETCH_COLUMN);
@@ -80,14 +79,14 @@ class TransactionUploader extends DBHandler
                 $agreed_to = 0;
                 $checked_from = 0;
                 $checked_to = 0;
-                if ($this->idUser === $id_from) {
+                if ($this->id_user === $id_from) {
                     $agreed_from = 1;
                     $checked_from = 1;
-                } else if ($this->idUser === $id_to) {
+                } else if ($this->id_user === $id_to) {
                     $agreed_to = 1;
                     $checked_to = 1;
                 }
-                $sql = "INSERT INTO requests_pending (id_shift, id_from, id_to, id_created, time_created, `status`, time_proceeded, id_transaction, agreed_from, agreed_to, checked_from, checked_to) VALUES ($id_shift, $id_from, $id_to, $this->idUser, '$time_created', 2, '$time_created', $id_transaction, $agreed_from, $agreed_to, $checked_from, $checked_to);";
+                $sql = "INSERT INTO requests_pending (id_shift, id_from, id_to, id_created, time_created, `status`, time_proceeded, id_transaction, agreed_from, agreed_to, checked_from, checked_to) VALUES ($id_shift, $id_from, $id_to, $this->id_user, '$time_created', 2, '$time_created', $id_transaction, $agreed_from, $agreed_to, $checked_from, $checked_to);";
                 $this->SQLS = $this->SQLS . $sql;
             }
         }
@@ -111,7 +110,7 @@ $transaction_uploader = new TransactionUploader($master_handler, $config_handler
 // // $arrayFormIds = explode(',', $_POST["formIDs"]);
 // // $SQLS = '';
 // $master_handler->dbh->query('START TRANSACTION;');
-// $sql = "SELECT id_transaction FROM requests_pending ORDER BY id_transaction DESC LIMIT 1;";
+// $sql = "SELECT id_transaction FROM requests_pending ORDER BY id_transaction DESC LIMIT 1 FOR UPDATE;";
 // $stmt = $this->querySql($sql);
 // // Set next id_transaction
 // $arrayIdtrans = $stmt->fetchAll(PDO::FETCH_COLUMN);

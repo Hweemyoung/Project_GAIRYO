@@ -26,7 +26,7 @@ class MarketPurchaseProcessor extends DBHandler
         $mode = $_GET['mode'];
         $id_request = $_GET['id_request'];
         if ($mode === 'put') {
-            $sql = "SELECT id_transaction FROM requests_pending WHERE id_request=$id_request AND `status`=2 AND id_to IS NULL;";
+            $sql = "SELECT id_transaction FROM requests_pending WHERE id_request=$id_request AND `status`=2 AND id_to IS NULL FOR UPDATE;";
             echo $sql . '<br>';
             $stmt = $this->querySql($sql);
             $result = $stmt->fetchAll(PDO::FETCH_COLUMN | PDO::FETCH_NUM);

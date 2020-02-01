@@ -23,6 +23,24 @@ class DBHandler
     {
     }
 
+    public function lockTablesIfNotInnoDB(array $arrTableName)
+    {
+        $sqlConditions = $this->genSqlConditions($arrTableName, 'Name', 'OR');
+        $sql = "SHOW TABLE STATUS WHERE $sqlConditions;";
+        $stmt = $this->dbh->query($sql);
+        $arrTableStatus = $stmt->fetchAll(PDO::FETCH_COLUMN | PDO::FETCH_CLASS);
+        $stmt->closeCursor();
+        $sqlConditions = '';
+        foreach($arrTableStatus as $tableStatus){
+            if ($tableStatus->Engine !== 'InnoDB'){
+                $sqlConditions = $sqlConditions . "$tableStatus->Name WRITE";
+            }
+        }
+        $sql = "LOCK TABLE $sqlConditions;";
+        echo 'Locking tables: ' . $sql . '<br>';
+        $this->executeSql($sql);
+    }
+
     public function redirect($commit, string $url, array $query)
     {
         if ($commit) {
@@ -73,7 +91,7 @@ class DBHandler
         if (count($arrayFieldValues) === 0) {
             $arrayFieldValues = [0];
         } else {
-            if ($colName === 'date_shift') {
+            if (in_array($colName, ['date_shift', 'shift'])) {
                 for ($i = 0; $i < count($arrayFieldValues); $i++) {
                     $arrayFieldValues[$i] = $colName . '="' . $arrayFieldValues[$i] . '"';
                 }
