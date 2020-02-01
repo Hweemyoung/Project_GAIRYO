@@ -6,6 +6,7 @@ require_once "$homedir/class/class_db_handler.php";
 
 class MarketItemUploader extends DBHandler
 {
+    # This process heavily depends on DBEngine, for it uses MySQL savepoints.
     public function __construct($master_handler, $config_handler)
     {
         $this->master_handler = $master_handler;
@@ -27,7 +28,6 @@ class MarketItemUploader extends DBHandler
         $this->setMode();
         $this->validateUser($this->mode);
         $this->upload_market_item($this->mode);
-        $this->matchCounterItem();
     }
 
     private function setMode()
@@ -206,7 +206,10 @@ class MarketItemUploader extends DBHandler
     }
 
     private function matchCounterItem($mode){
-        
+        if ($mode === 'put'){
+            // Find any counter item
+            $sql = "SELECT id_request FROM requests_pending WHERE id_from IS NULL AND date_shift='$this->date_shift' AND shift='$this->shift' AND id_to IS NOT NULL AND `status`=2;";
+        }
     }
 }
 
