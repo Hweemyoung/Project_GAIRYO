@@ -27,18 +27,22 @@ class DBHandler
     {
         $sqlConditions = $this->genSqlConditions($arrTableName, 'Name', 'OR');
         $sql = "SHOW TABLE STATUS WHERE $sqlConditions;";
+        echo $sql .'<br>';
         $stmt = $this->dbh->query($sql);
-        $arrTableStatus = $stmt->fetchAll(PDO::FETCH_COLUMN | PDO::FETCH_CLASS);
+        $arrTableStatus = $stmt->fetchAll(PDO::FETCH_CLASS);
         $stmt->closeCursor();
         $sqlConditions = '';
+        $arrTableNamesLocked = [];
         foreach($arrTableStatus as $tableStatus){
             if ($tableStatus->Engine !== 'InnoDB'){
                 $sqlConditions = $sqlConditions . "$tableStatus->Name WRITE";
+                $arrTableNamesLocked[] = $tableStatus->Name;
             }
         }
         $sql = "LOCK TABLE $sqlConditions;";
         echo 'Locking tables: ' . $sql . '<br>';
         $this->executeSql($sql);
+        return $arrTableNamesLocked;
     }
 
     public function redirect($commit, string $url, array $query)
@@ -91,7 +95,7 @@ class DBHandler
         if (count($arrayFieldValues) === 0) {
             $arrayFieldValues = [0];
         } else {
-            if (in_array($colName, ['date_shift', 'shift'])) {
+            if (in_array($colName, ['date_shift', 'shift', 'Name'])) {
                 for ($i = 0; $i < count($arrayFieldValues); $i++) {
                     $arrayFieldValues[$i] = $colName . '="' . $arrayFieldValues[$i] . '"';
                 }

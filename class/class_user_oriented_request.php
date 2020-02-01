@@ -33,20 +33,21 @@ class userOrientedRequest
         $this->status = $arrayRequest["status"];
         $this->nicknameFrom = $arrayMemberObjectsByIdUser[$arrayRequest["id_from"]]->nickname;
         $this->nicknameTo = $arrayMemberObjectsByIdUser[$arrayRequest["id_to"]]->nickname;
-        if ($arrayRequest["id_created"] === $id_user){
+        if ($arrayRequest["id_created"] === $id_user) {
             $this->nicknameCreated = 'YOU';
         } else {
             $this->nicknameCreated = $arrayMemberObjectsByIdUser[$arrayRequest["id_created"]]->nickname;
         }
         $this->idShift = $arrayRequest["id_shift"];
         $sql = "SELECT date_shift, shift FROM shifts_assigned WHERE id_shift=$this->idShift;";
-        // echo $sql;
+        echo $sql;
         // var_dump($this->dbh->query($sql)->errorInfo());
         $stmt = $this->dbh->query($sql);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // var_dump($result);
         $stmt->closeCursor();
         $this->dateTime = DateTime::createFromFormat('Y-m-d', $result[0]["date_shift"]);
-        switch($this->dateTime->format('w')){
+        switch ($this->dateTime->format('w')) {
             case 0:
                 $this->classTextColorDay = 'text-danger';
                 break;

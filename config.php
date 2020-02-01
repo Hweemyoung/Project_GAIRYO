@@ -19,7 +19,7 @@ class ConfigHandler
     public $maxWorkingMinsPerWeekByJp = ['0' => 1680, 1 => 2400];
     public $maxWorkingDaysPerWeekByJp = ['0' => 5, 1 => 7];
     // Per month
-    public $maxWorkingMinsPerMonthByJp = ['0' => INF, 1 => 6600];
+    public $maxWorkingMinsPerMonthByJp = ['0' => 6600, 1 => 10000];
     public $maxWorkingDaysPerMonthByJp = ['0' => 16, '1' => 16];
 
     // Languages

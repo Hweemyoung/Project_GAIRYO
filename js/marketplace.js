@@ -1,7 +1,8 @@
 class MarketItemHandler {
 
-    constructor(_memberObjectOfUser, _arrDateObjects, _arrIdPutRequestsByIdShift, _arrIdCallRequestsByDate, _arrDateObjectsPut, _arrDateObjectsCall, _arrShiftsByPart, _constants) {
+    constructor(_memberObjectOfUser, _arrDateObjects, _arrIdPutRequestsByIdShift, _arrIdCallRequestsByDate, _arrDateObjectsPut, _arrDateObjectsCall, _arrShiftsByPart, _http_host, _constants) {
         this._constants = _constants;
+        this._http_host = _http_host;
         this._memberObjectOfUser = _memberObjectOfUser;
         this._arrDateObjects = _arrDateObjects;
         this._arrIdPutRequestsByIdShift = _arrIdPutRequestsByIdShift;
@@ -161,11 +162,9 @@ class MarketItemHandler {
             console.log('exists!');
             $('#input-id-request').attr('value', this._arrIdPutRequestsByIdShift[this._objTbodies[_date_shift][_shift].ShiftObject.id_shift].id_request);
             $('#input-mode').attr('value', $(event.target).closest('.btn-group').attr('mode'));
+            $('#form .btn[type="submit"]').attr('action', `${this._http_host}/process/upload_market_item.php`);
+
         }
-    }
-
-    checkConfirmable(_shiftObject) {
-
     }
 }
 

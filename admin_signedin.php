@@ -293,7 +293,7 @@ $stmt->closeCursor();
 // var_dump($arrayBoardItems);OK
 // set checked_$id_user = 1
 $sql = "UPDATE board SET checked_$id_user=1 WHERE id_board_item IN (" . implode(',', array_keys($arrayBoardItems)) . ");";
-echo $sql . '<br>';
+// echo $sql . '<br>';
 $dbh->exec($sql);
 ?>
 

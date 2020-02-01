@@ -32,7 +32,7 @@ function echoTr($arrayShifts)
     }
 }
 
-$sql = 'SELECT date_shift, shift FROM shifts_assigned WHERE id_user=:id_user ORDER BY date_shift DESC';
+$sql = 'SELECT id_shift, date_shift, shift FROM shifts_assigned WHERE id_user=:id_user ORDER BY date_shift DESC';
 $stmt = $dbh->prepare($sql);
 $stmt->bindParam(':id_user', $id_user);
 $stmt->execute();
@@ -62,6 +62,8 @@ $arrayShifts = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $hrefDailyMembers = utils\genHref($config_handler->http_host, 'shifts.php', $master_handler->arrPseudoUser + ['Y' => $date->format('Y'), 'page' => intval($date->format('W')), 'date' => $date->format('M_j')]) . '#' . $date->format('M_j');
             $date->format('W');
             $hrefRequest = utils\genHref($config_handler->http_host, 'transactionform.php', $master_handler->arrPseudoUser + ['id_from' => $master_handler->id_user, 'month' => $date->format('Y_M'), 'day' => $date->format('j'), 'shift' => $shift]);
+            $hrefMarket = utils\genHref($config_handler->http_host, 'process/upload_market_item.php', $master_handler->arrPseudoUser + ['mode'=> 'put', 'id_from' => $master_handler->id_user, 'id_shift' => $arrayShift['id_shift'], 'date_shift' => $arrayShift['date_shift'], 'shift' => $shift]);
+            $arrNames = ['id_from', 'id_shift', 'date_shift', 'shift'];
             echo "
                         <td>
                             <div class='dropdown'>
@@ -69,7 +71,7 @@ $arrayShifts = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <div class='dropdown-menu dropdown-menu-right'>
                                     <a class='dropdown-item' href='$hrefDailyMembers'>See daily members</a>
                                     <a class='dropdown-item' href='$hrefRequest'>Request</a>
-                                    <a class='dropdown-item' href='#'>To Market</a>
+                                    <a class='dropdown-item' href='$hrefMarket'>To Market</a>
                                 </div>
                             </div>
                         </td>

@@ -59,6 +59,7 @@ $market_item_handler = new MarketItemHandler($master_handler, $config_handler);
             <?= json_encode($market_item_handler->date_objects_put_handler->arrayDateObjects, 0, 1024) ?>,
             <?= json_encode($market_item_handler->date_objects_call_handler->arrayDateObjects, 0, 1024) ?>,
             <?= json_encode($market_item_handler->arrayShiftsByPart, 0, 1024) ?>,
+            '<?= $config_handler->http_host?>',
             _constants);
     </script>
 </main>

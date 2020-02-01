@@ -18,7 +18,7 @@ $transactionform_handler->setArrayDateObjects($arrayShiftObjectsByDate);
 // var_dump($stmt->errorInfo());OK
 // $arrayShiftsByDate = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
 // ksort($arrayShiftsByDate);
-$sql = "SELECT id_user, date_shift, shift FROM shifts_assigned WHERE done = 0";
+$sql = "SELECT id_user, date_shift, shift FROM shifts_assigned WHERE done = 0 AND id_user>0";
 $stmt = $master_handler->dbh->prepare($sql);
 $stmt->execute();
 // var_dump($stmt->errorInfo());OK

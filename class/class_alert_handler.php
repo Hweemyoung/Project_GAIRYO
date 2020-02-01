@@ -85,15 +85,15 @@ class AlertHandler
                                 break;
                             case 1:
                                 switch ($this->_value) {
-                                    case 0:
+                                    case '0':
                                         $this->alertMode = 'alert-warning';
                                         $this->alertStrong = 'Agreed!';
                                         $this->alertMsg = 'Awaiting other agreements for executing transaction.';
                                         break;
-                                    case 1:
+                                    case '1':
                                         $this->alertMsg = 'Transaction successfully executed.<br>Your Shifts have been UPDATED!';
                                         break;
-                                    case 2:
+                                    case '2':
                                         $this->alertMsg = 'Transaction successfully declined and no longer valid.';
                                         break;
                                 }
@@ -122,7 +122,9 @@ class AlertHandler
                                         $this->alertMsg = 'Transaction successfully created.';
                                         break;
                                 }
+                                break;
                         }
+                        break;
                         // From upload_market_item.php
                     case 3:
                         switch($this->_status){
@@ -144,6 +146,8 @@ class AlertHandler
                                     case 1:
                                         $this->alertMsg = 'Call successfully echoed to market.';
                                         break;
+                                    case 2:
+                                        $this->alertMsg = 'Call item which matches your put item was found.<br>Your shift have been UPDATED!';
                                 }
                         }
                 }
