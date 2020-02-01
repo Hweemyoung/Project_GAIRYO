@@ -41,7 +41,7 @@ class ShiftsDistributor extends DBHandler
         $this->loadShiftsSubmitted();
         $this->setArrDateShiftsHandlerByDate();
         $this->distributeAllShifts();
-        $this->dbh->commit();
+        // $this->dbh->commit();
     }
 
     private function deleteAllIfAny()
@@ -71,8 +71,13 @@ class ShiftsDistributor extends DBHandler
         // echo '<br>';
         foreach (range(1, 31) as $date) {
             $dateTime = DateTime::createFromFormat('Ymd', $this->m . '01'); // '2020-03-01'
-            if ($date > 15) {
+            if ($date === 15){
+                $this->maxDateTime = $dateTime;
+            } elseif($date > 15) {
                 $dateTime = $dateTime->modify('-1 days'); // '2020-02-28';
+                if ($date===16){
+                    $this->minDateTime = $dateTime;
+                }
                 // echo 'Modified DateTime:' . $dateTime->format('Y-m-d') . '<br>';
                 if ($date > 28) {
                     // Check if $date could be valid DateTime
@@ -124,7 +129,7 @@ class ShiftsDistributor extends DBHandler
             // Save id_user of applicants for this date
             $this->addArrIdUserApp($date);
         }
-        
+
         // echo 'keys of arrShiftStatusByShift<br>';
         // var_dump(array_keys($this->arrDateShiftsDeployerByDate[16]->arrShiftStatusByShift));
         // echo '<br>';
@@ -147,7 +152,8 @@ class ShiftsDistributor extends DBHandler
         // var_dump(($this->arrDateShiftsDeployerByDate)['2020-02-16']);
     }
 
-    private function addArrIdUserApp($date){
+    private function addArrIdUserApp($date)
+    {
         $this->arrIdUserAppByDate[$date] = array_keys($this->arrDateShiftsDeployerByDate[$date]->arrShiftAppObjectsByIdUser);
     }
 
@@ -197,8 +203,43 @@ class ShiftsDistributor extends DBHandler
             $this->arrStats[$date] = $this->arrDateShiftsDeployerByDate[$date]->getStatistics();
             // Assign all shifts
             // $this->arrDateShiftsDeployerByDate[$date]->assignAllShifts($this);
+            // Filter ShiftObjects
+
+
         }
         $this->getTotalStats();
+    }
+
+    private function filterByWorkingConditions($date)
+    {
+        // $date = int(19)
+        $curDateTime = DateTime::createFromFormat('Ymd', $this->m . '01'); // '2020-03-01'
+        if ($date > 15) {
+            $curDateTime = $curDateTime->modify('-1 days'); // '2020-02-28';
+        }
+        $curDateTime->setDate($curDateTime->format('Y'), $curDateTime->format('n'), $date);
+        // per week
+        foreach ($this->arrayMemberObjectsByIdUser as $id_user => $memberObject) {
+            // working mins
+            if ($memberObject->workedMinsByWeek[$curDateTime->format('W')] >= $this->config_handler->maxWorkingMinsPerWeekByJp[$memberObject->jp]){
+                // If over, unset
+                // get date range first
+            };
+            // Per month: working mins, days
+        }
+    }
+
+    private function getDatesOfWeek($dateTime){
+        $dateTimeStart = clone $dateTime;
+        $dateTimeStart->sub($dateTime->format('N') - 1);
+        if ($dateTimeStart < $this->minDateTime){
+            $dateTimeStart = $this->minDateTime;
+        }
+        $dateTimeEnd = clone $dateTime;
+        $dateTimeEnd->add(7 - $dateTime->format('N'));
+        if ($dateTimeEnd > $this->maxDateTime){
+            $dateTimeEnd = $this->maxDateTime;
+        }
     }
 
     private function getTotalStats()
@@ -255,7 +296,6 @@ class ShiftsDistributor extends DBHandler
         $arrIdUsersAppMerged = [];
         foreach ($this->arrIdUserAppByDate as $date => $arrIdUsersApp) {
             $arrIdUsersAppMerged = array_unique(array_merge($arrIdUsersAppMerged, $arrIdUsersApp));
-            
         }
         $numTotalApplicants = count($arrIdUsersAppMerged);
         echo "Total num of applicants: " . $numTotalApplicants . '<br>';

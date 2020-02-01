@@ -14,6 +14,14 @@ class ConfigHandler
     public $http_host;
     public $homedir = '/var/www/html/gairyo_temp';
 
+    // Working conditions: '0': Not JP, '1': JP
+    // Per week
+    public $maxWorkingMinsPerWeekByJp = ['0' => 1680, 1 => 2400];
+    public $maxWorkingDaysPerWeekByJp = ['0' => 5, 1 => 7];
+    // Per month
+    public $maxWorkingMinsPerMonthByJp = ['0' => INF, 1 => 6600];
+    public $maxWorkingDaysPerMonthByJp = ['0' => 16, '1' => 16];
+
     // Languages
     public $numLangs = 8; // Includes 'other'
     public $arrayLangsShort = ['cn', 'kr', 'th', 'my', 'ru', 'fr', 'de', 'other'];
@@ -36,20 +44,20 @@ class ConfigHandler
     public $defaultNumNeededByPart = [5, 4];
     public $arrNumNeededByPartByDate = [16 => [8, 8]];
 
-    
+
     // ConfigHandler
     public $sleepSeconds = 2;
-    
+
     // DailyMembersHandler
     public $YLowerBound = 2020;
     public $dayStart = 'Mon';
     public $dayEnd = 'Sun';
-    
+
     // tab_submit_shifts
     public $enableSubmit = 1;
     public $m_submit = '202002';
     public $message = 'シフト希望は2020年2月2日から受け付けます';
-    
+
     // ShiftsDistributor
     public $m = '202002';
     public $arr_mshifts = [];

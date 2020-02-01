@@ -29,10 +29,9 @@ class MasterHandler
                     echo 'Neither id_user nor pseudo_user given to master_handler. exit!';
                     exit;
                 }
-                elseif($_GET['pseudo_user'] !== strval($this->id_user)){
+            } elseif($_GET['pseudo_user'] !== strval($this->id_user)){
                     echo '<strong>MasterHandler</strong>: id_user from $param and pseudo_user from $_GET are different.<br>This could cause trouble with href.<br>';
                 }
-            }
             $this->arrPseudoUser = (isset($_GET['pseudo_user'])) ? ['pseudo_user' => $_GET['pseudo_user']] : [];
             $this->signedin = true;
         } elseif (isset($_POST['id_google'])) {

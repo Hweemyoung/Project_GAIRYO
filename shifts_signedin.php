@@ -4,11 +4,11 @@
         <ul class="nav nav-tabs">
             <?php
             ?>
-            <li class="nav-item"><a href="#tab-content1" class="nav-link <?php if (!isset($_GET["page"])) {
+            <li class="nav-item"><a href="#tab-content1" class="nav-link <?php if (!isset($_GET["page"]) && !isset($_GET["Y"])) {
                                                                                 echo 'active';
                                                                             } ?>" data-toggle="tab">My Shifts</a>
-            <li>
-            <li class="nav-item"><a href="#tab-content2" class="nav-link <?php if (isset($_GET["page"])) {
+            </li>
+            <li class="nav-item"><a href="#tab-content2" class="nav-link <?php if (isset($_GET["page"]) || isset($_GET["Y"])) {
                                                                                 echo 'active';
                                                                             } ?>" data-toggle="tab">Daily Members</a>
             </li>

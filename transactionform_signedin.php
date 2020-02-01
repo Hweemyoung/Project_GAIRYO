@@ -36,8 +36,8 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
 <main>
     <hr>
     <section>
-    <a class="a-popover" data-toggle="popover" data-content="PHP loads requests that exists in DB and gives them to JS, checking everytime if requests trying to create is valid or not. If invalid, JS prevents users from confirming creation. Check out if it works!" data-trigger="hover" data-placement="bottom">User-oriented form</a>
-        <form action="<?=utils\genHref($config_handler->http_host, 'process/upload_transaction.php', $master_handler->arrPseudoUser) ?>" method="POST">
+        <a class="a-popover" data-toggle="popover" data-content="PHP loads requests that exists in DB and gives them to JS, checking everytime if requests trying to create is valid or not. If invalid, JS prevents users from confirming creation. Check out if it works!" data-trigger="hover" data-placement="bottom">User-oriented form</a>
+        <form action="<?= utils\genHref($config_handler->http_host, 'process/upload_transaction.php', $master_handler->arrPseudoUser) ?>" method="POST">
             <input id="input-ids" type="hidden" name="formIDs" value="1">
             <div class="form-item" id="1">
                 <div class="row no-gutters">
@@ -167,6 +167,10 @@ $arrayShifts = array('A', 'B', 'H', 'C', 'D');
 </main>
 <footer></footer>
 <script src="<?= $config_handler->http_host ?>/js/transactionform.js"></script>
+<script src="<?= $config_handler->http_host ?>/js/form_auto_selector.js"></script>
 <script>
     const formHandler = new FormHandler(<?= json_encode($arrayShiftsByIdUser) ?>, <?= json_encode($transactionform_handler) ?>);
+    <?php if (isset($_GET['id_from']) && isset($_GET['month']) && isset($_GET['day']) && isset($_GET['shift'])) { ?>
+        const form_auto_selector = new FormAutoSelector('<?= $_GET['id_from'] ?>', '<?= $_GET['month'] ?>', '<?= $_GET['day'] ?>', '<?= $_GET['shift'] ?>');
+    <?php } ?>
 </script>

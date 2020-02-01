@@ -1,4 +1,8 @@
 <?php
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/utils.php";
+require_once "$homedir/config.php";
+
 function echoTr($arrayShifts)
 {
     foreach ($arrayShifts as $shift) {
@@ -28,7 +32,7 @@ function echoTr($arrayShifts)
     }
 }
 
-$sql = 'SELECT * FROM shifts_assigned WHERE id_user=:id_user ORDER BY date_shift DESC';
+$sql = 'SELECT date_shift, shift FROM shifts_assigned WHERE id_user=:id_user ORDER BY date_shift DESC';
 $stmt = $dbh->prepare($sql);
 $stmt->bindParam(':id_user', $id_user);
 $stmt->execute();
@@ -47,41 +51,29 @@ $arrayShifts = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <tr>
                 ';
             $date = new DateTime($arrayShift["date_shift"]);
-            $date = $date->getTimestamp();
-            $dateShift = date('M j (D) ', $date);
+            $dateShift = $date->format('M j (D)');
             $shift = $arrayShift["shift"];
-            switch (intval(date('w', $date))) {
-                case 0:
-                    echo strtr('
-                        <td class="text-danger">$dateShift</td>
-                        ', array('$dateShift' => $dateShift));
-                    break;
-                case 6:
-                    echo strtr('
-                        <td class="text-primary">$dateShift</td>
-                        ', array('$dateShift' => $dateShift));
-                    break;
-                default:
-                    echo "
-                        <td>$dateShift</td>
-                        ";
-                    break;
-            }
+            $classTextColor = utils\getClassTextColorForDay($date->format('D'));
+            echo "
+                        <td class='$classTextColor'>$dateShift</td>";
             echo "
                         <td>$shift</td>
                 ";
-            echo '
+            $hrefDailyMembers = utils\genHref($config_handler->http_host, 'shifts.php', $master_handler->arrPseudoUser + ['Y' => $date->format('Y'), 'page' => intval($date->format('W')), 'date' => $date->format('M_j')]) . '#' . $date->format('M_j');
+            $date->format('W');
+            $hrefRequest = utils\genHref($config_handler->http_host, 'transactionform.php', $master_handler->arrPseudoUser + ['id_from' => $master_handler->id_user, 'month' => $date->format('Y_M'), 'day' => $date->format('j'), 'shift' => $shift]);
+            echo "
                         <td>
-                            <div class="dropdown">
-                                <a href="#" data-toggle="dropdown"><i class="fas fa-ellipsis-h"></i></a>
-                                <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="#">See daily members</a>
-                                    <a class="dropdown-item" href="#">Request</a>
-                                    <a class="dropdown-item" href="#">Advertise</a>
+                            <div class='dropdown'>
+                                <a href='#' data-toggle='dropdown'><i class='fas fa-ellipsis-h'></i></a>
+                                <div class='dropdown-menu dropdown-menu-right'>
+                                    <a class='dropdown-item' href='$hrefDailyMembers'>See daily members</a>
+                                    <a class='dropdown-item' href='$hrefRequest'>Request</a>
+                                    <a class='dropdown-item' href='#'>To Market</a>
                                 </div>
                             </div>
                         </td>
-                ';
+                ";
             echo '
                     </tr>
                 ';

@@ -138,16 +138,16 @@ class DailyMembersHandler extends DateObjectsHandler
                     <div class='dropdown-menu'>";
         if (($this->Y - 1) >= $this->YLowerBound) {
             $YPrev = $this->Y - 1;
-            $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + ['Y' => $YPrev]);
+            $href = utils\genHref($this->config_handler->http_host, 'shifts.php', $this->master_handler->arrPseudoUser + ['Y' => $YPrev]);
             echo "
                         <a href='$href' class='dropdown-item'>$YPrev</a>";
         }
-        $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser);
+        // $href = utils\genHref($this->config_handler->http_host, 'shifts.php', $this->master_handler->arrPseudoUser);
         echo "
-                        <a href='$href' class='dropdown-item active'>$this->Y</a>";
+                        <a href='#' class='dropdown-item active'>$this->Y</a>";
         if (($this->Y + 1) <= $this->YMax) {
             $YNext = $this->Y + 1;
-            $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + ['Y' => $YNext]);
+            $href = utils\genHref($this->config_handler->http_host, 'shifts.php', $this->master_handler->arrPseudoUser + ['Y' => $YNext]);
             echo "
                         <a href='$href' class='dropdown-item'>$YNext</a>";
         }
@@ -165,14 +165,14 @@ class DailyMembersHandler extends DateObjectsHandler
             $href = '';
         } else {
             $disabled = '';
-            $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + ['page' => 1]);
+            $href = utils\genHref($this->config_handler->http_host, 'shifts.php', $this->master_handler->arrPseudoUser + ['Y' => $this->Y, 'page' => 1]);
         }
         echo "
                     <li class='page-item $disabled'><a class='page-link' href='$href'><i class='fas fa-angle-double-left'></i></a></li>
         ";
         if ($this->currentPage > 3) {
             $disabled = '';
-            $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + ['page' => $this->currentPage - 3]);
+            $href = utils\genHref($this->config_handler->http_host, 'shifts.php', $this->master_handler->arrPseudoUser + ['Y' => $this->Y, 'page' => $this->currentPage - 3]);
         } else {
             $disabled = 'disabled';
             $href = '';
@@ -182,7 +182,7 @@ class DailyMembersHandler extends DateObjectsHandler
         for ($i = 2; $i > 0; $i--) {
             if (($this->currentPage - $i) > 0) {
                 $page = $this->currentPage - $i;
-                $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + array('page' => $page));
+                $href = utils\genHref($this->config_handler->http_host, 'shifts.php', $this->master_handler->arrPseudoUser + array('Y' => $this->Y, 'page' => $page));
                 echo "
                     <li class='page-item'><a class='page-link' href='$href'>$page</a></li>";
             }
@@ -193,7 +193,7 @@ class DailyMembersHandler extends DateObjectsHandler
             $page = $this->currentPage + $i;
             if ($page <= $this->pageUpperBound) {
                 if ($page <= $this->pageMax) {
-                    $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + array('page' => $page));
+                    $href = utils\genHref($this->config_handler->http_host, 'shifts.php', $this->master_handler->arrPseudoUser + array('Y' => $this->Y, 'page' => $page));
                     echo "
                     <li class='page-item'><a class='page-link' href='$href'>$page</a></li>
                 ";
@@ -208,7 +208,7 @@ class DailyMembersHandler extends DateObjectsHandler
         }
         if ($this->currentPage < $this->pageMax - 2) {
             $disabled = '';
-            $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + array('page' => $this->currentPage + 3));
+            $href = utils\genHref($this->config_handler->http_host, 'shifts.php', $this->master_handler->arrPseudoUser + array('Y' => $this->Y, 'page' => $this->currentPage + 3));
         } else {
             $disabled = 'disabled';
             $href = '';
@@ -220,7 +220,7 @@ class DailyMembersHandler extends DateObjectsHandler
             $href = '';
         } else {
             $disabled = '';
-            $href = utils\genHref($this->config_handler->http_host, 'shift.php', $this->master_handler->arrPseudoUser + array('page' => $this->pageMax));
+            $href = utils\genHref($this->config_handler->http_host, 'shifts.php', $this->master_handler->arrPseudoUser + array('Y' => $this->Y, 'page' => $this->pageMax));
         }
         echo "
                     <li class='page-item $disabled'><a class='page-link' href='$href'><i class='fas fa-angle-double-right'></i></a></li>
@@ -245,35 +245,36 @@ class DailyMembersHandler extends DateObjectsHandler
             $currentDateTime = new DateTime($date);
             // var_dump($currentDateTime);
             $headerTitle = $currentDateTime->format('M j (D)');
+            $id_card = $currentDateTime->format('M_j');
             if (!isset($_GET["date"])) {
                 $show = '';
-            } elseif ($_GET["date"] !== $date) {
+            } elseif ($_GET["date"] !== $id_card) {
                 $show = '';
             } else {
                 $show = 'show';
             }
             $w = $currentDateTime->format('w');
-            echo '
-            <div class="card">
-        ';
+            echo "
+            <div class='card' id='$id_card'>
+        ";
             echo strtr('
                 <div class="card-header"><a href="#day$w" class="card-link" data-toggle="collapse">$headerTitle</a></div>
         ', array('$w' => $w, '$headerTitle' => $headerTitle));
-            echo strtr('
-                <div class="collapse $show" data-parent="#accordion" id="day$w">
-                    <div class="card-body">
-                        <div class="row no-gutters">
+            echo "
+                <div class='collapse $show' data-parent='#accordion' id='day$w'>
+                    <div class='card-body'>
+                        <div class='row no-gutters'>
                             <!-- col left -->
-                            <div class="col-md-8 col-left">
-                                <a style="left: -10rem" class="a-popover" data-toggle="popover" data-content="Cozy and neat schedule design provides users quick grasp of assigned coleagues" data-trigger="hover" data-placement="bottom">Beautiful schedule</a>
-                                <div class="div-schedule">
+                            <div class='col-md-8 col-left'>
+                                <a style='left: -10rem' class='a-popover' data-toggle='popover' data-content='Cozy and neat schedule design provides users quick grasp of assigned coleagues' data-trigger='hover' data-placement='bottom'>Beautiful schedule</a>
+                                <div class='div-schedule'>
                                     <!-- timeline -->
-                                    <div class="timeline">
-                                        <ul type="none">
+                                    <div class='timeline'>
+                                        <ul type='none'>
                                         </ul>
                                     </div>
-                                    <div class="div-columns">
-            ', array('$w' => $w, '$show' => $show));
+                                    <div class='div-columns'>
+        ";
             for ($i = 0; $i < count($matchShiftsAndColumns); $i++) {
                 echo '
                                         <div class="column">

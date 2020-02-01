@@ -14,11 +14,13 @@ class TransactionsLister extends DBHandler
         $this->dbh = $master_handler->dbh;
         $this->id_user = $master_handler->id_user;
         $this->config_handler = $config_handler;
-        $this->http_host = $config_handler->http_host;
         $this->sleepSeconds = $config_handler->sleepSeconds;
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
         $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
         $this->url = 'process/register_agree.php';
+        $this->hrefTransactionForm = utils\genHref($this->config_handler->http_host, 'transactionform.php', $this->master_handler->arrPseudoUser);
+        $this->hrefMarketplace = utils\genHref($this->config_handler->http_host, 'marketplace.php', $this->master_handler->arrPseudoUser);
+
         $this->process();
     }
 
@@ -102,8 +104,8 @@ class TransactionsLister extends DBHandler
                     if ($i === 0) {
                         // $hrefDecline = $hrefGen->getHref('decline', $idUser, $idTrans);
                         // $hrefAgree = $hrefGen->getHref('agree', $idUser, $idTrans);
-                        $hrefDecline = utils\genHref($this->http_host, $this->url, ['mode' => 'decline', 'id_user' => $idUser, 'id_transaction' => $idTrans]);
-                        $hrefAgree = utils\genHref($this->http_host, $this->url, ['mode' => 'agree', 'id_user' => $idUser, 'id_transaction' => $idTrans]);
+                        $hrefDecline = utils\genHref($this->config_handler->http_host, $this->url, $this->master_handler->arrPseudoUser + ['mode' => 'decline', 'id_user' => $idUser, 'id_transaction' => $idTrans]);
+                        $hrefAgree = utils\genHref($this->config_handler->http_host, $this->url, $this->master_handler->arrPseudoUser + ['mode' => 'agree', 'id_user' => $idUser, 'id_transaction' => $idTrans]);
                         echo "
             <td class='align-middle' rowspan='$numRequests'>$nicknameCreated</td>
             <td class='align-middle' rowspan='$numRequests'>
@@ -182,7 +184,7 @@ class TransactionsLister extends DBHandler
     // $day = $dateTime->format('D');
     // $classTextColor = utils\getClassTextColorForDay($day);
     // foreach ($arrShiftPutObjects as $shiftPutObject) {
-    // $hrefDecline = utils\genHref($this->http_host, $this->url, ['mode' => 'decline', 'id_user' => $this->id_user, 'id_transaction' => $shiftPutObject->id_transaction]);
+    // $hrefDecline = utils\genHref($this->config_handler->http_host, $this->url, ['mode' => 'decline', 'id_user' => $this->id_user, 'id_transaction' => $shiftPutObject->id_transaction]);
     // echo "
     // <li class='list-group-item d-flex justify-content-between align-items-center'>
     // <span><span class='$classTextColor'>$date ($day)</span> $shiftPutObject->shift</span>
@@ -201,7 +203,7 @@ class TransactionsLister extends DBHandler
         $direction = ($mode === 'put') ? 'right' : 'left';
         $color = ($mode === 'put') ? 'success' : 'danger';
         echo "
-        <div class='div-list-title d-flex justify-content-center'><h5 class='mr-1'>$title</h5><i class='fas fa-lg fa-hand-holding-heart'></i><i class='fas fa-lg fa-long-arrow-alt-$direction text-$color'></i></div>
+        <div class='div-list-title d-flex justify-content-center'><h5 class='mr-1'>$title</h5><i class='fas fa-lg fa-hand-holding-usd text-$color'></i><i class='fas fa-lg fa-long-arrow-alt-$direction text-$color'></i></div>
         ";
         // $mode: 'put' or 'call'
         if (!count($arrObjectsByDate)) {
@@ -215,7 +217,7 @@ class TransactionsLister extends DBHandler
                 $day = $dateTime->format('D');
                 $classTextColor = utils\getClassTextColorForDay($day);
                 foreach ($arrObjects as $Object) {
-                    $hrefDecline = utils\genHref($this->http_host, $this->url, ['mode' => 'decline', 'id_user' => $this->id_user, 'id_transaction' => $Object->id_transaction]);
+                    $hrefDecline = utils\genHref($this->config_handler->http_host, $this->url, $this->master_handler->arrPseudoUser + ['mode' => 'decline', 'id_user' => $this->id_user, 'id_transaction' => $Object->id_transaction]);
                     echo "
             <li class='list-group-item d-flex justify-content-between align-items-center py-0'>
                 <span><span class='$classTextColor'>$date ($day)</span> $Object->shift</span>
@@ -240,7 +242,7 @@ class TransactionsLister extends DBHandler
     // $day = $dateTime->format('D');
     // $classTextColor = utils\getClassTextColorForDay($day);
     // foreach ($arrCallRequests as $callRequest) {
-    // $hrefDecline = utils\genHref($this->http_host, $this->url, ['mode' => 'decline', 'id_user' => $this->id_user, 'id_transaction' => $callRequest->id_transaction]);
+    // $hrefDecline = utils\genHref($this->config_handler->http_host, $this->url, ['mode' => 'decline', 'id_user' => $this->id_user, 'id_transaction' => $callRequest->id_transaction]);
     // echo "
     // <li class='list-group-item d-flex justify-content-between align-items-center'>
     // <span><span class='$classTextColor'>$date ($day)</span> $callRequest->shift</span>
@@ -255,6 +257,8 @@ class TransactionsLister extends DBHandler
 }
 
 $transactions_lister = new TransactionsLister($master_handler, $config_handler);
+
+
 ?>
 
 <main>
@@ -265,7 +269,7 @@ $transactions_lister = new TransactionsLister($master_handler, $config_handler);
             <div class="col-md-8 my-1">
                 <h2>Upcoming Requests</h2>
             </div>
-            <div class="col-md-4 my-1"><a href="<?= $config_handler->http_host ?>/transactionform.php" class="btn btn-primary d-block"><i class="fas fa-plus-square"></i> <strong>Create Requests</strong></a></div>
+            <div class="col-md-4 my-1"><a href="<?= $transactions_lister->hrefTransactionForm ?>" class="btn btn-primary d-block"><i class="fas fa-plus-square"></i> <strong>Create Requests</strong></a></div>
         </div>
         <table class="table table-responsive-md text-center">
             <thead>
@@ -311,7 +315,7 @@ $transactions_lister = new TransactionsLister($master_handler, $config_handler);
             <div class="col-md-8 my-1">
                 <h2>Your Market Item</h2>
             </div>
-            <div class="col-md-4 my-1"><a href="<?= $config_handler->http_host ?>/marketplace.php" class="btn btn-primary d-block"><i class="fas fa-search-dollar"></i> <strong>Go to Marketplace</strong></a></div>
+            <div class="col-md-4 my-1"><a href="<?= $transactions_lister->hrefMarketplace ?>" class="btn btn-primary d-block"><i class="fas fa-search-dollar"></i> <strong>Go to Marketplace</strong></a></div>
         </div>
         <div class="row">
             <!-- Put -->

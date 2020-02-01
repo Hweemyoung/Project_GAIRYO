@@ -12,7 +12,7 @@ function getNicksAndAd($nextShift, $arrayMemberObjectsByIdUser)
     if (count($nextShift)) {
         if ($nextShift[0]["under_request"] == '1') {
             $arrayNicknamesTo = array();
-            $advertising = false;
+            $onMarket = false;
 
             // If there are pending requests regarding this shift
             $sql = 'SELECT id_to, requests_pending.* FROM requests_pending WHERE id_shift=:id_shift AND (id_from IS NOT NULL AND id_to IS NOT NULL) AND `status` = 2';
@@ -25,13 +25,13 @@ function getNicksAndAd($nextShift, $arrayMemberObjectsByIdUser)
             // var_dump($requestsOnNextShift); OK
             foreach (array_keys($requestsOnNextShift) as $id_to) {
                 if ($id_to == NULL) {
-                    $advertising = true;
+                    $onMarket = true;
                 } else {
                     array_push($arrayNicknamesTo, $arrayMemberObjectsByIdUser[$id_to]->nickname);
                 }
             }
             // $arrayNicknamesTo = array('0'=>'nickname0', '1'=>'nickname1', ...)
-            $nicksAndAd = array("arrayNicknamesTo" => $arrayNicknamesTo, "advertising" => $advertising);
+            $nicksAndAd = array("arrayNicknamesTo" => $arrayNicknamesTo, "onMarket" => $onMarket);
             return $nicksAndAd;
         } else {
             return false;
@@ -74,7 +74,7 @@ function echoRequestWarning($nicksAndAd)
 
 function echoAdvertisingWarning($nicksAndAd)
 {
-    if ($nicksAndAd["advertising"]) {
+    if ($nicksAndAd["onMarket"]) {
         echo '
         <!-- Advertising warning -->
         <div class="dropdown mx-md-1">
@@ -245,7 +245,7 @@ function echoExclamations($nicksAndAd)
             ';
         }
         // <i class="fas fa-exclamation-triangle text-danger"></i>
-        if ($nicksAndAd["advertising"]) {
+        if ($nicksAndAd["onMarket"]) {
             echo '
                 <i class="fas fa-exclamation-triangle text-warning"></i>
             ';
@@ -255,11 +255,11 @@ function echoExclamations($nicksAndAd)
 }
 
 // Get Next shift
-$sql = 'SELECT * FROM shifts_assigned WHERE id_user = :id_user ORDER BY date_shift ASC LIMIT 1';
+$sql = 'SELECT * FROM shifts_assigned WHERE id_user = :id_user AND done=0 AND date_shift>=CURDATE() ORDER BY date_shift ASC LIMIT 1';
 $stmt = $dbh->prepare($sql);
 $stmt->bindParam(':id_user', $id_user);
 $stmt->execute();
-// var_dump($stmt->errorInfo()); OK
+// var_dump($stmt->errorInfo());
 $nextShift = $stmt->fetchAll();
 // var_dump($nextShift);
 
@@ -284,31 +284,32 @@ if (count($nextShift)) {
 }
 
 // Get Board Items
-$sql = strtr('SELECT id_board_item, title, content, date_created, checked_$id_user FROM board ORDER BY date_created DESC LIMIT 5', array('$id_user' => $id_user));
+$sql = strtr('SELECT id_board_item, id_board_item, title, content, date_created, checked_$id_user FROM board ORDER BY date_created DESC LIMIT 5', array('$id_user' => $id_user));
 $stmt = $dbh->prepare($sql);
 $stmt->execute();
 // var_dump($stmt->errorInfo());OK
-$arrayBoardItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$arrayBoardItems = $stmt->fetchAll(PDO::FETCH_UNIQUE);
+$stmt->closeCursor();
 // var_dump($arrayBoardItems);OK
-
+// set checked_$id_user = 1
+$sql = "UPDATE board SET checked_$id_user=1 WHERE id_board_item IN (" . implode(',', array_keys($arrayBoardItems)) . ");";
+echo $sql . '<br>';
+$dbh->exec($sql);
 ?>
 
 <main>
     <section id="section-shift">
         <a class="a-popover" data-toggle="popover" title="Upcoming shift" data-content="Selects closest upcoming shift and coleagues from DB!" data-trigger="hover" data-placement="bottom">FEATURE</a>
         <h2>Upcoming Shift</h2>
+        <?php if (count($nextShift)) {
+            $nextShift = $nextShift[0];
+            $dateTime = new DateTime($nextShift);
+            $hrefRequest = utils\genHref($config_handler->http_host, 'transactionform.php', $master_handler->arrPseudoUser + ['id_from' => $master_handler->id_user, 'month' => $dateTime->format('Y_M'), 'day' => $dateTime->format('j'), 'shift' => $shift]);
+            ?>
         <div class="card" id="card-shift">
             <div class="card-header d-flex align-middle">
                 <a href="#shift-content" class="card-link mr-auto" data-toggle="collapse">
-                    <?php
-                    if (count($nextShift)) {
-                        $nextDate = date('M j (D)', strtotime($nextShift[0]["date_shift"]));
-                        echo "Next: {$nextDate} {$nextShift[0]["shift"]}";
-                        // Like 'Next: Jan 23(Thu) A'
-                    } else {
-                        echo "No upcoming shifts!";
-                    }
-                    ?>
+                    Next: <?=$dateTime->format('M j (D)')?> <?=$nextShift["shift"]?>
                 </a>
                 <?php
                 echoExclamations($nicksAndAd);
@@ -317,10 +318,10 @@ $arrayBoardItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <div class="collapse show" id="shift-content">
                 <div class="card-body">
-                    <?php if (count($nextShift)) { ?>
+
                         <h5 class="mb-0 text-center">
                             <?php
-                            echo date('Y M j (D)', strtotime($nextShift[0]["date_shift"])) . ' ' . $nextShift[0]["shift"];
+                            echo date('Y M j (D)', strtotime($nextShift["date_shift"])) . ' ' . $nextShift["shift"];
                             // Like: '2020/1/3(Mon) A'
                             ?>
                         </h5>
@@ -330,13 +331,13 @@ $arrayBoardItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <div id="div-your-shift">
                                     <h1 class="display-3">
                                         <?php
-                                        echo $nextShift[0]["shift"];
+                                        echo $nextShift["shift"];
                                         // Like: B
                                         ?>
                                     </h1>
                                     <p class="">
                                         <?php
-                                        echo $shifts[$nextShift[0]["shift"]]['time-start'] . '~' . $shifts[$nextShift[0]["shift"]]['time-end'];
+                                        echo $shifts[$nextShift["shift"]]['time-start'] . '~' . $shifts[$nextShift["shift"]]['time-end'];
                                         // Like '08:00~13:00'
                                         ?>
                                     </p>
@@ -371,23 +372,23 @@ $arrayBoardItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 </div>
                             </div>
                         </div>
-                    <?php } ?>
+
                 </div>
             </div>
             <div class="card-footer p-2">
                 <div class="row no-gutters text-center">
-                    <div class="col-4 px-0">
-                        <button class="btn btn-sm btn-danger" type="button">Request</button>
+                    <div class="col-6 px-0">
+                        <a href="<?=$hrefRequest ?>" class="btn btn-sm btn-danger" type="button">Request</a>
                     </div>
-                    <div class="col-4 px-0">
-                        <button class="btn btn-sm btn-warning" type="button">Advertise</button>
-                    </div>
-                    <div class="col-4 px-0">
-                        <button class="btn btn-sm btn-secondary" type="button">Details</button>
+                    <div class="col-6 px-0">
+                        <button class="btn btn-sm btn-warning" type="button">To Market</button>
                     </div>
                 </div>
             </div>
         </div>
+        <?php } else {?>
+        <div>No upcoming shift!</div>
+        <?php }?>
     </section>
     <hr>
     <section id="section-boards">

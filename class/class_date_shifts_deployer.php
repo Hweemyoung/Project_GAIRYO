@@ -77,6 +77,7 @@ class DateShiftsDeployer extends DateObject
 
     public function deployAllShifts()
     {
+
         // Update MemberObjects: add 1 to numDaysProceeded
         $this->addNumDaysProceeded();
         // If there is candidates AND not all parts are full
@@ -131,21 +132,20 @@ class DateShiftsDeployer extends DateObject
 
             // Push to ShiftPartStatus
             $this->arrShiftPartStatus[$shiftObjectDeployed->shiftPart]->pushArrShiftObjectByIdUser($shiftObjectDeployed); // For ShiftPartStatus
-
-            // Push to ShiftStatus
-            $this->arrShiftStatus[$shiftObjectDeployed->shift]->pushArrShiftObjectByIdUser($shiftObjectDeployed);
-
+            // Update props for ShiftPartStatus
+            $this->arrShiftPartStatus[$shiftObjectDeployed->shiftPart]->updateProps();
             // Unset from ShiftPartStatus::arrShiftAppObjectsByIdUser. For DateShiftsDeployer, already done above.
             $this->arrShiftPartStatus[$shiftObjectDeployed->shiftPart]->unsetShiftAppObjectsByIdUser($shiftObjectDeployed);
 
+            // Push to ShiftStatus
+            $this->arrShiftStatus[$shiftObjectDeployed->shift]->pushArrShiftObjectByIdUser($shiftObjectDeployed);
+            // Update props for ShiftStatus
+            $this->arrShiftStatus[$shiftObjectDeployed->shift]->updateProps();
             // Unset from ShiftStatus::$arrShiftAppObjectsByIdUser.
             $this->arrShiftStatus[$shiftObjectDeployed->shift]->unsetShiftAppObjectsByIdUser($shiftObjectDeployed);
 
-            // Update props for ShiftPartStatus
-            $this->arrShiftPartStatus[$shiftObjectDeployed->shiftPart]->updateProps();
-
-            // Update props for ShiftStatus
-            $this->arrShiftStatus[$shiftObjectDeployed->shift]->updateProps();
+            // Update prop of MemberObject;
+            $shiftObjectDeployed->memberObject->updateProps();
 
             // If this shift part is full, unset rest of ShiftAppObjects for this shift part from DateShiftsDeployer
             // 
@@ -165,9 +165,6 @@ class DateShiftsDeployer extends DateObject
                 //     }
                 // }
             }
-
-            // Update prop of MemberObject;
-            $shiftObjectDeployed->memberObject->addNumDaysDeployed();
         }
     }
 
@@ -241,7 +238,7 @@ class DateShiftsDeployer extends DateObject
             $arrShiftAppObjectsByPart = [];
             foreach ($this->arrShiftAppObjectsByIdUser[$id_user_seleted] as $shiftObject) {
                 // Check if this shift part is already filled out.
-                if ($this->arrShiftPartStatus[$shiftObject->shiftPart]->vacancy >= 1 ) {
+                if ($this->arrShiftPartStatus[$shiftObject->shiftPart]->vacancy >= 1) {
                     echo 'This shift PART is already full.<br>';
                     // Unset this shiftApp from DateShiftsDeployer::arrShiftAppObjectsByIdUser and ShiftStatus::arrShiftAppObjectsByIdUser. This can no longer be used.
                     $this->unsetShiftAppObject($shiftObject);
@@ -333,7 +330,8 @@ class DateShiftsDeployer extends DateObject
         return $arrShiftPartStatusVacant;
     }
 
-    private function getVacantShiftStatus(){
+    private function getVacantShiftStatus()
+    {
         $arrShiftStatusVacant = $this->arrShiftStatus;
         foreach ($arrShiftStatusVacant as $shift => $shiftStatus) {
             if ($shiftStatus->vacancy === 1 || $shiftStatus->vacancy > 1) {
@@ -359,16 +357,16 @@ class DateShiftsDeployer extends DateObject
         // Get vacant ShiftPartStatus
         $arrShiftPartStatusVacant = $this->getVacantShiftPartStatus();
         // Filter $arrShiftObjectsFiltered
-        foreach($arrShiftObjectsFiltered as $key => $shiftObject){
-            if (!array_key_exists($shiftObject->shiftPart, $arrShiftPartStatusVacant)){
+        foreach ($arrShiftObjectsFiltered as $key => $shiftObject) {
+            if (!array_key_exists($shiftObject->shiftPart, $arrShiftPartStatusVacant)) {
                 unset($arrShiftObjectsFiltered[$key]);
             }
         }
         // Get vacant ShiftStatus
         $arrShiftStatusVacant = $this->getVacantShiftStatus();
         // Filter $arrShiftObjectsFiltered
-        foreach($arrShiftObjectsFiltered as $key => $shiftObject){
-            if (!array_key_exists($shiftObject->shift, $arrShiftStatusVacant)){
+        foreach ($arrShiftObjectsFiltered as $key => $shiftObject) {
+            if (!array_key_exists($shiftObject->shift, $arrShiftStatusVacant)) {
                 unset($arrShiftObjectsFiltered[$key]);
             }
         }
