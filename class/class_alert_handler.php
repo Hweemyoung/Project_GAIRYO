@@ -8,7 +8,7 @@ require_once "$homedir/config.php";
 
 class AlertHandler
 {
-    public function __construct($__FILE__, $config_handler)
+    public function __construct($__FILE__, $master_handler, $config_handler)
     {
         // From none
         if (!isset($_GET["f"])) {
@@ -16,8 +16,9 @@ class AlertHandler
         } else {
             $this->_from = intval($_GET["f"]);
         }
+        $this->master_handler = $master_handler;
         $this->basename = basename($__FILE__);
-        $this->arrayLangsLong = $config_handler->arrayLangsLong;
+        $this->config_handler = $config_handler;
         $this->init();
     }
 
@@ -67,6 +68,12 @@ class AlertHandler
                                     case 2:
                                         $this->alertMsg = 'The request had already been agreed with by the user.';
                                         break;
+                                    case 3:
+                                        $date_shift = $_GET['date'];
+                                        $partName = $this->config_handler->arrayPartNames[$_GET['part']];
+                                        $nick_to = $this->master_handler->arrayMemberObjectsByIdUser[$_GET['id_to']];
+                                        $this->alertMsg = "Member '$nick_to' already has a shift in $partName";
+                                        break;
                                     case 4:
                                         $arrayCases = [];
                                         foreach ($_GET as $key => $value) {
@@ -75,12 +82,13 @@ class AlertHandler
                                                 $dateTime = DateTime::createFromFormat('Y-m-d', $temp[0]);
                                                 $date = $dateTime->format('Y M j (D)');
                                                 $partName = $this->arrayPartNames[$temp[1]];
-                                                $langLong = $this->arrayLangsLong[$temp[2]];
+                                                $langLong = $this->config_handler->arrayLangsLong[$temp[2]];
                                                 $msg = "$date $partName の $langLong";
                                                 array_push($arrayCases, $msg);
                                             }
                                         }
                                         $this->alertMsg = "Following languages are not sufficient: " . implode(', ', $arrayCases);
+                                        break;
                                 }
                                 break;
                             case 1:
@@ -109,7 +117,7 @@ class AlertHandler
                                         $this->alertMsg = 'Invalid form ID. Call for administrator.';
                                         break;
                                     case 1:
-                                        $nick = $_GET["nick"];
+                                        $nick = $this->master_handler->arrayMemberObjectsByIdUser[$_GET["id_from"]]->nickname;
                                         $dateShift = $_GET["date"];
                                         $shift = $_GET["shift"];
                                         $this->alertMsg = "Shift doesn't exist!: $nick's $dateShift $shift";
@@ -127,7 +135,7 @@ class AlertHandler
                         break;
                         // From upload_market_item.php
                     case 3:
-                        switch($this->_status){
+                        switch ($this->_status) {
                             case 0:
                                 switch ($this->_value) {
                                     case 0:
@@ -136,20 +144,58 @@ class AlertHandler
                                     case 1:
                                         $this->alertMsg = "Mode not understood.";
                                         break;
+                                    case 2:
+                                        $nick_user = $this->master_handler->arrayMemberObjectsByIdUser[$_GET['id_user']]->nickname;
+                                        $nick_from = $this->master_handler->arrayMemberObjectsByIdUser[$_GET['id_from']]->nickname;
+                                        $this->alertMsg = "User $nick_user is handling other member $nick_from's shift!";
+                                        break;
+                                    case 3:
+                                        $nick_user = $this->master_handler->arrayMemberObjectsByIdUser[$_GET['id_user']]->nickname;
+                                        $nick_to = $this->master_handler->arrayMemberObjectsByIdUser[$_GET['id_to']]->nickname;
+                                        $this->alertMsg = "User $nick_user is handling other member $nick_to's shift!";
+                                        break;
+                                    case 4:
+                                        $var_name = $_GET['var'];
+                                        $this->alertMsg = "Variable '$var_name' is required but not given!";
+                                        break;
+                                    case 5:
+                                        $this->alertMsg = "No such shift found!";
+                                        break;
+                                    case 6:
+                                        $id_request = $_GET['id_request'];
+                                        $this->alertMsg = "Item already exists in market: id_request=$id_request";
+                                        break;
+                                    case 7:
+                                        $date = $_GET['date'];
+                                        $shift = $_GET['shift'];
+                                        $this->alertMsg = "You already have shift '$shift' on $date. Remove it first.";
+                                        break;
                                 }
                                 break;
                             case 1:
                                 switch ($this->_value) {
                                     case 0:
-                                        $this->alertMsg = 'Shift successfully put to market.';
+                                        $this->alertMsg = "Your shift '$shift' on $date has been put to market.";
                                         break;
                                     case 1:
-                                        $this->alertMsg = 'Call successfully echoed to market.';
+                                        $this->alertMsg = "You're now calling for shift '$shift' on $date.";
                                         break;
                                     case 2:
-                                        $this->alertMsg = 'Call item which matches your put item was found.<br>Your shift have been UPDATED!';
+                                        $date_shift = $_GET['date_shift'];
+                                        $shift = $_GET['shift'];
+                                        $nick_to = $this->master_handler->arrayMemberObjectsByIdUser[$_GET['id_to']]->nickname;
+                                        $this->alertMsg = "Matched: Your shift '$shift' on $date_shift was taken by $nick_to!";
+                                        break;
+                                    case 3:
+                                        $date_shift = $_GET['date_shift'];
+                                        $shift = $_GET['shift'];
+                                        $nick_from = $this->master_handler->arrayMemberObjectsByIdUser[$_GET['id_from']]->nickname;
+                                        $this->alertMsg = "Matched: You got shift '$shift' on $date_shift from $nick_from!";
+                                        break;
                                 }
+                                break;
                         }
+                        break;
                 }
                 break;
             case 'admin.php':
@@ -179,6 +225,7 @@ class AlertHandler
                                         $this->alertMsg = 'Registration successful. Please wait for authentication';
                                         break;
                                 }
+                                break;
                         }
                         break;
                 }
