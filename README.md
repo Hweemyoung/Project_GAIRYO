@@ -1,41 +1,18 @@
 https://github.com/Hweemyoung/Project_GAIRYO
 
 <h1>Project GAIRYO</h1>
-        <p>
-            This application is specially designed for part-timers and managers to improve communication experience and
-            efficiency.
-        </p>
-        <div class="row">
-            <div class="col-sm-6">Find out more features by pseudo-sign-in! Select user id in range of 1~24.</div>
-            <div class="col-sm-6">
-                <form action="./admin.php" method="get">
-                    <div class="form-group row">
-                        <label class="col-4 py-1 mb-0" for="pseudo_user"><span>User ID</span></label>
-                        <input class="col-4" type="text" class="form-control" name="pseudo_user" id="pseudo_user">
-                        <div class="col-4">
-                            <button class="btn btn-primary" type="submit"><strong>Sign
-                                    in</strong></button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <h2 class="my-4">What you can do:</h2>
-        <ul class="list-group list-group-flush my-4">
-            <h4>Part-timers:</h4>
-            <li class="list-group-item">Can check out all shifts assigned both to the user and to other users in very
-                conprehensive way.</li>
-            <li class="list-group-item">Can create transactions in which any user's shifts could be transferred to any
-                user. With all concerned users' agreements, the transaction will be executed automatically.</li>
-            <li class="list-group-item">Can put the user's shifts to market so that other users can freely take them.
-            </li>
-            <li class="list-group-item">Can call for shifts on specific time from other users in market.</li>
-            <li class="list-group-item">Can use statistics of the user to check out cumulative (or expected in future)
-                working hours and income.</li>
-            <li class="list-group-item">Can submit and modify application form for shifts of upcoming period.</li>
-            <li class="list-group-item">Can identify themselves with Google sign-in.</li>
-        </ul>
+<p>This application is specially designed for part-timers and managers to improve communication experience and efficiency.</p>
+<h2 class="my-4">What you can do:</h2>
+<ul class="list-group list-group-flush my-4">
+<h4>Part-timers:</h4>
+<li class="list-group-item">Can check out all shifts assigned both to the user and to other users in very conprehensive way.</li>
+<li class="list-group-item">Can create transactions in which any user's shifts could be transferred to any user. With all concerned users' agreements, the transaction will be executed automatically.</li>
+<li class="list-group-item">Can put the user's shifts to market so that other users can freely take them.</li>
+<li class="list-group-item">Can call for shifts on specific time from other users in market.</li>
+<li class="list-group-item">Can use statistics of the user to check out cumulative (or expected in future) working hours and income.</li>
+<li class="list-group-item">Can submit and modify application form for shifts of upcoming period.</li>
+<li class="list-group-item">Can identify themselves with Google sign-in.</li>
+</ul>
         <ul class="list-group list-group-flush my-4">
             <h4>Managers:</h4>
             <li class="list-group-item">Can manually check new sign-ups and grand permission.</li>
