@@ -1,6 +1,6 @@
 https://github.com/Hweemyoung/Project_GAIRYO
 
-Project GAIRYO, 2019-2020
+<h1>Project GAIRYO, 2019-2020</h1>
 
 This application is specially designed for part-timers and managers to improve communication experience and efficiency.
 
