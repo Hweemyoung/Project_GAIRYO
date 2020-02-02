@@ -67,7 +67,7 @@ class TransactionUploader extends DBHandler
             if (count($result) === 0) {
                 echo 'here!';
                 // exit;
-                $this->redirect(false, $this->url, ['f' => 2, 'e' => 1, 'nick' => $this->arrayMemberObjectsByIdUser[$id_from]->nickname, 'date' => $dateShift, 'shift' => $shift]);
+                $this->redirect(false, $this->url, ['f' => 2, 'e' => 1, 'id_from' => $id_from, 'date' => $dateShift, 'shift' => $shift]);
             } else {
                 $id_shift = $result[0];
                 // shifts_assigned: Update under_request
@@ -86,7 +86,7 @@ class TransactionUploader extends DBHandler
                     $agreed_to = 1;
                     $checked_to = 1;
                 }
-                $sql = "INSERT INTO requests_pending (id_shift, id_from, id_to, id_created, time_created, `status`, time_proceeded, id_transaction, agreed_from, agreed_to, checked_from, checked_to) VALUES ($id_shift, $id_from, $id_to, $this->id_user, '$time_created', 2, '$time_created', $id_transaction, $agreed_from, $agreed_to, $checked_from, $checked_to);";
+                $sql = "INSERT INTO requests_pending (id_shift, id_from, date_shift, shift, id_to, id_created, time_created, `status`, time_proceeded, id_transaction, agreed_from, agreed_to, checked_from, checked_to) VALUES ($id_shift, $id_from, $dateShift, $shift, $id_to, $this->id_user, '$time_created', 2, '$time_created', $id_transaction, $agreed_from, $agreed_to, $checked_from, $checked_to);";
                 $this->SQLS = $this->SQLS . $sql;
             }
         }

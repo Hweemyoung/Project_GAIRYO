@@ -4,7 +4,7 @@ $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/check_session.php";
 require_once "$homedir/class/class_alert_handler.php";
 require_once "$homedir/config.php";
-$alert_handler = new AlertHandler(__FILE__, $config_handler);
+$alert_handler = new AlertHandler(__FILE__, $master_handler, $config_handler);
 ?>
 
 <!DOCTYPE html>
