@@ -40,7 +40,7 @@ class userOrientedRequest
         }
         $this->idShift = $arrayRequest["id_shift"];
         $sql = "SELECT date_shift, shift FROM shifts_assigned WHERE id_shift=$this->idShift;";
-        echo $sql;
+        // echo $sql;
         // var_dump($this->dbh->query($sql)->errorInfo());
         $stmt = $this->dbh->query($sql);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);

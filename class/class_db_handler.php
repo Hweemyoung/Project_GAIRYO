@@ -33,16 +33,18 @@ class DBHandler
         $stmt->closeCursor();
         $sqlConditions = '';
         $arrTableNamesLocked = [];
-        foreach($arrTableStatus as $tableStatus){
-            if ($tableStatus->Engine !== 'InnoDB'){
-                $sqlConditions = $sqlConditions . "$tableStatus->Name WRITE";
-                $arrTableNamesLocked[] = $tableStatus->Name;
+        if(count($arrTableStatus)){
+            foreach($arrTableStatus as $tableStatus){
+                if ($tableStatus->Engine !== 'InnoDB'){
+                    $sqlConditions = $sqlConditions . "$tableStatus->Name WRITE";
+                    $arrTableNamesLocked[] = $tableStatus->Name;
+                }
             }
+            $sql = "LOCK TABLE $sqlConditions;";
+            echo 'Locking tables: ' . $sql . '<br>';
+            $this->executeSql($sql);
+            return $arrTableNamesLocked;
         }
-        $sql = "LOCK TABLE $sqlConditions;";
-        echo 'Locking tables: ' . $sql . '<br>';
-        $this->executeSql($sql);
-        return $arrTableNamesLocked;
     }
 
     public function redirect($commit, string $url, array $query)

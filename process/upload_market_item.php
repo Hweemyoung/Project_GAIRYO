@@ -1,6 +1,6 @@
 <?php
 $homedir = '/var/www/html/gairyo_temp';
-require_once "$homedir/class/class_market_item_handler.php";
+require_once "$homedir/class/class_market_item_uploader.php";
 
 $market_item_uploader = new MarketItemUploader($master_handler, $config_handler);
 // // $arrayNames = array('id_from', 'month', 'day', 'shift', 'id_to');

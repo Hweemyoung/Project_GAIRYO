@@ -10,6 +10,7 @@ class ShiftObject
     {
         $this->setShiftPart($config_handler->arrayShiftsByPart);
         $this->setMemberObj($master_handler->arrayMemberObjectsByIdUser);
+        // var_dump($this);
         $this->workingMins = $config_handler->arrayShiftTimes[$this->shift]['workingMins'];
     }
     public function setMemberObj($arrayMemberObjectsByIdUser)

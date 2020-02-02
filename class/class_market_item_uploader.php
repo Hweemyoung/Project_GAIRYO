@@ -5,6 +5,7 @@ require_once "$homedir/check_session.php";
 require_once "$homedir/class/class_db_handler.php";
 require_once "$homedir/class/class_request_object.php";
 require_once "$homedir/class/class_market_purchase_processor.php";
+require_once "$homedir/class/class_requests_handler.php";
 class MarketItemUploader extends DBHandler
 {
     public $useSavepoints;
@@ -16,10 +17,10 @@ class MarketItemUploader extends DBHandler
         $this->master_handler = $master_handler;
         $this->dbh = $master_handler->dbh;
         $this->id_user = $master_handler->id_user;
+        $this->config_handler = $config_handler;
         $this->http_host = $config_handler->http_host;
         $this->sleepSeconds = $config_handler->sleepSeconds;
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
-        $this->SQLS = '';
         $this->arrModes = ['put', 'call'];
         $this->url = "transactions.php";
         $this->key = NULL;
@@ -43,8 +44,6 @@ class MarketItemUploader extends DBHandler
         if ($this->key !== NULL && $this->marketItemForIter === NULL) {
             // Iteration completed but no call objects found. Just upload put object and commit.
             echo '// Iteration completed but no call objects found. Just upload put object and commit.';
-            $stmt = $this->querySql($this->SQLS);
-            var_dump($stmt->errorInfo());
             // exit;
             $this->redirect(true, $this->url, ['f' => 3, 's' => 0]);
         } else {
@@ -53,10 +52,11 @@ class MarketItemUploader extends DBHandler
         }
     }
 
-    private function setProps(){
-        if ($this->mode === 'put'){
+    private function setProps()
+    {
+        if ($this->mode === 'put') {
             $this->set_props_put();
-        } elseif($this->mode === 'call'){
+        } elseif ($this->mode === 'call') {
             $this->set_props_call();
         }
     }
@@ -96,7 +96,7 @@ class MarketItemUploader extends DBHandler
                 break;
             case 'call':
                 if ($this->id_user !== $this->id_to) {
-                    echo "Error- invalid user: id_user = $this->id_user and id_from = $this->id_to<br>";
+                    echo "Error- invalid user: id_user = $this->id_user and id_to = $this->id_to<br>";
                     // exit;
                 }
                 break;
@@ -133,16 +133,15 @@ class MarketItemUploader extends DBHandler
         $this->validate_put($sqlConditions_shifts);
         // shifts_assigned: Update under_request
         $sql = "UPDATE shifts_assigned SET under_request=1 WHERE $sqlConditions_shifts AND done=0;";
-        $this->SQLS = $this->SQLS . $sql;
+        $this->executeSql($sql);
         // requests_pending: Insert new request
         $time_created = date('Y-m-d H:i:s');
         $agreed_from = 1;
         $agreed_to = 0;
         $checked_from = 1;
         $checked_to = 0;
-        $sql = "INSERT INTO requests_pending (id_shift, id_from, id_to, id_created, time_created, `status`, time_proceeded, id_transaction, agreed_from, agreed_to, checked_from, checked_to) VALUES ($this->id_shift, $this->id_from, NULL, $this->id_from, '$time_created', 2, '$time_created', $this->id_transaction, $agreed_from, $agreed_to, $checked_from, $checked_to);";
-        $this->SQLS = $this->SQLS . $sql;
-        echo "Put SQLS: $this->SQLS<br>";
+        $sql = "INSERT INTO requests_pending (id_shift, id_from, date_shift, shift id_to, id_created, time_created, `status`, time_proceeded, id_transaction, agreed_from, agreed_to, checked_from, checked_to) VALUES ($this->id_shift, $this->id_from, $this->date_shift, $this->shift, NULL, $this->id_from, '$time_created', 2, '$time_created', $this->id_transaction, $agreed_from, $agreed_to, $checked_from, $checked_to);";
+        $this->executeSql($sql);
     }
 
     private function set_props_put()
@@ -151,7 +150,7 @@ class MarketItemUploader extends DBHandler
         foreach ($arrNames as $name) {
             if (!isset($_GET[$name])) {
                 echo "Error: Not enough \$_GET variables: $name. exit!<br>";
-                // exit;
+                exit;
             }
         }
         $this->id_from = $_GET['id_from'];
@@ -165,13 +164,13 @@ class MarketItemUploader extends DBHandler
         // Check if there is such a shift and lock it.
         echo '// Check if there is such a shift<br>';
         $sql = "SELECT EXISTS (SELECT 1 FROM shifts_assigned WHERE $sqlConditions_shifts AND done=0 LIMIT 1 FOR UPDATE);";
-        echo $sql;
+        echo $sql.'<br>';
         $stmt = $this->querySql($sql);
         $exists = $stmt->fetch();
         $stmt->closeCursor();
         if (!$exists) {
             echo "ERROR: No such shift found: WHERE $sqlConditions_shifts AND done=0<br>";
-            // exit;
+            exit;
         }
         // Check if item already exists in market
         $sqlConditions_requests = "id_shift=$this->id_shift AND id_from=$this->id_from AND id_to IS NULL AND `status`=2";
@@ -189,12 +188,7 @@ class MarketItemUploader extends DBHandler
         $checked_from = 0;
         $checked_to = 1;
         $sql = "INSERT INTO requests_pending (id_shift, id_from, id_to, id_created, time_created, `status`, time_proceeded, id_transaction, agreed_from, agreed_to, checked_from, checked_to) VALUES (NULL, NULL, $this->id_to, $this->id_to, '$time_created', 2, '$time_created', $this->id_transaction, $agreed_from, $agreed_to, $checked_from, $checked_to);";
-        $this->SQLS = $this->SQLS . $sql;
-        echo "Call SQLS: $this->SQLS<br>";
-        $stmt = $this->querySql($this->SQLS);
-        var_dump($stmt->errorInfo());
-        // exit;
-        $this->redirect(true, 'transactions.php', ['f' => 3, 's' => 1]);
+        $this->executeSql($sql);
     }
 
     private function set_props_call()
@@ -203,7 +197,7 @@ class MarketItemUploader extends DBHandler
         foreach ($arrNames as $name) {
             if (!isset($_GET[$name])) {
                 echo "Error: Not enough \$_GET variables: $name. exit!<br>";
-                // exit;
+                exit;
             }
         }
         $this->id_to = $_GET['id_to'];
@@ -216,13 +210,13 @@ class MarketItemUploader extends DBHandler
         // Check if there is such a shift and lock it (to prevent id_user from turning into id_to while processing)
         echo '// Check if there is any shift for this call<br>';
         $sql = "SELECT EXISTS (SELECT 1 FROM shifts_assigned WHERE $sqlConditions_shifts AND done=0 LIMIT 1 FOR UPDATE);";
-        echo $sql;
+        echo $sql.'<br>';
         $stmt = $this->querySql($sql);
         $exists = $stmt->fetch();
         $stmt->closeCursor();
         if (!$exists) {
             echo "ERROR: No such shift found: WHERE $sqlConditions_shifts AND done=0<br>";
-            // exit;
+            exit;
         }
         // Check if item already exists in market
         $sqlConditions_requests = "id_from IS NULL AND date_shift='$this->date_shift' AND shift='$this->shift' AND id_to=$this->id_to AND `status`=2";
@@ -240,64 +234,116 @@ class MarketItemUploader extends DBHandler
         if (count($idRequest)) {
             $idRequest = $idRequest[0];
             echo "ERROR: Item already exists in market: id_request=$idRequest.<br>";
-            // exit;
+            exit;
         }
     }
 
     private function matchCounterItem($mode, $key, $marketItemForIter)
     {
         if ($mode === 'put') {
-            echo 'HERE!<br>';
+            echo 'Searching for valid counter call item<br>.';
             if ($marketItemForIter !== NULL) { // If this call is iteration by MyISAM
-                $this->checkValidCallObjectMyIsam($key, $marketItemForIter);
+                $this->checkValidCallObject($key, $marketItemForIter);
             } else { // Could be InnoDB or MyISAM(haven't started iteration)
-                // Savepoint
-                if (!$this->useSavepoints) {
-                    // This is MyISAM(haven't started iteration)
-                    // Find any counter item
-                    $sql = "SELECT id_transaction, id_request, id_from, id_to FROM requests_pending WHERE id_from IS NULL AND date_shift='$this->date_shift' AND shift='$this->shift' AND id_to IS NOT NULL AND `status`=2 ORDER BY time_created ASC FOR UPDATE;";
-                    $stmt = $this->querySql($sql);
-                    $this->arrCallObjectsCandidates = $stmt->fetchAll(PDO::FETCH_CLASS, 'RequestObject');
-                    $stmt->closeCursor();
-                    if (count($this->arrCallObjectsCandidates)) {
+                $sql = "SELECT id_transaction, id_request, id_from, id_to FROM requests_pending WHERE id_from IS NULL AND date_shift='$this->date_shift' AND shift='$this->shift' AND id_to IS NOT NULL AND `status`=2 ORDER BY time_created ASC FOR UPDATE;";
+                $stmt = $this->querySql($sql);
+                $this->arrCallObjectsCandidates = $stmt->fetchAll(PDO::FETCH_CLASS, 'RequestObject');
+                $stmt->closeCursor();
+                if (count($this->arrCallObjectsCandidates)) {
+                    // Savepoint
+                    if (!$this->useSavepoints) {
+                        // This is MyISAM(haven't started iteration)
+                        // Find any counter item
+
                         // Start iteration
-                        $this->checkValidCallObjectMyIsam(0, $this->arrCallObjectsCandidates[0]);
-                    }
-                } else {
-                    // This is InnoDB
-                    echo '// This is InnoDB<br>';
-                    $this->executeSql('SAVEPOINT awaiting_counter;');
-                    $sql = "SELECT id_transaction, id_request, id_from, id_to FROM requests_pending WHERE id_from IS NULL AND date_shift='$this->date_shift' AND shift='$this->shift' AND id_to IS NOT NULL AND `status`=2 ORDER BY time_created ASC FOR UPDATE;";
-                    $stmt = $this->querySql($sql);
-                    $this->arrCallObjectsCandidates = $stmt->fetchAll(PDO::FETCH_CLASS, 'RequestObject');
-                    $stmt->closeCursor();
-                    if (count($this->arrCallObjectsCandidates)) {
+                        $this->checkValidCallObject(0, $this->arrCallObjectsCandidates[0]);
+                    } else {
+                        // This is InnoDB
+                        echo '// This is InnoDB<br>';
+                        $this->executeSql('SAVEPOINT awaiting_counter;');
                         foreach ($this->arrCallObjectsCandidates as $key => $callObject) {
-                            $this->checkValidCallObjectMyIsam($key, $callObject);
+                            $this->checkValidCallObject($key, $callObject);
                         }
+                        // No valid call objects found. Just commit.
+                        echo '// Iteration completed but no call objects found. Just upload put object and commit.';
+                        // exit;
+                        $this->redirect(true, $this->url, ['f' => 3, 's' => 0]);
                     }
-                    // No valid call objects found. Just commit.
-                    echo '// Iteration completed but no call objects found. Just upload put object and commit.';
-                    $stmt = $this->querySql($this->SQLS);
-                    var_dump($stmt->errorInfo());
-                    // exit;
-                    $this->redirect(true, $this->url, ['f' => 3, 's' => 0]);
+                    // (InnoDB)No valid call object found.
                 }
             }
-            // No valid call object found.
+
+        } elseif ($mode === 'call') {
+            echo 'Searching for valid counter put item.<br>';
+            if ($marketItemForIter !== NULL) { // If this call is iteration by MyISAM
+                $this->checkValidPutObject($key, $marketItemForIter);
+            } else { // Could be InnoDB or MyISAM(haven't started iteration)
+                $sql = "SELECT id_transaction, id_request, id_from, id_to FROM requests_pending WHERE id_to IS NULL AND date_shift='$this->date_shift' AND shift='$this->shift' AND id_from IS NOT NULL AND `status`=2 ORDER BY time_created ASC FOR UPDATE;";
+                $stmt = $this->querySql($sql);
+                $this->arrPutObjectsCandidates = $stmt->fetchAll(PDO::FETCH_CLASS, 'RequestObject');
+                echo "date_shift: $this->date_shift, shift: $this->shift<br>";
+                echo '$this->arrPutObjectsCandidates';
+                var_dump($this->arrPutObjectsCandidates);
+                echo '<br>';
+                $stmt->closeCursor();
+                if (count($this->arrPutObjectsCandidates)) {
+                    // Savepoint
+                    if (!$this->useSavepoints) {
+                        // This is MyISAM(haven't started iteration)
+                        // Find any counter item
+                        // Start iteration
+                        echo '// This is MyISAM(haven\'t started iteration).<br>';
+                        echo '// Start iteration<br>';
+                        $this->checkValidPutObject(0, $this->arrPutObjectsCandidates[0]);
+                    } else {
+                        // This is InnoDB
+                        echo '// This is InnoDB<br>';
+                        $this->executeSql('SAVEPOINT awaiting_counter;');
+                        echo '// Start iteration<br>';
+                        foreach ($this->arrPutObjectsCandidates as $key => $callObject) {
+                            $this->checkValidPutObject($key, $callObject);
+                        }
+                        // No valid put objects found. Just commit.
+                        echo '// Iteration completed but no call objects found. Just upload put object and commit.';
+                        // exit;
+                        $this->redirect(true, $this->url, ['f' => 3, 's' => 0]);
+                    }
+                    // (InnoDB)No valid put object found.
+                }
+            }
         }
     }
 
-    private function checkValidCallObjectMyIsam($key, $callObject)
+    private function checkValidPutObject($key, $putObject)
     {
-        $market_purchase_processor = new MarketPurchaseProcessor(['mode' => 'call', 'id_request' => $callObject->id_request, 'id_transaction' => $callObject->id_transaction, 'id_shift' => $this->id_shift], $this->master_handler); // Set id_from of call object // User is purchasing 'mode' item.
+        $market_purchase_processor = new MarketPurchaseProcessor(['mode' => 'put', 'id_request' => $putObject->id_request, 'id_transaction' => $putObject->id_transaction], $this->master_handler); // Set id_to of put object // User is purchasing 'mode' item.
         $requests_handler = new RequestsHandler('agree', $market_purchase_processor->id_user, $market_purchase_processor->id_transaction, $this->master_handler, $this->config_handler, false);
+        $this->commitOrBackToLoop($key, $putObject, $requests_handler);
+    }
 
+    private function checkValidCallObject($key, $callObject)
+    {
+        $market_purchase_processor = new MarketPurchaseProcessor(['mode' => 'call', 'id_request' => $callObject->id_request, 'id_transaction' => $callObject->id_transaction, 'id_shift' => $this->id_shift], $this->master_handler); // Set id_from and id_shift of call object // User is purchasing 'mode' item.
+        $requests_handler = new RequestsHandler('agree', $market_purchase_processor->id_user, $market_purchase_processor->id_transaction, $this->master_handler, $this->config_handler, false);
+        $this->commitOrBackToLoop($key, $callObject, $requests_handler);
+    }
+
+    private function commitOrBackToLoop($key, $counterObject, $requests_handler)
+    {
+        echo '$requests_handler->return<br>';
+        var_dump($requests_handler->return);
+        echo '<br>';
         if ($requests_handler->return[0]) { // $commit = true
-            // Matched valid counter!: commit and redirect!
-            echo "// Matched valid counter!: commit and redirect!<br>";
-            $stmt = $this->querySql($this->SQLS);
-            var_dump($stmt->errorInfo());
+            // Matched valid counter!
+            echo "// Matched valid counter!<br>";
+            // Set original market item target.
+            if ($this->mode==='put'){
+                // $counterObject is call object
+                $sql = "UPDATE requests_pending SET id_to=$counterObject->id_to WHERE id_transaction=$this->id_transaction;";
+            } elseif($this->mode === 'call'){
+
+            }
+            // commit and redirect!
             // exit;
             $requests_handler->redirect(true, $this->url, ['f' => 3, 's' => 2]);
         } else { // $commit = false

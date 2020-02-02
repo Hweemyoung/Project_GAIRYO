@@ -6,7 +6,7 @@ class MarketPurchaseProcessor extends DBHandler
     {
         $arrPropNames = ['mode', 'id_request', 'id_transaction', 'id_shift'];
         // both modes require id_request
-        // mode='call' requires id_shift
+        // mode='call' requires id_shift: id_shift as call target.
         // id_transaction is an option
         $this->dbh = $master_handler->dbh;
         $this->id_user = $master_handler->id_user;

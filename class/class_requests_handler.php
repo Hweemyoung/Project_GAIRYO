@@ -32,7 +32,6 @@ class RequestsHandler extends DBHandler
         $this->positions = ['from', 'to'];
         $this->SQLS = '';
         $this->arrayErrors = [];
-        $this->goOrReturn($this->validateUser($master_handler->id_user));
         $this->return = $this->process();
     }
 
@@ -40,7 +39,7 @@ class RequestsHandler extends DBHandler
     {
         if (intval($this->id_user) !== intval($id_user)) {
             echo 'Error - No permission';
-            $this->redirectOrReturn(false, array('f' => 1, 'e' => 0));
+            return $this->redirectOrReturn(false, array('f' => 1, 'e' => 0));
         }
         return NULL;
     }
@@ -54,11 +53,7 @@ class RequestsHandler extends DBHandler
         if (in_array('0', array_keys($this->arrayRequestsInTransaction)) || in_array('1', array_keys($this->arrayRequestsInTransaction))) {
             echo "Fatal Error - Some requests had already been closed:<br>";
             // var_dump($results);OK
-            if ($this->auto_redirect) {
-                $this->redirect(false, $this->url, array('f' => 1, 'e' => 1));
-            } else {
-                return [false, array('f' => 1, 'e' => 1)];
-            }
+            return $this->redirectOrReturn(false,array('f' => 1, 'e' => 1));
             exit;
         }
         return NULL;
@@ -128,7 +123,7 @@ class RequestsHandler extends DBHandler
             echo 'This is CALL request. No shift object to handle. <br>';
         } else {
             // Lock. Dates will be used for checking language changes between before and after.
-            $stmt = $this->querySql('SELECT date_shift, id_user FROM shifts_assigned WHERE id_shift in (' . $sql . ') FOR UPDATE;');
+            $stmt = $this->querySql('SELECT date_shift, shift, id_user FROM shifts_assigned WHERE id_shift in (' . $sql . ') FOR UPDATE;');
             $arrayByDateShift = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->master_handler, $this->config_handler]); // array(0) if call request
             $stmt->closeCursor();
             // Save Date Objects Before execution.
@@ -172,7 +167,7 @@ class RequestsHandler extends DBHandler
         }
         if (count($this->arrayErrors)) {
             echo "Fatal Error - The request had already been agreed with by the user.<br>Request ID:";
-            $this->redirectOrReturn(false, array('f' => 1, 'e' => 2));
+            return $this->redirectOrReturn(false, array('f' => 1, 'e' => 2));
         }
         return NULL;
     }
@@ -199,7 +194,7 @@ class RequestsHandler extends DBHandler
         $stmt->closeCursor();
         if ($this->mode === 'decline') {
             // exit;
-            $this->redirectOrReturn(true, ['f' => 1, 's' => 2]);
+            return $this->redirectOrReturn(true, ['f' => 1, 's' => 2]);
         }
         $this->SQLS = '';
     }
@@ -242,7 +237,7 @@ class RequestsHandler extends DBHandler
             }
         } else {
             // echo "Awaiting agreements from other members.";
-            $this->redirectOrReturn(true, ['f' => 1, 's' => 0]);
+            return $this->redirectOrReturn(true, ['f' => 1, 's' => 0]);
         }
         return NULL;
     }
@@ -293,11 +288,11 @@ class RequestsHandler extends DBHandler
             }
             // var_dump($this->arrayQuery);
             echo 'NOT ENOUGH LANGS!';
-            $this->redirectOrReturn(false, $this->arrayQuery);
+            return $this->redirectOrReturn(false, $this->arrayQuery);
         } else {
             // var_dump($this->arrayQuery);
             echo 'All Good!';
-            $this->redirectOrReturn(true, $this->arrayQuery);
+            return $this->redirectOrReturn(true, $this->arrayQuery);
         }
     }
 
@@ -319,10 +314,26 @@ class RequestsHandler extends DBHandler
 
     public function process()
     {
+        $checkpoint = $this->validateUser($this->master_handler->id_user);
+        if ($checkpoint !== NULL){
+            return $checkpoint;
+        }
         $this->beginTransactionIfNotIn();
         $this->lockTablesIfNotInnoDB(['shifts_assigned', 'requests_pending']);
-        $this->goOrReturn($this->execute());
-        $this->goOrReturn($this->executeTransaction());
-        $this->goOrReturn($this->checkLangsChange());
+        $checkpoint = $this->execute();
+        if ($checkpoint !== NULL){
+            return $checkpoint;
+        }
+        $checkpoint = $this->executeTransaction();
+        if ($checkpoint !== NULL){
+            return $checkpoint;
+        }
+        $checkpoint = $this->checkLangsChange();
+        if ($checkpoint !== NULL){
+            return $checkpoint;
+        }
+        // $this->goOrReturn($this->execute());
+        // $this->goOrReturn($this->executeTransaction());
+        // $this->goOrReturn($this->checkLangsChange());
     }
 }
