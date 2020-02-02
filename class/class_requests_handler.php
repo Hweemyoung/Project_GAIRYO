@@ -46,15 +46,39 @@ class RequestsHandler extends DBHandler
 
     public function validateAction()
     {
-        $sql = strtr('SELECT `status`, id_request, id_from, id_to, id_shift FROM requests_pending WHERE id_transaction=$idTrans FOR UPDATE;', array('$idTrans' => $this->id_transaction));
+        $sql = strtr('SELECT `status`, id_request, id_from, date_shift, shift, id_to, id_shift, shift FROM requests_pending WHERE id_transaction=$idTrans FOR UPDATE;', array('$idTrans' => $this->id_transaction));
         $stmt = ($this->dbh)->prepare($sql);
         $stmt->execute();
         $this->arrayRequestsInTransaction = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
         if (in_array('0', array_keys($this->arrayRequestsInTransaction)) || in_array('1', array_keys($this->arrayRequestsInTransaction))) {
             echo "Fatal Error - Some requests had already been closed:<br>";
             // var_dump($results);OK
-            return $this->redirectOrReturn(false,array('f' => 1, 'e' => 1));
+            return $this->redirectOrReturn(false, array('f' => 1, 'e' => 1));
             exit;
+        }
+
+        return NULL;
+    }
+
+    private function checkShiftsInSamePart()
+    {
+        foreach ($this->arrayRequestsInTransaction['2'] as $arrRequest) {
+            foreach ($this->config_handler->arrayShiftsByPart as $shiftPart => $arrShifts) {
+                if (in_array($arrRequest['shift'], $arrShifts)) {
+                    break;
+                }
+            }
+            // Found shiftPart
+            $sqlConditions = $this->genSqlConditions($arrShifts, 'shift', 'OR');
+            $date_shift = $arrRequest['date_shift'];
+            $sql = "SELECT EXISTS (SELECT 1 FROM shifts_assigned WHERE id_user=$arrRequest->id_to AND done=0 AND date_shift='$date_shift' AND $sqlConditions);";
+            $stmt = $this->querySql($sql);
+            $result = $stmt->fetch();
+            $stmt->closeCursor();
+            if ($result) {
+                $id_to = $arrRequest['id_to'];
+                return $this->redirectOrReturn(false, array('f' => 1, 'e' => 3, 'id_to' => $id_to, 'date' => $date_shift, 'part' => $shiftPart));
+            }
         }
         return NULL;
     }
@@ -174,13 +198,19 @@ class RequestsHandler extends DBHandler
 
     public function execute()
     {
-        $this->goOrReturn($this->validateAction());
+        $checkpoint = $this->validateAction();
+        if ($checkpoint !== NULL) {
+            return $checkpoint;
+        }
         if ($this->mode === 'decline') {
             echo $this->id_transaction;
             // $this->decline(['id_transaction=' . $this->id_transaction]);
             $this->decline("(id_transaction=$this->id_transaction)");
         } else if ($this->mode === 'agree') {
-            $this->goOrReturn($this->agree());
+            $checkpoint = $this->agree();
+            if ($checkpoint !== NULL) {
+                return $checkpoint;
+            }
         } else {
             echo "Error - mode NOT understood<br>mode:";
             return $this->redirectOrReturn(false, ['f' => 1, 'e' => 3]);
@@ -210,6 +240,14 @@ class RequestsHandler extends DBHandler
         $sql = strtr('SELECT id_shift, id_to FROM requests_pending WHERE id_transaction=$idTrans AND agreed_from=1 AND agreed_to=1 FOR UPDATE;', array('$idTrans' => $this->id_transaction));
         $arrayRequests = $this->querySql($sql)->fetchAll(PDO::FETCH_ASSOC);
         if (count($arrayRequests) === intval($stmt->fetchAll(PDO::FETCH_COLUMN)[0])) { // intval('2')
+            echo 'All members agreed.<br>';
+
+            // Check if any member has a shift in the same shift part
+            $checkpoint = $this->checkShiftsInSamePart();
+            if ($checkpoint !== NULL) {
+                return $checkpoint;
+            }
+
             // Execute
             // Firstly, invalidate all pending(i.e. status=2) transactions surrounding these shifts
             $this->invalidateAllRequests();
@@ -305,31 +343,24 @@ class RequestsHandler extends DBHandler
         }
     }
 
-    private function goOrReturn($checkpoint)
-    {
-        if ($checkpoint !== NULL) {
-            return $checkpoint;
-        }
-    }
-
     public function process()
     {
         $checkpoint = $this->validateUser($this->master_handler->id_user);
-        if ($checkpoint !== NULL){
+        if ($checkpoint !== NULL) {
             return $checkpoint;
         }
         $this->beginTransactionIfNotIn();
         $this->lockTablesIfNotInnoDB(['shifts_assigned', 'requests_pending']);
         $checkpoint = $this->execute();
-        if ($checkpoint !== NULL){
+        if ($checkpoint !== NULL) {
             return $checkpoint;
         }
         $checkpoint = $this->executeTransaction();
-        if ($checkpoint !== NULL){
+        if ($checkpoint !== NULL) {
             return $checkpoint;
         }
         $checkpoint = $this->checkLangsChange();
-        if ($checkpoint !== NULL){
+        if ($checkpoint !== NULL) {
             return $checkpoint;
         }
         // $this->goOrReturn($this->execute());
