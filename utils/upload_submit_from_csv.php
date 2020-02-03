@@ -119,7 +119,7 @@ class CsvRespondsUploader
 }
 
 $host = 'localhost';
-$DBName = 'gairyo';
+$DBName = 'gairyo_shift_dist';
 $userName = 'root';
 $pw = '111111';
 $dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));

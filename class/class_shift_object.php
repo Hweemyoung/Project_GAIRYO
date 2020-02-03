@@ -1,4 +1,7 @@
 <?php
+
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+
 class ShiftObject
 {
     public $id_user;
@@ -11,6 +14,7 @@ class ShiftObject
         $this->setShiftPart($config_handler->arrayShiftsByPart);
         $this->setMemberObj($master_handler->arrayMemberObjectsByIdUser);
         // var_dump($this);
+        $this->setW();
         $this->workingMins = $config_handler->arrayShiftTimes[$this->shift]['workingMins'];
     }
     public function setMemberObj($arrayMemberObjectsByIdUser)
@@ -26,6 +30,11 @@ class ShiftObject
             }
         }
     }
+    public function setW(){
+        $dateTime = new DateTime($this->date_shift);
+        $this->W = $dateTime->format('W');
+    }
+
     public function set_Ym()
     {
         $this->YM = date('Y m', $this->date_shift);

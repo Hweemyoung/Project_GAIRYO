@@ -83,7 +83,6 @@ class DateShiftsDeployer extends DateObject
         // If there is candidates AND not all parts are full
         // echo '$this->arrShiftAppObjectsByIdUser <br>';
         // var_dump($this->arrShiftAppObjectsByIdUser);
-
         while (count($this->arrShiftAppObjectsByIdUser) && $this->targetPart !== NULL) {
             $this->deployShift();
         }
@@ -145,7 +144,7 @@ class DateShiftsDeployer extends DateObject
             $this->arrShiftStatus[$shiftObjectDeployed->shift]->unsetShiftAppObjectsByIdUser($shiftObjectDeployed);
 
             // Update prop of MemberObject;
-            $shiftObjectDeployed->memberObject->updateProps();
+            $shiftObjectDeployed->memberObject->updateProps($shiftObjectDeployed);
 
             // If this shift part is full, unset rest of ShiftAppObjects for this shift part from DateShiftsDeployer
             // 
@@ -335,7 +334,7 @@ class DateShiftsDeployer extends DateObject
         $arrShiftStatusVacant = $this->arrShiftStatus;
         foreach ($arrShiftStatusVacant as $shift => $shiftStatus) {
             if ($shiftStatus->vacancy === 1 || $shiftStatus->vacancy > 1) {
-                $hasShift = in_array($shift, array_keys($arrShiftStatusVacant));
+                // $hasShift = in_array($shift, array_keys($arrShiftStatusVacant));
                 // echo "arrShiftStatusVacant has $shift: ";
                 // var_dump($hasShift);
                 // echo "Shift $shift is already full: Vacancy = $shiftStatus->vacancy<br>";
@@ -359,15 +358,42 @@ class DateShiftsDeployer extends DateObject
         // Filter $arrShiftObjectsFiltered
         foreach ($arrShiftObjectsFiltered as $key => $shiftObject) {
             if (!array_key_exists($shiftObject->shiftPart, $arrShiftPartStatusVacant)) {
+                $this->unsetShiftAppObject($arrShiftObjectsFiltered[$key]);
                 unset($arrShiftObjectsFiltered[$key]);
             }
         }
-        // Get vacant ShiftStatus
-        $arrShiftStatusVacant = $this->getVacantShiftStatus();
-        // Filter $arrShiftObjectsFiltered
-        foreach ($arrShiftObjectsFiltered as $key => $shiftObject) {
-            if (!array_key_exists($shiftObject->shift, $arrShiftStatusVacant)) {
-                unset($arrShiftObjectsFiltered[$key]);
+
+        if (count($arrShiftObjectsFiltered)) {
+            // Get vacant ShiftStatus
+            $arrShiftStatusVacant = $this->getVacantShiftStatus();
+            // Filter $arrShiftObjectsFiltered
+            foreach ($arrShiftObjectsFiltered as $key => $shiftObject) {
+                if (!array_key_exists($shiftObject->shift, $arrShiftStatusVacant)) {
+                    $this->unsetShiftAppObject($arrShiftObjectsFiltered[$key]);
+                    unset($arrShiftObjectsFiltered[$key]);
+                }
+            }
+        }
+
+        if (count($arrShiftObjectsFiltered)) {
+            // Filter by worked mins
+            foreach ($arrShiftObjectsFiltered as $key => $shiftObject) {
+                // Mins per week or per month
+                $is_jp = intval($shiftObject->memberObject->jp);
+                if (isset($shiftObject->memberObject->workedMinsByWeek[$shiftObject->W])) {
+                    if ($shiftObject->memberObject->workedMinsByWeek[$shiftObject->W] + $shiftObject->workingMins > $this->config_handler->maxWorkedMinsPerWeekByJp[$is_jp]) {
+                        // If over
+                        echo "Workable mins for this week full!<br>";
+                        $this->unsetShiftAppObject($arrShiftObjectsFiltered[$key]);
+                        unset($arrShiftObjectsFiltered[$key]);
+                    }
+                }
+                if ($shiftObject->memberObject->workedMinsTotal + $shiftObject->workingMins > $this->config_handler->maxWorkedMinsPerMonthByJp[$is_jp]) {
+                    // If over
+                    echo "Workable mins for this month full!<br>";
+                    $this->unsetShiftAppObject($arrShiftObjectsFiltered[$key]);
+                    unset($arrShiftObjectsFiltered[$key]);
+                }
             }
         }
 

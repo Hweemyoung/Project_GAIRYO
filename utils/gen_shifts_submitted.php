@@ -21,7 +21,7 @@ $arrIdUsers = $stmt->fetchAll(PDO::FETCH_COLUMN);
 $stmt->closeCursor();
 foreach ($arrIdUsers as $id_user) {
     $columns = 'id_user, m';
-    $m = '202002';
+    $m = '202003';
     $fields = "$id_user, '$m'";
     foreach ($arrayDates as $date) {
         if (randFloat() > .72) {

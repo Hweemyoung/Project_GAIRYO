@@ -15,7 +15,7 @@ $host = 'localhost';
 $DBName = 'gairyo_shift_dist';
 $userName = 'root';
 $pw = '111111';
-$params = [];
+$params = ['id_user' => 0];
 $master_handler = new MasterHandler($test, $host, $DBName, $userName, $pw, $config_handler, $params);
 $dbh = $master_handler->dbh;
 $signedin = $master_handler->signedin;

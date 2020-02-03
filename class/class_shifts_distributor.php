@@ -6,12 +6,20 @@ require_once "$homedir/config.php";
 
 class ShiftsDistributor extends DBHandler
 {
+    private $arrDateShiftsDeployerByDate;
+    private $arrDateRange;
+    private $arrStats;
+    private $arrDateTimes;
+    private $arrDatesByWeek;
+    private $arrIdUserAppByDate;
+
     public function __construct($master_handler, $config_handler)
     {
         $this->dbh = $master_handler->dbh;
         $this->master_handler = $master_handler;
         $this->config_handler = $config_handler;
         $this->arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
+        // var_dump(array_keys($this->arrayMemberObjectsByIdUser));
         $this->arrayShiftsByPart = $config_handler->arrayShiftsByPart;
         $this->m = $config_handler->m;
         $this->init();
@@ -23,6 +31,8 @@ class ShiftsDistributor extends DBHandler
         $this->arrDateShiftsDeployerByDate = [];
         $this->arrDateRange = [];
         $this->arrStats = [];
+        $this->arrDateTimes = [];
+        $this->arrDatesByWeek = [];
         $this->addPropsToMemberObjects(); // memberObject->numDaysApplied = 0; memberObject->numDaysDeployed = 0; memberObject->arrShiftAppObjects = [];
         $this->arrIdUserAppByDate = [];
     }
@@ -37,16 +47,18 @@ class ShiftsDistributor extends DBHandler
     public function process()
     {
         $this->beginTransactionIfNotIn();
-        $this->deleteAllIfAny();
         $this->loadShiftsSubmitted();
         $this->setArrDateShiftsHandlerByDate();
+        $this->deleteAllIfAny();
         $this->distributeAllShifts();
-        // $this->dbh->commit();
+        $this->dbh->commit();
     }
 
     private function deleteAllIfAny()
     {
-        $sql = "DELETE FROM shifts_assigned WHERE m='$this->m';";
+        $dateStart = $this->arrDateTimes[16]->format('Y-m-d');
+        $dateEnd = $this->arrDateTimes[15]->format('Y-m-d');
+        $sql = "DELETE FROM shifts_assigned WHERE date_shift>='$dateStart' AND date_shift<='$dateEnd';";
         $this->executeSql($sql);
     }
 
@@ -71,11 +83,11 @@ class ShiftsDistributor extends DBHandler
         // echo '<br>';
         foreach (range(1, 31) as $date) {
             $dateTime = DateTime::createFromFormat('Ymd', $this->m . '01'); // '2020-03-01'
-            if ($date === 15){
+            if ($date === 15) {
                 $this->maxDateTime = $dateTime;
-            } elseif($date > 15) {
+            } elseif ($date > 15) {
                 $dateTime = $dateTime->modify('-1 days'); // '2020-02-28';
-                if ($date===16){
+                if ($date === 16) {
                     $this->minDateTime = $dateTime;
                 }
                 // echo 'Modified DateTime:' . $dateTime->format('Y-m-d') . '<br>';
@@ -91,6 +103,10 @@ class ShiftsDistributor extends DBHandler
             // Add date to arrDateRange
             $this->arrDateRange[] = $date;
             $dateTime->setDate($dateTime->format('Y'), $dateTime->format('n'), $date);
+
+            $this->arrDateTimes[$date] = $dateTime;
+            $this->arrDatesByWeek[$dateTime->format('W')][] = $date;
+
             echo "Modified DateTime<br>";
             var_dump($dateTime->format('Y-m-d'));
             echo '<br>';
@@ -184,7 +200,7 @@ class ShiftsDistributor extends DBHandler
     private function pushShiftAppObject($shiftObject)
     {
         // To MemberObject->arrShiftAppObjects
-        $shiftObject->memberObject->pushShiftAppObjects($shiftObject);
+        // $shiftObject->memberObject->pushShiftAppObjects($shiftObject);
         // To DateShiftsDeployer->arrShiftAppObjectsByIdUser and to DateShiftsDeployer...ShiftPartStatus->arrShiftAppObjectsByIdUser
         $this->arrDateShiftsDeployerByDate[$shiftObject->date]->pushShiftAppObject($shiftObject);
         // To ShiftStatus->arrShiftAppObjectsByIdUser
@@ -202,43 +218,38 @@ class ShiftsDistributor extends DBHandler
             // Statistics
             $this->arrStats[$date] = $this->arrDateShiftsDeployerByDate[$date]->getStatistics();
             // Assign all shifts
-            // $this->arrDateShiftsDeployerByDate[$date]->assignAllShifts($this);
+            $this->arrDateShiftsDeployerByDate[$date]->assignAllShifts($this);
             // Filter ShiftObjects
-
-
+            $this->filterByWorkingConditions($date);
         }
         $this->getTotalStats();
     }
 
     private function filterByWorkingConditions($date)
     {
-        // $date = int(19)
-        $curDateTime = DateTime::createFromFormat('Ymd', $this->m . '01'); // '2020-03-01'
-        if ($date > 15) {
-            $curDateTime = $curDateTime->modify('-1 days'); // '2020-02-28';
-        }
-        $curDateTime->setDate($curDateTime->format('Y'), $curDateTime->format('n'), $date);
-        // per week
-        foreach ($this->arrayMemberObjectsByIdUser as $id_user => $memberObject) {
-            // working mins
-            if ($memberObject->workedMinsByWeek[$curDateTime->format('W')] >= $this->config_handler->maxWorkingMinsPerWeekByJp[$memberObject->jp]){
-                // If over, unset
-                // get date range first
-            };
-            // Per month: working mins, days
-        }
-    }
+        $curDateTime = $this->arrDateTimes[$date];
 
-    private function getDatesOfWeek($dateTime){
-        $dateTimeStart = clone $dateTime;
-        $dateTimeStart->sub($dateTime->format('N') - 1);
-        if ($dateTimeStart < $this->minDateTime){
-            $dateTimeStart = $this->minDateTime;
-        }
-        $dateTimeEnd = clone $dateTime;
-        $dateTimeEnd->add(7 - $dateTime->format('N'));
-        if ($dateTimeEnd > $this->maxDateTime){
-            $dateTimeEnd = $this->maxDateTime;
+        foreach ($this->arrayMemberObjectsByIdUser as $id_user => $memberObject) {
+            $is_jp = intval($memberObject->jp);
+            $W = $curDateTime->format('W');
+            // per week
+            // worked days
+            if (isset($memberObject->arrWorkedDatesByWeek[$W])) {
+                if (count($memberObject->arrWorkedDatesByWeek[$W]) === $this->config_handler->maxWorkedDaysPerWeekByJp[$is_jp]) {
+                    echo "This member fully worked for week $W. Unset all ShiftAppObjects for this week.<br>";
+                    foreach ($this->arrDatesByWeek[$W] as $date) {
+                        unset($this->arrDateShiftsDeployerByDate[$date]->arrShiftAppObjectsByIdUser[$id_user]);
+                    }
+                }
+            }
+            // Per month
+            // worked days (=numDaysDeployed)
+            if ($memberObject->numDaysDeployed === $this->config_handler->maxWorkedDaysPerMonthByJp[$is_jp]) {
+                echo "This member fully worked for month. Unset all ShiftAppObjects for this month.<br>";
+                foreach ($this->arrDateShiftsDeployerByDate as $dateShiftsDeployer) {
+                    unset($dateShiftsDeployer->arrShiftAppObjectsByIdUser[$id_user]);
+                }
+            }
         }
     }
 

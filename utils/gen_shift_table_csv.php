@@ -54,7 +54,7 @@ class ShiftTableGenerator extends DBHandler
     private function setArrShiftsByIdUsers()
     {
         // Get cn first
-        $sql = "SELECT id_user, nickname, cn FROM members_new WHERE cn=1 ORDER BY id_user ASC";
+        $sql = "SELECT id_user, nickname, cn FROM members WHERE cn=1 ORDER BY id_user ASC";
         $stmt = $this->querySql($sql);
         $arrMembersOfCnByIdUser = $stmt->fetchAll(PDO::FETCH_UNIQUE);
         $stmt->closeCursor();
@@ -62,7 +62,7 @@ class ShiftTableGenerator extends DBHandler
         $this->arrShiftsByIdUser = $this->arrShiftsByIdUser + $this->loadShiftsForIdUsers($arrMembersOfCnByIdUser);
 
         // Get rest
-        $sql = "SELECT id_user, nickname, cn FROM members_new WHERE cn<>1 ORDER BY id_user ASC";
+        $sql = "SELECT id_user, nickname, cn FROM members WHERE cn<>1 ORDER BY id_user ASC";
         $stmt = $this->querySql($sql);
         $arrMembersOfNotCnByIdUser = $stmt->fetchAll(PDO::FETCH_UNIQUE);
         $stmt->closeCursor();
@@ -180,7 +180,7 @@ class ShiftTableGenerator extends DBHandler
 
     private function toCsv()
     {
-        $fp = fopen("$this->homedir/data/csv/test.csv", 'w');
+        $fp = fopen("$this->homedir/data/csv/test3.csv", 'w');
         foreach ($this->arrCsv as $row) {
             var_dump(fputcsv($fp, $row));
         }

@@ -12,11 +12,11 @@ class ConfigHandler
 
     // Working conditions: '0': Not JP, '1': JP
     // Per week
-    public $maxWorkingMinsPerWeekByJp = ['0' => 1680, 1 => 2400];
-    public $maxWorkingDaysPerWeekByJp = ['0' => 5, 1 => 7];
+    public $maxWorkedMinsPerWeekByJp = ['0' => 1680, 1 => 2400];
+    public $maxWorkedDaysPerWeekByJp = ['0' => 5, 1 => 7];
     // Per month
-    public $maxWorkingMinsPerMonthByJp = ['0' => 6600, 1 => 10000];
-    public $maxWorkingDaysPerMonthByJp = ['0' => 16, '1' => 16];
+    public $maxWorkedMinsPerMonthByJp = ['0' => 6600, 1 => 10000];
+    public $maxWorkedDaysPerMonthByJp = ['0' => 16, '1' => 16];
 
     // Languages
     public $numLangs = 8; // Includes 'other'
@@ -32,13 +32,16 @@ class ConfigHandler
     public $arrayPartNames = ['午前', '午後'];
 
     public $defaultNumMaxByShift = ['A' => 1, 'B' => 4, 'H' => 2, 'C' => 2, 'D' => 4];
-    public $arrNumMaxByShiftByDate = [16 => ['A' => 1, 'B' => 6, 'H' => 4, 'C' => 3, 'D' => 6]];
+    public $arrNumMaxByShiftByDate = [];
+    // public $arrNumMaxByShiftByDate = [16 => ['A' => 1, 'B' => 6, 'H' => 4, 'C' => 3, 'D' => 6]];
 
     public $defaultNumNeededByShift = ['H' => 1, 'C' => 1];
-    public $arrNumNeededByShiftByDate = [16 => ['B' => 3, 'H' => 2, 'C' => 2, 'D' => 4]];
+    public $arrNumNeededByShiftByDate = [];
+    // public $arrNumNeededByShiftByDate = [16 => ['B' => 3, 'H' => 2, 'C' => 2, 'D' => 4]];
 
     public $defaultNumNeededByPart = [5, 4];
-    public $arrNumNeededByPartByDate = [16 => [8, 8]];
+    public $arrNumNeededByPartByDate = [];
+    // public $arrNumNeededByPartByDate = [16 => [8, 8]];
 
 
     // ConfigHandler
@@ -57,9 +60,9 @@ class ConfigHandler
     // ShiftsDistributor
     public $m = '202002';
     public $arr_mshifts = [];
-    // public $arrScoreItems = ['appForTargetPart' => 'max', 'langScore' => 'max', 'deployRatio' => 'min'];
+    public $arrScoreItems = ['appForTargetPart' => 'max', 'langScore' => 'max', 'deployRatio' => 'min'];
     // public $arrScoreItems = ['appForTargetPart' => 'max', 'numShiftAppObjects' => 'min', 'langScore' => 'max', 'deployRatio' => 'min'];
-    public $arrScoreItems = ['deployRatio' => 'min', 'appForTargetPart' => 'max', 'numAppNotEnough' => 'max', 'langScore' => 'max']; // BEST?
+    // public $arrScoreItems = ['deployRatio' => 'min', 'appForTargetPart' => 'max', 'numAppNotEnough' => 'max', 'langScore' => 'max']; // BEST?
     // public $arrScoreItems = ['deployRatio' => 'min', 'appForTargetPart' => 'max', 'langScore' => 'max'];
     // public $arrScoreItems = ['appForTargetPart' => 'max', 'numShiftAppObjects' => 'min', 'numAppNotEnough' => 'max', 'langScore' => 'max', 'deployRatio' => 'min'];
     // public $arrScoreItems = ['numAppNotEnough' => 'min', 'langScore' => 'max', 'deployRatio' => 'min'];
