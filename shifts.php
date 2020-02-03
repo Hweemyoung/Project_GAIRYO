@@ -25,7 +25,7 @@ require_once "$homedir/check_session.php";
             <div class="col-sm-9">
                 <?php
                 require './shifts_header.php';
-                if (!$signedin) {
+                if (!$master_handler->signedin) {
                     require './common_nav_signedout.php';
                     require './common_main_signedout.php';
                 } else {

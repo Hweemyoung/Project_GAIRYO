@@ -1,7 +1,5 @@
 <?php
 
-use PhpOffice\PhpSpreadsheet\Shared\Date;
-
 class ShiftObject
 {
     public $id_user;
@@ -30,6 +28,11 @@ class ShiftObject
             }
         }
     }
+
+    public function setCallable($callable){
+        $this->callable = $callable;
+    }
+
     public function setW(){
         $dateTime = new DateTime($this->date_shift);
         $this->W = $dateTime->format('W');

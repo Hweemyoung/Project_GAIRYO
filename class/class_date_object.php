@@ -63,7 +63,7 @@ class DateObject
         $this->arrayShiftObjectsByShift[$shiftObject->shift][] = $shiftObject;
     }
 
-    private function setArrayShiftObjectsByShift($arrayShiftObjectsOfDate)
+    public function setArrayShiftObjectsByShift($arrayShiftObjectsOfDate)
     {
         if (count($arrayShiftObjectsOfDate)) {
             // Initialize array

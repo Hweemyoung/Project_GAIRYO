@@ -214,7 +214,7 @@ class MarketItemUploader extends DBHandler
 
     private function validate_call($sqlConditions_shifts)
     {
-        // Check if there is such a shift and lock it (to prevent id_user from turning into id_to while processing)
+        // Check if there is shift candidates and lock it (to prevent id_user from turning into id_to while processing)
         echo '// Check if there is any shift for this call<br>';
         $sql = "SELECT EXISTS (SELECT 1 FROM shifts_assigned WHERE $sqlConditions_shifts AND done=0 LIMIT 1 FOR UPDATE);";
         echo $sql . '<br>';
