@@ -5,7 +5,8 @@ class TempClass
     public $prop1;
     public $arr = ['a', 'b', 'c'];
 }
-$inst = new TempClass();
+
+var_dump($_FILES);
 
 
 // $test = true;
@@ -17,7 +18,3 @@ $inst = new TempClass();
 // $sql = "SHOW TABLE STATUS WHERE Name='shifts_assigned';";
 // var_dump($dbh->query($sql)->fetchAll(PDO::FETCH_NUM)); // Engine = [0][1] = 'InnoDB';
 ?>
-Script<br>
-<?php foreach ($inst->arr as $key => $val) { ?>
-    <?= $key ?> / <?= $val ?><br>
-<?php } ?>

@@ -124,5 +124,8 @@ $userName = 'root';
 $pw = '111111';
 $dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
 $homedir = '/var/www/html/gairyo_temp';
-$fpath = "$homedir/data/csv/2月分シフト希望表.csv";
+$fp = "$homedir/data/csv/2月分シフト希望表.csv";
+if (isset($_FILES['csv_submit'])){
+    $fp = $_FILES['csv_submit']["tmp_name"] . $_FILES['csv_submit']["name"];
+}
 $csv_responds_uploader = new CsvRespondsUploader($dbh, $homedir, $fpath);
