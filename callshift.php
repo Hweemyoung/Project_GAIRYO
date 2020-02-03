@@ -1,0 +1,33 @@
+<?php
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/check_session.php";
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <?php
+    require './common_head.php';
+    ?>
+</head>
+
+<body>
+    <div class="container px-1">
+    <div class="row">
+        <div class="col-sm-3 d-none d-sm-block"></div>
+        <div class="col-sm-9">
+                <?php
+                if (!$master_handler->signedin) {
+                    require './common_nav_signedout.php';
+                    require './common_main_signedout.php';
+                } else {
+                    require './common_nav_signedin.php';
+                    require './callshift_signedin.php';
+                }
+                require './common_footer.php';
+                ?>
+            </div>
+        </div>
+    </div>
+</body>
