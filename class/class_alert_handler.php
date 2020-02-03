@@ -134,7 +134,7 @@ class AlertHandler
                         }
                         break;
                         // From upload_market_item.php
-                    case 3:
+                    case 4:
                         switch ($this->_status) {
                             case 0:
                                 switch ($this->_value) {
@@ -230,6 +230,22 @@ class AlertHandler
                         break;
                 }
                 break;
+            case 'shifts.php':
+                switch ($this->_from) {
+                        // From marketplace.php
+                    case 5:
+                        switch ($this->_status) {
+                                // Success
+                            case 1:
+                                switch ($this->_value) {
+                                    case 0:
+                                        $this->alertMode = 'alert-warning';
+                                        $this->alertStrong = 'Choose!';
+                                        $this->alertMsg = 'Please choose your shift to put.';
+                                        break;
+                                }
+                        }
+                }
         }
     }
 

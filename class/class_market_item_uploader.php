@@ -45,7 +45,7 @@ class MarketItemUploader extends DBHandler
             // Iteration completed but no call objects found. Just upload put object and commit.
             echo '// Iteration completed but no call objects found. Just upload put object and commit.';
             // exit;
-            $this->redirect(true, $this->url, ['f' => 3, 's' => 0]);
+            $this->redirect(true, $this->url, ['f' => 4, 's' => 0]);
         } else {
             // Continue iteration
             $this->matchCounterItem($this->mode, $this->key, $this->marketItemForIter);
@@ -76,11 +76,11 @@ class MarketItemUploader extends DBHandler
         if (!isset($_GET['mode'])) {
             echo 'Error: mode not set. exit!<br>';
             // exit;
-            $this->redirect(false, $this->url, ['f' => 3, 'e' => 0]);
+            $this->redirect(false, $this->url, ['f' => 4, 'e' => 0]);
         } elseif (!in_array($_GET['mode'], $this->arrModes)) {
             echo 'Error: mode not understood. exit!<br>';
             // exit;
-            $this->redirect(false, $this->url, ['f' => 3, 'e' => 1]);
+            $this->redirect(false, $this->url, ['f' => 4, 'e' => 1]);
         }
         $this->mode = $_GET['mode'];
     }
@@ -92,14 +92,14 @@ class MarketItemUploader extends DBHandler
                 if ($this->id_user !== $this->id_from) {
                     echo "Error- invalid user: id_user = $this->id_user and id_from = $this->id_from<br>";
                     // exit;
-                    $this->redirect(false, $this->url, ['f' => 3, 'e' => 2, 'id_user' => $this->id_user, 'id_from' => $this->id_from]);
+                    $this->redirect(false, $this->url, ['f' => 4, 'e' => 2, 'id_user' => $this->id_user, 'id_from' => $this->id_from]);
                 }
                 break;
             case 'call':
                 if ($this->id_user !== $this->id_to) {
                     echo "Error- invalid user: id_user = $this->id_user and id_to = $this->id_to<br>";
                     // exit;
-                    $this->redirect(false, $this->url, ['f' => 3, 'e' => 3, 'id_user' => $this->id_user, 'id_to' => $this->id_to]);
+                    $this->redirect(false, $this->url, ['f' => 4, 'e' => 3, 'id_user' => $this->id_user, 'id_to' => $this->id_to]);
                 }
                 break;
         }
@@ -153,7 +153,7 @@ class MarketItemUploader extends DBHandler
             if (!isset($_GET[$name])) {
                 echo "Error: Not enough \$_GET variables: $name. exit!<br>";
                 // exit;
-                $this->redirect(false, $this->url, ['f' => 3, 'e' => 4, 'var' => $name]);
+                $this->redirect(false, $this->url, ['f' => 4, 'e' => 4, 'var' => $name]);
             }
         }
         $this->id_from = $_GET['id_from'];
@@ -174,7 +174,7 @@ class MarketItemUploader extends DBHandler
         if (!$exists) {
             echo "ERROR: No such shift found: WHERE $sqlConditions_shifts AND done=0<br>";
             // exit;
-            $this->redirect(false, $this->url, ['f' => 3, 'e' => 5]);
+            $this->redirect(false, $this->url, ['f' => 4, 'e' => 5]);
         }
         // Check if item already exists in market
         $sqlConditions_requests = "id_shift=$this->id_shift AND id_from=$this->id_from AND id_to IS NULL AND `status`=2";
@@ -204,7 +204,7 @@ class MarketItemUploader extends DBHandler
             if (!isset($_GET[$name])) {
                 echo "Error: Not enough \$_GET variables: $name. exit!<br>";
                 // exit;
-                $this->redirect(false, $this->url, ['f' => 3, 'e' => 4, 'var' => $name]);
+                $this->redirect(false, $this->url, ['f' => 4, 'e' => 4, 'var' => $name]);
             }
         }
         $this->id_to = $_GET['id_to'];
@@ -224,7 +224,7 @@ class MarketItemUploader extends DBHandler
         if (!$exists) {
             echo "ERROR: No such shift found: WHERE $sqlConditions_shifts AND done=0<br>";
             // exit;
-            $this->redirect(false, $this->url, ['f' => 3, 'e' => 5]);
+            $this->redirect(false, $this->url, ['f' => 4, 'e' => 5]);
         }
         // Check if user already has any shift in this shift part
         $this->checkShiftsInSamePart();
@@ -239,7 +239,7 @@ class MarketItemUploader extends DBHandler
         $stmt = $this->querySql($sql);
         $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
         if (count($result)) {
-            $this->redirect(false, $this->url, ['f' => 3, 'e' => 7, 'date' => $this->date_shift, 'shift' => $result[0]]);
+            $this->redirect(false, $this->url, ['f' => 4, 'e' => 7, 'date' => $this->date_shift, 'shift' => $result[0]]);
         }
     }
 
@@ -255,7 +255,7 @@ class MarketItemUploader extends DBHandler
             $id_request = $id_request[0];
             echo "ERROR: Item already exists in market: id_request=$id_request.<br>";
             // exit;
-            $this->redirect(false, $this->url, ['f' => 3, 'e' => 6, 'id_request' => $id_request]);
+            $this->redirect(false, $this->url, ['f' => 4, 'e' => 6, 'id_request' => $id_request]);
         }
     }
 
@@ -289,7 +289,7 @@ class MarketItemUploader extends DBHandler
                         // No valid call objects found. Just commit.
                         echo '// Iteration completed but no call objects found. Just upload put object and commit.';
                         // exit;
-                        $this->redirect(true, $this->url, ['f' => 3, 's' => 0, 'date' => $this->date_shift, 'shift' => $this->shift]);
+                        $this->redirect(true, $this->url, ['f' => 4, 's' => 0, 'date' => $this->date_shift, 'shift' => $this->shift]);
                     }
                     // (InnoDB)No valid call object found.
                 }
@@ -330,7 +330,7 @@ class MarketItemUploader extends DBHandler
                         // No valid put objects found. Just commit.
                         echo '// Iteration completed but no call objects found. Just upload put object and commit.';
                         // exit;
-                        $this->redirect(true, $this->url, ['f' => 3, 's' => 1, 'date' => $this->date_shift, 'shift' => $this->shift]);
+                        $this->redirect(true, $this->url, ['f' => 4, 's' => 1, 'date' => $this->date_shift, 'shift' => $this->shift]);
                     }
                     // (InnoDB)No valid put object found.
                 }
@@ -368,14 +368,14 @@ class MarketItemUploader extends DBHandler
                 $this->executeSql($sql);
                 // commit and redirect!
                 // exit;
-                $this->redirect(true, $this->url, ['f' => 3, 's' => 2, 'date_shift' => $this->date_shift, 'shift' => $this->shift, 'id_to' => $counterObject->id_to]);
+                $this->redirect(true, $this->url, ['f' => 4, 's' => 2, 'date_shift' => $this->date_shift, 'shift' => $this->shift, 'id_to' => $counterObject->id_to]);
             } elseif ($this->mode === 'call') {
                 $sql = "UPDATE requests_pending SET id_shift=$counterObject->id_shift, id_from=$counterObject->id_from, date_shift='$counterObject->date_shift', shift= '$counterObject->shift', `status`=1, time_proceeded=NOW(), agreed_from=1, checked_from=1 WHERE id_transaction=$this->id_transaction;";
                 echo "Setting call object id_shift, id_from, date_shift, shift to counterobject: $sql <br>";
                 $this->executeSql($sql);
                 // commit and redirect!
                 // exit;
-                $this->redirect(true, $this->url, ['f' => 3, 's' => 3, 'date_shift' => $this->date_shift, 'shift' => $this->shift, 'id_from' => $counterObject->id_from]);
+                $this->redirect(true, $this->url, ['f' => 4, 's' => 3, 'date_shift' => $this->date_shift, 'shift' => $this->shift, 'id_from' => $counterObject->id_from]);
             }
         } else { // $commit = false
             if ($this->useSavepoints) {

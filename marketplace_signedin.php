@@ -10,8 +10,12 @@ $market_item_handler = new MarketItemHandler($master_handler, $config_handler);
 ?>
 
 <main>
-<a class="a-popover" data-toggle="popover" data-content="Very intuitive and user-friendly design. Currently implemented 'Put item' only." data-trigger="hover" data-placement="bottom">Market Timeline</a>
+    <a class="a-popover" data-toggle="popover" data-content="Very intuitive and user-friendly design. Currently implemented 'Put item' only." data-trigger="hover" data-placement="bottom">Market Timeline</a>
     <div class="bs4-timeline px-1 py-1 py-sm-2 py-md-4">
+        <div id="div-btns-put-call-my-shifts" class="row no-gutters d-flex justify-content-between">
+            <div class="col-md-4 my-1"><a href="<?= utils\genHref($config_handler->http_host, 'shifts.php', ['f' => 5, 's' => 0]) ?>" class="btn d-block"><i class="fas fa-plus-square"></i> <strong>Put my shift</strong></a></div>
+            <div class="col-md-4 my-1"><a href="<?= $config_handler->http_host ?>/callshifts.php" class="btn d-block"><i class="fas fa-plus-square"></i> <strong>Call for shifts</strong></a></div>
+        </div>
         <?php
         $market_item_handler->echoMarketTimeline();
         ?>
@@ -59,7 +63,7 @@ $market_item_handler = new MarketItemHandler($master_handler, $config_handler);
             <?= json_encode($market_item_handler->date_objects_put_handler->arrayDateObjects, 0, 1024) ?>,
             <?= json_encode($market_item_handler->date_objects_call_handler->arrayDateObjects, 0, 1024) ?>,
             <?= json_encode($market_item_handler->arrayShiftsByPart, 0, 1024) ?>,
-            '<?= $config_handler->http_host?>',
+            '<?= $config_handler->http_host ?>',
             _constants);
     </script>
 </main>

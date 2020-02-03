@@ -78,24 +78,21 @@
   background-color: rgba(255, 35, 35, .35);
   transition: 300ms;
 } */
-.col-put .btn-group .btn {
+#div-btns-put-call-my-shifts>div:first-child .btn, .col-put .btn-group .btn {
   background-color: rgba(255, 35, 35, .35);
   transition: 300ms;
 }
 
-.col-put .btn-group .btn:hover {
+#div-btns-put-call-my-shifts>div:first-child .btn, .col-put .btn-group .btn:hover {
   background-color: rgba(255, 35, 35, .5);
 }
 
-.how-it-works.row .col-6 .row .col-call{
+#div-btns-put-call-my-shifts>div:last-child .btn, .col-call .btn-group .btn{
   background-color: rgba(35, 35, 255, .35);
   transition: 300ms;
 }
 
-/* .how-it-works.row .col-6 .row .col-put:hover{
-  background-color: rgba(255, 35, 35, .5);
-} */
-.how-it-works.row .col-6 .row .col-call:hover{
+#div-btns-put-call-my-shifts>div:last-child .btn, .col-call .btn-group .btn:hover{
   background-color: rgba(35, 35, 255, .5);
 }
 

@@ -29,7 +29,7 @@ class ShiftCaller extends DateObjectsHandler
 
     private function loadShiftObjectsByDate(){
         // Load other's shifts
-        $sql = "SELECT date_shift, id_user, date_shift, shift FROM shifts_assigned WHERE done=0 AND id_user<>$this->id_user;";
+        $sql = "SELECT date_shift, id_user, date_shift, shift FROM shifts_assigned WHERE done=0 AND id_user<>$this->id_user ORDER BY date_shift ASC;";
         $stmt = $this->master_handler->dbh->query($sql);
         $this->arrShiftObjectsOthersByDate = $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_CLASS, 'ShiftObject', [$this->master_handler, $this->config_handler]);
         $stmt->closeCursor();
