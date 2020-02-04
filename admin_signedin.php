@@ -296,7 +296,7 @@ $sql = "UPDATE board SET checked_$id_user=1 WHERE id_board_item IN (" . implode(
 // echo $sql . '<br>';
 $dbh->exec($sql);
 ?>
-
+<header>Overview</header>
 <main>
     <section id="section-shift">
         <a class="a-popover" data-toggle="popover" title="Upcoming shift" data-content="Selects closest upcoming shift and coleagues from DB!" data-trigger="hover" data-placement="bottom">FEATURE</a>

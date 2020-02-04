@@ -24,7 +24,6 @@ $alert_handler = new AlertHandler(__FILE__, $master_handler, $config_handler);
             <div class="col-sm-3 d-none d-sm-block"></div>
             <div class="col-sm-9">
                 <?php
-                require './admin_header.php';
                 if (!$master_handler->signedin) {
                     require './common_nav_signedout.php';
                     require './common_main_signedout.php';

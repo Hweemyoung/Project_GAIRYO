@@ -13,6 +13,7 @@ class DateShiftsFilterer extends DateObject
     public function __construct($date, $arrayShiftObjectsOfDate, $master_handler, $config_handler)
     {
         $this->date = $date;
+        $this->master_handler = $master_handler;
         $this->id_user = $master_handler->id_user;
         $this->dbh = $master_handler->dbh;
         $this->config_handler = $config_handler;
@@ -36,14 +37,20 @@ class DateShiftsFilterer extends DateObject
                 $this->arrShiftAvailableByShift[$shiftObject->shift] = true;
             }
         }
+        $arr = array('A', 'B', 'H', 'C', 'D');
+        uksort($this->arrShiftAvailableByShift, function ($a, $b) use ($arr) {
+            $key_a = array_search($a, $arr);
+            $key_b = array_search($b, $arr);
+            return $key_a - $key_b;
+        });
     }
 
     private function setMyShiftParts()
     {
         $this->myShiftParts = [];
 
-        $sql = "SELECT id_user, date_shift, shift FROM shifts_assigned WHERE done=0 AND id_user=$this->id_user;";
-        $stmt = $this->master_handler->dbh->query($sql);
+        $sql = "SELECT id_user, date_shift, shift FROM shifts_assigned WHERE done=0 AND date_shift='$this->date' AND id_user=$this->id_user;";
+        $stmt = $this->dbh->query($sql);
         $myShiftObjects = $stmt->fetchAll(PDO::FETCH_CLASS, 'ShiftObject', [$this->master_handler, $this->config_handler]);
         $stmt->closeCursor();
         foreach ($myShiftObjects as $shiftObject) {
@@ -54,9 +61,11 @@ class DateShiftsFilterer extends DateObject
     private function filterArrShiftObjectsByShift()
     {
         foreach (array_keys($this->myShiftParts) as $shiftPart) {
+            // echo "User has shift in part $shiftPart<br>";
             foreach ($this->config_handler->arrayShiftsByPart[$shiftPart] as $shift) {
                 if (isset($this->arrShiftAvailableByShift[$shift])) {
                     // Set to false
+                    // echo "arrShiftAvailableByShift has $shift and setting to unavailable.<br>";
                     $this->arrShiftAvailableByShift[$shift] = false;
                 }
             }

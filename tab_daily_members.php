@@ -282,7 +282,7 @@ class DailyMembersHandler extends DateObjectsHandler
                 // var_dump($arrayShiftTimes);
                 foreach ($matchShiftsAndColumns[$i] as $shift) {
                     echo strtr('
-                                            <a class="btn $btnColor" time-start="$timeStart" time-end="$timeEnd" data-toggle="modal">
+                                            <button class="btn $btnColor" time-start="$timeStart" time-end="$timeEnd" data-toggle="modal" data-target="#modal-A">
                                                 <h5>$shift</h5>
                                                 <ul type="none">
                 ', array('$btnColor' => $this->arrayShiftTimes[$shift]['btn-color'], '$timeStart' => $this->arrayShiftTimes[$shift]['time-start'], '$timeEnd' => $this->arrayShiftTimes[$shift]['time-end'], '$shift' => $shift));
@@ -368,7 +368,7 @@ class DailyMembersHandler extends DateObjectsHandler
                                 </div>
                                 </div>'; // .shift-member-table .col-12 .row
             echo '
-                                <a style="left: -10rem" class="a-popover" data-toggle="popover" data-content="Loads member\'s specific information from DB and summarises them for every date." data-trigger="hover" data-placement="bottom">Summary</a>
+                                <a class="a-popover" data-toggle="popover" data-content="Loads member\'s specific information from DB and summarises them for every date." data-trigger="hover" data-placement="bottom">Summary</a>
                                 <div class="row">
                                     <div class="col-12">';
             foreach (array_keys($dateObject->arrayNumLangsByPart) as $idxPart) {

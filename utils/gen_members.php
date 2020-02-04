@@ -127,4 +127,16 @@ $dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO:
 //     echo $stmt->errorInfo();
 //     echo '<br>';
 // }
-generateTableMembers($arrayLanguages);
+// generateTableMembers($arrayLanguages);
+$dbh->beginTransaction();
+$sql = "SELECT id_user FROM members WHERE id_user>0;";
+$stmt = $dbh->query($sql);
+$arrIdUsers = $stmt->fetchAll(PDO::FETCH_COLUMN);
+foreach($arrIdUsers as $id_user){
+    $sql = "UPDATE members SET nickname='member$id_user' WHERE id_user=$id_user";
+    echo $sql .'<br>';
+    $dbh->exec($sql);
+    $stmt = $dbh->query($sql);
+    echo('ERROR: ' . $stmt->errorInfo()[2] . '<br>');
+}
+$dbh->commit();

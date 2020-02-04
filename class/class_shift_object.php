@@ -9,6 +9,7 @@ class ShiftObject
     public static $arrayShiftsByPart;
     function __construct($master_handler, $config_handler)
     {
+        // echo 'ShiftObject::id_user:' .  $this->id_user .'<br>';
         $this->setShiftPart($config_handler->arrayShiftsByPart);
         $this->setMemberObj($master_handler->arrayMemberObjectsByIdUser);
         // var_dump($this);

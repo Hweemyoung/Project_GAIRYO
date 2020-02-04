@@ -71,7 +71,7 @@ class AlertHandler
                                     case 3:
                                         $date_shift = $_GET['date'];
                                         $partName = $this->config_handler->arrayPartNames[$_GET['part']];
-                                        $nick_to = $this->master_handler->arrayMemberObjectsByIdUser[$_GET['id_to']];
+                                        $nick_to = $this->master_handler->arrayMemberObjectsByIdUser[$_GET['id_to']]->nickname;
                                         $this->alertMsg = "Member '$nick_to' already has a shift in $partName";
                                         break;
                                     case 4:
@@ -175,10 +175,14 @@ class AlertHandler
                             case 1:
                                 switch ($this->_value) {
                                     case 0:
-                                        $this->alertMsg = "Your shift '$shift' on $date has been put to market.";
+                                        $date_shift = $_GET['date'];
+                                        $shift = $_GET['shift'];
+                                        $this->alertMsg = "Your shift '$shift' on $date_shift has been put to market.";
                                         break;
                                     case 1:
-                                        $this->alertMsg = "You're now calling for shift '$shift' on $date.";
+                                        $date_shift = $_GET['date'];
+                                        $shift = $_GET['shift'];
+                                        $this->alertMsg = "You're now calling for shift '$shift' on $date_shift.";
                                         break;
                                     case 2:
                                         $date_shift = $_GET['date_shift'];

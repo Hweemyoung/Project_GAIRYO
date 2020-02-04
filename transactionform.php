@@ -22,7 +22,6 @@ require_once "$homedir/check_session.php";
             <div class="col-sm-3 d-none d-sm-block"></div>
             <div class="col-sm-9">
                 <?php
-                require "$homedir/transactionform_header.php";
                 if (!$master_handler->signedin) {
                     require "$homedir/common_nav_signedout.php";
                     require "$homedir/common_main_signedout.php";

@@ -71,7 +71,7 @@ for ($i = 0; $i < count($requests); $i++) {
                     }
                     ?>
                     <div class="dropdown-divider"></div>
-                    <a href="<?= utils\genHref($config_handler->http_host, 'transactions.php', ['id_user' => $_GET['id_user']]) ?>" class="dropdown-item">More transactions</a>
+                    <a href="<?= utils\genHref($config_handler->http_host, 'transactions.php', $master_handler->arrPseudoUser) ?>" class="dropdown-item">More transactions</a>
                 </div>
             </li>
             <!-- Account -->

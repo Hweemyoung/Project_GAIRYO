@@ -71,12 +71,14 @@ class RequestsHandler extends DBHandler
             // Found shiftPart
             $sqlConditions = $this->genSqlConditions($arrShifts, 'shift', 'OR');
             $date_shift = $arrRequest['date_shift'];
-            $sql = "SELECT EXISTS (SELECT 1 FROM shifts_assigned WHERE id_user=$arrRequest->id_to AND done=0 AND date_shift='$date_shift' AND $sqlConditions);";
+            $id_to = $arrRequest['id_to'];
+            $sql = "SELECT EXISTS (SELECT 1 FROM shifts_assigned WHERE id_user=$id_to AND done=0 AND date_shift='$date_shift' AND $sqlConditions);";
+            echo $sql. '<br>';
             $stmt = $this->querySql($sql);
-            $result = $stmt->fetch();
+            $result = $stmt->fetch(PDO::FETCH_NUM);
+            var_dump($result);
             $stmt->closeCursor();
-            if ($result) {
-                $id_to = $arrRequest['id_to'];
+            if ($result[0] !== '0') {
                 return $this->redirectOrReturn(false, array('f' => 1, 'e' => 3, 'id_to' => $id_to, 'date' => $date_shift, 'part' => $shiftPart));
             }
         }
@@ -138,11 +140,14 @@ class RequestsHandler extends DBHandler
     {
         // For every shift in invalidated transactions, check if there is any other requests surrounding it and update under_request.
         $sql = 'SELECT id_shift FROM requests_pending WHERE ' . $sqlConditions;
+        // echo $sql . '<br>';
         $stmt = $this->querySql($sql);
         $arrayByIdShift = $stmt->fetchAll(PDO::FETCH_GROUP);
+        // var_dump($arrayByIdShift);
+        // echo '<br>';
         $stmt->closeCursor();
         // if call request
-        if (array_keys($arrayByIdShift) === [NULL]) {
+        if (array_keys($arrayByIdShift) === [""]) {
             // No shift object to handle. Return.
             echo 'This is CALL request. No shift object to handle. <br>';
         } else {
@@ -160,6 +165,7 @@ class RequestsHandler extends DBHandler
             // Get id_shifts
             $sqlConditions = [];
             foreach (array_keys($arrayByIdShift) as $idShift) {
+                // var_dump($idShift);
                 $sql = "SELECT EXISTS (SELECT 1 FROM requests_pending WHERE`status`=2 AND id_shift=$idShift LIMIT 1);";
                 $exists = $this->querySql($sql)->fetch();
                 if (!$exists) {
@@ -337,6 +343,7 @@ class RequestsHandler extends DBHandler
     private function redirectOrReturn($commit, $arrQuery)
     {
         if ($this->auto_redirect) {
+            // exit;
             $this->redirect($commit, $this->url, $arrQuery);
         } else {
             return [$commit, $arrQuery];

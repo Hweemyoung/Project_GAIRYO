@@ -1,5 +1,11 @@
 header{
     margin-top: 5rem;
+    font-size: 2.5rem;
+}
+
+main {
+    margin-top: 2.5rem !important;
+    margin-bottom: 2.5rem !important;
 }
 
 #section-nav > .navbar{
@@ -96,7 +102,7 @@ main .container>section{
       -o-animation: fadein 1s; /* Opera < 12.1 */
          animation: fadein 1s;
     position: absolute;
-    left: -8rem;
+    
     display: none;
     font-style: oblique;
 }
@@ -137,6 +143,7 @@ main .container>section{
     }
     .a-popover{
         display: block;
+        left: -8rem;
     }
 }
 

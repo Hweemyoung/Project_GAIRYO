@@ -1,16 +1,12 @@
 <?php
 $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/utils.php";
+require_once "$homedir/config.php";
 
-function getArrayRecords($Y, $m)
+function getArrayRecords($master_handler, $config_handler)
 {
-    global $dbh, $id_user;
-    $now = new DateTime($Y . '-' . $m . '-01');
-    $Ym = strval($now->format('Ym'));
-    $sql = "SELECT * FROM shifts_submitted WHERE id_user = $id_user AND m = :Ym";
-    $stmt = $dbh->prepare($sql);
-    $stmt->bindParam(':Ym', $Ym);
-    $stmt->execute();
+    $sql = "SELECT * FROM shifts_submitted WHERE id_user = $master_handler->id_user AND m = '$config_handler->m_submit'";
+    $stmt = $master_handler->dbh->query($sql);
     $arrayRecords = ($stmt->fetchAll(PDO::FETCH_ASSOC));
     if (count($arrayRecords)) {
         unset($arrayRecords[0]["id_user"]);
@@ -20,7 +16,7 @@ function getArrayRecords($Y, $m)
         return array();
     }
 }
-$arrayRecords = getArrayRecords($Y, $m);
+$arrayRecords = getArrayRecords($master_handler, $config_handler);
 $submitMode = ($arrayRecords) ? 'modify' : 'submit';
 ?>
 
@@ -28,10 +24,8 @@ $submitMode = ($arrayRecords) ? 'modify' : 'submit';
     <a class="a-popover" data-toggle="popover" data-content="Users can both submit and modify application form for shifts of next months. DB saves and modifies all applications from users, which will be used distributing shifts after submit-deadline." data-trigger="hover" data-placement="bottom">Submit&Modify</a>
     <h2 class="my-2"><?= ucfirst($submitMode) ?> application form</h2>
     <form action="<?= utils\genHref($config_handler->http_host, 'process/submitshifts.php', $master_handler->arrPseudoUser + ['mode' => $submitMode]) ?>" method="POST" id="form-application">
-        <?php echo strtr('
-        <input type="hidden" name="id_user" value="$id_user">
-        <input type="hidden" name="Ym" value="$Ym">
-        ', array('$id_user' => $id_user, '$Ym' => $Y . $m)); ?>
+        <input type="hidden" name="id_user" value="<?= $master_handler->id_user ?>">
+        <input type="hidden" name="Ym" value="<?= $config_handler->m_submit ?>">
         <!-- .row.no-gutters>.col-sm-6>h3+hr+table.table.table-hover>(thead>tr>th{Date}+th{Day}+th{Shift})+tbody>tr>td*2+td>.form-group>form-check-inline>label.form-check-label>input.form-check-input[type="checkbox"
                         name value] -->
         <div class="row no-gutters">
@@ -106,10 +100,10 @@ $submitMode = ($arrayRecords) ? 'modify' : 'submit';
 </div>
 <div id="div-buttons" class="text-right p-1">
     <button id="btn-clear" class="btn btn-primary" title="Clear"><i class="fas fa-eraser"></i></button>
-    <button id="btn-confirm" class="btn btn-primary" title="Final check" data-toggle="modal"><i class="fas fa-check"></i></button>
+    <button data-target="#modal-confirm" id="btn-confirm" class="btn btn-primary" title="Final check" data-toggle="modal"><i class="fas fa-check"></i></a>
 </div>
 <script>
-    var arrayRecords = <?= json_encode($arrayRecords) ?>;
+    var arrayRecords = <?= json_encode($arrayRecords[0]) ?>;
 </script>
 <script src="<?= $config_handler->http_host ?>/js/constants.js"></script>
 <script src="<?= $config_handler->http_host ?>/js/submitform.js"></script>

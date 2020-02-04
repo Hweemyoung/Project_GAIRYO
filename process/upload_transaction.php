@@ -86,7 +86,7 @@ class TransactionUploader extends DBHandler
                     $agreed_to = 1;
                     $checked_to = 1;
                 }
-                $sql = "INSERT INTO requests_pending (id_shift, id_from, date_shift, shift, id_to, id_created, time_created, `status`, time_proceeded, id_transaction, agreed_from, agreed_to, checked_from, checked_to) VALUES ($id_shift, $id_from, $dateShift, $shift, $id_to, $this->id_user, '$time_created', 2, '$time_created', $id_transaction, $agreed_from, $agreed_to, $checked_from, $checked_to);";
+                $sql = "INSERT INTO requests_pending (id_shift, id_from, date_shift, shift, id_to, id_created, time_created, `status`, time_proceeded, id_transaction, agreed_from, agreed_to, checked_from, checked_to) VALUES ($id_shift, $id_from, '$dateShift', '$shift', $id_to, $this->id_user, '$time_created', 2, '$time_created', $id_transaction, $agreed_from, $agreed_to, $checked_from, $checked_to);";
                 $this->SQLS = $this->SQLS . $sql;
             }
         }
@@ -100,7 +100,7 @@ class TransactionUploader extends DBHandler
             $this->redirect(true, $this->url, ['f' => 2, 's' => 0]);
         } else {
             echo $stmt->errorInfo()[2];
-            exit;
+            // exit;
         }
     }
 }

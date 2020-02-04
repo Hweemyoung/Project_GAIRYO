@@ -21,10 +21,9 @@ require_once "$homedir/check_session.php";
 <body>
     <div class="container px-1">
         <div class="row">
-            <div class="col-sm-3 d-none d-sm-block"></div>
-            <div class="col-sm-9">
+            <div class="col-sm-3 col-md-2 d-none d-sm-block"></div>
+            <div class="col-sm-9 col-md-8">
                 <?php
-                require './shifts_header.php';
                 if (!$master_handler->signedin) {
                     require './common_nav_signedout.php';
                     require './common_main_signedout.php';
@@ -35,5 +34,6 @@ require_once "$homedir/check_session.php";
                 require './common_footer.php';
                 ?>
             </div>
+            <div class="col-sm-3 col-md-8 d-none d-sm-block"></div>
         </div>
 </body>

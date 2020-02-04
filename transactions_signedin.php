@@ -156,19 +156,22 @@ class TransactionsLister extends DBHandler
         }
 
         // Call
-        $sql = "SELECT date_shift, shift, id_transaction FROM requests_pending WHERE `status`=2 AND (id_from IS NULL AND id_to=$this->id_user) AND id_shift IS NULL ORDER BY time_created ASC;";
+        $sql = "SELECT date_shift, id_from, date_shift, shift, id_to, id_transaction FROM requests_pending WHERE `status`=2 AND (id_from IS NULL AND id_to=$this->id_user) AND id_shift IS NULL ORDER BY time_created ASC;";
         $stmt = $this->querySql($sql);
         $this->arrCallRequestsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'RequestObject');
         $stmt->closeCursor();
+        // var_dump($this->arrCallRequestsByDate);
         // Call: group by shift
-        if (count($this->arrCallRequestsByDate)) {
-            try {
-                $this->arrCallRequestsByDate = utils\groupArrayByValue($this->arrCallRequestsByDate, 'shift');
-            } catch (Exception $e) {
-                echo "Caught exception: " . $e->getMessage();
-                exit;
-            }
-        }
+        // if (count($this->arrCallRequestsByDate)) {
+            // try {
+                // foreach ($this->arrCallRequestsByDate as $date => $arrCallRequests) {
+                    // $this->arrCallRequestsByDate[$date] = utils\groupArrayByValue($arrCallRequests, 'shift');
+                // }
+            // } catch (Exception $e) {
+                // echo "Caught exception: " . $e->getMessage();
+                // exit;
+            // }
+        // }
     }
 
     // public function echoListGroupPuts()
@@ -199,6 +202,7 @@ class TransactionsLister extends DBHandler
 
     public function echoListGroup(string $mode, array $arrObjectsByDate)
     {
+        // var_dump($arrObjectsByDate);
         $title = ucfirst($mode);
         $direction = ($mode === 'put') ? 'right' : 'left';
         $color = ($mode === 'put') ? 'success' : 'danger';
@@ -216,11 +220,12 @@ class TransactionsLister extends DBHandler
                 $date = $dateTime->format('M j');
                 $day = $dateTime->format('D');
                 $classTextColor = utils\getClassTextColorForDay($day);
-                foreach ($arrObjects as $Object) {
-                    $hrefDecline = utils\genHref($this->config_handler->http_host, $this->url, $this->master_handler->arrPseudoUser + ['mode' => 'decline', 'id_user' => $this->id_user, 'id_transaction' => $Object->id_transaction]);
+                foreach ($arrObjects as $object) {
+                    // var_dump($object);
+                    $hrefDecline = utils\genHref($this->config_handler->http_host, $this->url, $this->master_handler->arrPseudoUser + ['mode' => 'decline', 'id_user' => $this->id_user, 'id_transaction' => $object->id_transaction]);
                     echo "
             <li class='list-group-item d-flex justify-content-between align-items-center py-0'>
-                <span><span class='$classTextColor'>$date ($day)</span> $Object->shift</span>
+                <span><span class='$classTextColor'>$date ($day)</span> $object->shift</span>
                 <a href='$hrefDecline' class='btn btn-danger m-1' title='Decline'><i class='fas fa-ban'></i></a>
             </li>";
                 }
@@ -260,7 +265,7 @@ $transactions_lister = new TransactionsLister($master_handler, $config_handler);
 
 
 ?>
-
+<header>Transactions</header>
 <main>
 
     <section id="section-transactions-list">

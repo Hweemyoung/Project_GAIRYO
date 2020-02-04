@@ -77,7 +77,7 @@ class DateObject
     public function setEnoughLangsByPart()
     {
         // Initialize arrays
-        echo 'HERE setEnoughLangsByPart<br>';
+        // echo 'HERE setEnoughLangsByPart<br>';
         $this->enoughLangsByPart = [];
         $this->arrBalancesByPart = [];
         // echo '$this->arrayNumLangsByPart<br>';

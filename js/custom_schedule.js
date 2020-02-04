@@ -1,6 +1,6 @@
 // RESIZE
 function resizeColumns() {
-    $('.div-columns .column a.btn').map(function () {
+    $('.div-columns .column button.btn').map(function () {
         // Switch screen_sm
         if (window.innerWidth < 576 && !screen_sm) {
             $('.div-schedule .timeline ul li span').map(function () {
@@ -36,7 +36,8 @@ function resizeColumns() {
 
 function resizeButtons(){
     var heightLi = $('.div-schedule .timeline ul li').height()
-    $('.div-schedule .div-columns .column a.btn').map(function(){
+    // $('.div-schedule .div-columns .column a.btn').map(function(){
+    $('.div-schedule .div-columns .column button.btn').map(function(){
         // Calc button height and top
         timeStartScaled = parseInt($(this).attr('time-start').slice(0, 2), 10) + parseInt($(this).attr('time-start').slice(-2), 10) / 60;
         timeEndScaled = parseInt($(this).attr('time-end').slice(0, 2), 10) + parseInt($(this).attr('time-end').slice(-2), 10) / 60;
@@ -94,11 +95,11 @@ if (window.innerWidth < 576) {
 
     // Manipulate modal
     $(document).ready(function () {
-        $('.div-columns a').click(function () {
+        $('.div-columns button.btn').click(function () {
             $('.modal-title').html('<h3>' + $(this).children('h5').html() + '</h3>');
             $('.modal-body').empty();
             $(this).children('ul').clone().appendTo($('.modal-body'));
-            $('.modal').modal();
+            // $('.modal').modal();
         });
     });
 

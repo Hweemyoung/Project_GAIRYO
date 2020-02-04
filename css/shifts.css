@@ -9,10 +9,6 @@
     transition: .3s;
 }
 
-#section-main{
-    padding-top: 5rem;
-}
-
 #section-main .nav-tabs .nav-link{
     padding: .5rem .25rem;
     font-size: .75rem;
@@ -106,7 +102,6 @@
     transform: translate(-50%, -50%);
 }
 
-
 @media screen and (max-width: 575px){
     .container{
         padding: 15px .5rem;
@@ -132,5 +127,13 @@
         width: 1.5rem;
         height: 1.5rem;
         font-size: 1rem;
+    }
+}
+
+@media screen and (min-width: 768px){
+    .col-right .a-popover{
+        display: block;
+        left: unset;
+        right: -6rem;
     }
 }
