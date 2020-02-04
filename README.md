@@ -1,4 +1,4 @@
-https://github.com/Hweemyoung/Project_GAIRYO
+Publishing: http://gairyo.epizy.com/index.html
 
 <h1>Project GAIRYO</h1>
 <p>This application is specially designed for part-timers and managers to improve communication experience and efficiency.</p>
@@ -38,3 +38,6 @@ https://github.com/Hweemyoung/Project_GAIRYO
             <li class="list-group-item">ES6 (ECMAScript 2015)</li>
             <li class="list-group-item">MySQL 5.7</li>
         </ul>
+        
+<span>&copy Hweemyoung Kim, 2019-2020</span>
+<span>https://github.com/Hweemyoung</span>
