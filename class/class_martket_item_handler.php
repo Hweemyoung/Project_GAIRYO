@@ -28,17 +28,18 @@ class MarketItemHandler extends DBHandler
         // Put
         $sql = "SELECT id_shift, id_shift, id_from, id_to, id_request FROM requests_pending WHERE `status`=2 AND (id_from IS NOT NULL AND id_to IS NULL) ORDER BY time_created ASC;";
         $stmt = $this->querySql($sql);
-        $this->arrIdPutRequestsByIdShift = $stmt->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'RequestObject');
+        $this->arrPutRequestsByIdShift = $stmt->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'RequestObject');
         $stmt->closeCursor();
         // Call
         $sql = "SELECT date_shift, date_shift, shift, id_from, id_to, id_request FROM requests_pending WHERE `status`=2 AND (id_from IS NULL AND id_to IS NOT NULL AND id_shift IS NULL) ORDER BY time_created ASC;";
         $stmt = $this->querySql($sql);
-        $this->arrIdCallRequestsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'RequestObject');
+        $this->arrCallRequestsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'RequestObject');
         $stmt->closeCursor();
         // Call: group by shift
-        if (count($this->arrIdCallRequestsByDate)) {
+        if (count($this->arrCallRequestsByDate)) {
             try {
-                $this->arrIdCallRequestsByDate = utils\groupArrayByValue($this->arrIdCallRequestsByDate, 'shift');
+                foreach ($this->arrCallRequestsByDate as $date => $arrCallRequests)
+                    $this->arrCallRequestsByDate[$date] = utils\groupArrayByValue($arrCallRequests, 'shift');
             } catch (Exception $e) {
                 echo "Caught exception: " . $e->getMessage();
                 exit;
@@ -50,8 +51,8 @@ class MarketItemHandler extends DBHandler
     {
         // Call after setArrIdRequests
         // Put: load all put shifts
-        if (count($this->arrIdPutRequestsByIdShift)) {
-            $sqlConditions = $this->genSqlConditions(array_keys($this->arrIdPutRequestsByIdShift), 'id_shift', 'OR');
+        if (count($this->arrPutRequestsByIdShift)) {
+            $sqlConditions = $this->genSqlConditions(array_keys($this->arrPutRequestsByIdShift), 'id_shift', 'OR');
             $sql = "SELECT date_shift, date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE done=0 AND $sqlConditions;";
             $stmt = $this->querySql($sql);
             $arrShiftPutObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->master_handler, $this->config_handler]);
@@ -63,16 +64,16 @@ class MarketItemHandler extends DBHandler
         }
 
         // Call: Load all shift candidates for this call
-        if (count($this->arrIdCallRequestsByDate)) {
+        if (count($this->arrCallRequestsByDate)) {
             $arrSqlConditions = [];
-            foreach ($this->arrIdCallRequestsByDate as $date_shift => $arrCallRequestsByShifts) {
+            foreach ($this->arrCallRequestsByDate as $date_shift => $arrCallRequestsByShifts) {
                 $sqlConditions = $this->genSqlConditions(array_keys($arrCallRequestsByShifts), 'shift', 'OR');
                 $arrSqlConditions[] = "(date_shift='$date_shift' AND $sqlConditions)";
             }
             $sqlConditions = '(' . implode(' OR ', $arrSqlConditions) . ')';
             // '((date_shift=234543 and (shift=B or shift=C)) or (...) or (...))'
             $sql = "SELECT date_shift, date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE done=0 AND $sqlConditions;";
-            echo 'Put sql:' .  $sql . '<br>';
+            // echo 'Put sql:' .  $sql . '<br>';
             $stmt = $this->querySql($sql);
             $arrShiftCallObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->master_handler, $this->config_handler]);
             $this->date_objects_call_handler->setArrayDateObjects($arrShiftCallObjectsByDate);
@@ -84,7 +85,7 @@ class MarketItemHandler extends DBHandler
         // Save date_shifts. This will be used for loading All ShiftObjects of dates
         // Merge arrDates
         $this->arrDateShifts = array_unique(array_merge($arrDateShiftsPut, $arrDateShiftsCall));
-        ksort($this->arrDateShifts);
+        sort($this->arrDateShifts);
         // var_dump($this->arrDateShifts);
     }
 
@@ -106,6 +107,8 @@ class MarketItemHandler extends DBHandler
         // var_dump(array_keys($this->date_objects_call_handler->arrayDateObjects));
         // echo '<br>';
         foreach ($this->arrDateShifts as $key => $date_shift) {
+            // var_dump($key);
+            // var_dump($key % 2);
             if ($key % 2) {
                 // $key % 2 === 0:left, 1:right
                 $classFlexRowReverse = '';
@@ -214,7 +217,7 @@ class MarketItemHandler extends DBHandler
         echo "
                 <div class='col-2 text-center bottom d-inline-flex justify-content-center align-items-center'>
                     <div class='circle'>
-                        <div class='div-circle-text'>$date</div><div class='div-circle-text $classTextColor'>$day</div>
+                        <div class='div-circle-text $classTextColor'>$date<br>$day</div>
                     </div>
                 </div>
         ";

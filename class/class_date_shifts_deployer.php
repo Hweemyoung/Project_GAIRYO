@@ -87,7 +87,7 @@ class DateShiftsDeployer extends DateObject
             $this->deployShift();
         }
         // Set enough langs
-        echo 'Set enough langs<br>';
+        // echo 'Set enough langs<br>';
         $this->setEnoughLangsByPart(); // DateObject method
     }
 

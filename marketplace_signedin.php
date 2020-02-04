@@ -39,7 +39,6 @@ $market_item_handler = new MarketItemHandler($master_handler, $config_handler);
                         </thead>
                         <tbody id="tbody-modal"></tbody>
                     </table>
-
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-danger" type="button" title="Back" data-dismiss="modal"><i class="fas fa-undo"></i></button>
@@ -58,8 +57,8 @@ $market_item_handler = new MarketItemHandler($master_handler, $config_handler);
         const market_item_handler = new MarketItemHandler(
             <?= json_encode($master_handler->arrayMemberObjectsByIdUser[$master_handler->id_user], 0, 1024) ?>,
             <?= json_encode($market_item_handler->date_objects_handler->arrayDateObjects, 0, 1024) ?>,
-            <?= json_encode($market_item_handler->arrIdPutRequestsByIdShift, 0, 1024) ?>,
-            <?= json_encode($market_item_handler->arrIdCallRequestsByDate, 0, 1024) ?>,
+            <?= json_encode($market_item_handler->arrPutRequestsByIdShift, 0, 1024) ?>,
+            <?= json_encode($market_item_handler->arrCallRequestsByDate, 0, 1024) ?>,
             <?= json_encode($market_item_handler->date_objects_put_handler->arrayDateObjects, 0, 1024) ?>,
             <?= json_encode($market_item_handler->date_objects_call_handler->arrayDateObjects, 0, 1024) ?>,
             <?= json_encode($market_item_handler->arrayShiftsByPart, 0, 1024) ?>,

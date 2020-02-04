@@ -62,7 +62,7 @@ body *:not(header){
 }
 
 /* .div-schedule .div-columns .column a.btn{ */
-.div-schedule .div-columns .column button.btn{
+.div-schedule .div-columns .column .btn{
     position: absolute;
     width: calc(100% / 3);
     padding: 0;

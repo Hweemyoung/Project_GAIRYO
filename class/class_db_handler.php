@@ -27,15 +27,15 @@ class DBHandler
     {
         $sqlConditions = $this->genSqlConditions($arrTableName, 'Name', 'OR');
         $sql = "SHOW TABLE STATUS WHERE $sqlConditions;";
-        echo $sql .'<br>';
+        echo $sql . '<br>';
         $stmt = $this->dbh->query($sql);
         $arrTableStatus = $stmt->fetchAll(PDO::FETCH_CLASS);
         $stmt->closeCursor();
         $sqlConditions = '';
         $arrTableNamesLocked = [];
-        if(count($arrTableStatus)){
-            foreach($arrTableStatus as $tableStatus){
-                if ($tableStatus->Engine !== 'InnoDB'){
+        if (count($arrTableStatus)) {
+            foreach ($arrTableStatus as $tableStatus) {
+                if ($tableStatus->Engine !== 'InnoDB') {
                     $sqlConditions = $sqlConditions . "$tableStatus->Name WRITE";
                     $arrTableNamesLocked[] = $tableStatus->Name;
                 }
@@ -98,12 +98,13 @@ class DBHandler
             $arrayFieldValues = [0];
         } else {
             if (in_array($colName, ['date_shift', 'shift', 'Name'])) {
-                for ($i = 0; $i < count($arrayFieldValues); $i++) {
-                    $arrayFieldValues[$i] = $colName . '="' . $arrayFieldValues[$i] . '"';
+                // for ($i = 0; $i < count($arrayFieldValues); $i++) {
+                foreach ($arrayFieldValues as $key => $val) {
+                    $arrayFieldValues[$key] = $colName . '="' . $val . '"';
                 }
             } else {
-                for ($i = 0; $i < count($arrayFieldValues); $i++) {
-                    $arrayFieldValues[$i] = $colName . '=' . $arrayFieldValues[$i];
+                foreach ($arrayFieldValues as $key => $val) {
+                    $arrayFieldValues[$key] = $colName . '=' . $val;
                 }
             }
         }

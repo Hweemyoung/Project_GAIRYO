@@ -29,6 +29,8 @@
 }
 
 .circle {
+  width: 75%;
+  height: 100%;
   padding: .25rem;
   border-radius: .25rem;
   background-color: rgba(88, 223, 149, .5);
@@ -39,7 +41,11 @@
 
 .circle .div-circle-text {
   font-size: 1rem;
-  margin: .25rem;
+  position: absolute;
+  margin: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .how-it-works.row{
@@ -83,7 +89,7 @@
   transition: 300ms;
 }
 
-#div-btns-put-call-my-shifts>div:first-child .btn, .col-put .btn-group .btn:hover {
+#div-btns-put-call-my-shifts>div:first-child .btn:hover, .col-put .btn-group .btn:hover {
   background-color: rgba(255, 35, 35, .5);
 }
 
@@ -92,7 +98,7 @@
   transition: 300ms;
 }
 
-#div-btns-put-call-my-shifts>div:last-child .btn, .col-call .btn-group .btn:hover{
+#div-btns-put-call-my-shifts>div:last-child .btn:hover, .col-call .btn-group .btn:hover{
   background-color: rgba(35, 35, 255, .5);
 }
 

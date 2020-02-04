@@ -1,12 +1,12 @@
 class MarketItemHandler {
 
-    constructor(_memberObjectOfUser, _arrDateObjects, _arrIdPutRequestsByIdShift, _arrIdCallRequestsByDate, _arrDateObjectsPut, _arrDateObjectsCall, _arrShiftsByPart, _http_host, _constants) {
+    constructor(_memberObjectOfUser, _arrDateObjects, _arrPutRequestsByIdShift, _arrCallRequestsByDate, _arrDateObjectsPut, _arrDateObjectsCall, _arrShiftsByPart, _http_host, _constants) {
         this._constants = _constants;
         this._http_host = _http_host;
         this._memberObjectOfUser = _memberObjectOfUser;
         this._arrDateObjects = _arrDateObjects;
-        this._arrIdPutRequestsByIdShift = _arrIdPutRequestsByIdShift;
-        this._arrIdCallRequestsByDate = _arrIdCallRequestsByDate;
+        this._arrPutRequestsByIdShift = _arrPutRequestsByIdShift;
+        this._arrCallRequestsByDate = _arrCallRequestsByDate;
         this._arrDateObjectsPut = _arrDateObjectsPut;
         this._arrDateObjectsCall = _arrDateObjectsCall;
         this._arrShiftsByPart = _arrShiftsByPart;
@@ -52,7 +52,7 @@ class MarketItemHandler {
     }
 
     // isUsers(_shiftObjectRequested) {
-        // return (_shiftObjectRequested.id_user === this._memberObjectOfUser.id_user);
+    // return (_shiftObjectRequested.id_user === this._memberObjectOfUser.id_user);
     // }
 
     notEnoughLangs(_shiftObjectRequested, arrBalancesByPart) {
@@ -71,78 +71,80 @@ class MarketItemHandler {
         return false;
     }
 
-    setArrModalBodies() {
-        // Put
-        for (var _date_shift in this._arrDateObjectsPut) {
+    setArrModalBodiesMode(_mode, _arrDateObjectsMode){
+        this._objTbodies[_mode] = {};
+        for (var _date_shift in _arrDateObjectsMode) {
             console.log('Now date_shift:', _date_shift);
             var _dateObject = this._arrDateObjects[_date_shift];
-            var _dateObjectPut = this._arrDateObjectsPut[_date_shift];
-            this._objTbodies[_date_shift] = {};
-
-            var _found = false;
-            for (var _shift in _dateObjectPut.arrayShiftObjectsByShift) {
+            var _dateObjectMode = _arrDateObjectsMode[_date_shift];
+            this._objTbodies[_mode][_date_shift] = {};
+            console.log('date_shift set:', _date_shift, this._objTbodies[_mode][_date_shift]);
+            for (var _shift in _dateObjectMode.arrayShiftObjectsByShift) {
                 console.log('Shift:', _shift);
                 // Part overlap check
-                var _isOverlap = false;
                 console.log('Overlap?', this.isOverlap(_shift, _dateObject));
                 if (this.isOverlap(_shift, _dateObject)) {
                     // Go to next shift
-                    _isOverlap = true;
+                    console.log('Overlapped!')
+                    this._objTbodies[_mode][_date_shift][_shift] = { 'ShiftObject': null, '_$tr': this._$modalBodyDisabledOverlap };
                     continue;
                 }
-                var _arrShiftObjectsPut = _dateObjectPut.arrayShiftObjectsByShift[_shift];
-                for (var idx in _arrShiftObjectsPut) {
-                    var _shiftObjectPut = _arrShiftObjectsPut[idx];
+
+                var _arrShiftObjectsMode = _dateObjectMode.arrayShiftObjectsByShift[_shift];
+                for (var idx in _arrShiftObjectsMode) {
+                    console.log('New shiftobject');
+                    var _shiftObjectMode = _arrShiftObjectsMode[idx];
                     // If this is user's, skip this ShiftObject. <- This has already been filtered by overlap stage.
                     // var _isUsers = false;
-                    // console.log('Is User\'s?', this.isUsers(_shiftObjectPut));
-                    // if (this.isUsers(_shiftObjectPut)) {
-                        // _isUsers = true;
-                        // Go to next shiftobject
-                        // continue;
+                    // console.log('Is User\'s?', this.isUsers(_shiftObjectMode));
+                    // if (this.isUsers(_shiftObjectMode)) {
+                    // _isUsers = true;
+                    // Go to next shiftobject
+                    // continue;
                     // }
 
                     // Language check
                     var _notEnoughLangs = false;
-                    console.log('Not enough langs?', this.notEnoughLangs(_shiftObjectPut, _dateObject.arrBalancesByPart));
-                    if (this.notEnoughLangs(_shiftObjectPut, _dateObject.arrBalancesByPart)) {
+                    console.log('Not enough langs?', this.notEnoughLangs(_shiftObjectMode, _dateObject.arrBalancesByPart));
+                    if (this.notEnoughLangs(_shiftObjectMode, _dateObject.arrBalancesByPart)) {
                         _notEnoughLangs = true;
                         // Go to next shiftobject
                         continue;
                     }
-                    
-                    // ShiftObject found!
-                    _found = true;
-                    var _$tr = $('<tr></tr>');
-                    var _date = new Date(_date_shift);
-                    // console.log(_date);
-                    var _month = `${_date.getFullYear()} ${this._constants.months[_date.getMonth()]}`;
-                    var _day = `${_date.getDate()} (${this._constants.weekdays[_date.getDay()]})`;
-                    var _arrTds = [_shiftObjectPut.memberObject.nickname, _month, _day, _shift, 'YOU'];
-                    // console.log(_arrTds);
-                    for (var i in _arrTds) {
-                        // $(`<td>${_arrTds[i]}</td>`).appendTo(_$tr);
-                        _$tr.append($(`<td>${_arrTds[i]}</td>`));
-                    }
-                    console.log(_$tr);
-                    this._objTbodies[_date_shift][_shift] = { 'ShiftObject': _shiftObjectPut, '_$tr': _$tr };
-                    
-                    // Search for next shift.
-                    break;
                 }
-            }
-            if (!_found) {
-                if (_isOverlap) {
-                    console.log('Overlapped!')
-                    this._objTbodies[_date_shift][_shift] = { 'ShiftObject': null, '_$tr': this._$modalBodyDisabledOverlap };
-                } else if (_notEnoughLangs) {
+                if (_notEnoughLangs) {
                     console.log('Not enough langs!');
-                    this._objTbodies[_date_shift][_shift] = { 'ShiftObject': null, '_$tr': this._$modalBodyDisabledLang };
-                } else {
-                    console.log('Something is really wrong...')
+                    this._objTbodies[_mode][_date_shift][_shift] = { 'ShiftObject': null, '_$tr': this._$modalBodyDisabledLang };
+                    continue;
                 }
+
+                // ShiftObject found!
+                var _$tr = $('<tr></tr>');
+                var _date = new Date(_date_shift);
+                // console.log(_date);
+                var _month = `${_date.getFullYear()} ${this._constants.months[_date.getMonth()]}`;
+                var _day = `${_date.getDate()} (${this._constants.weekdays[_date.getDay()]})`;
+                if (_mode === 'put'){
+                    var _arrTds = [_shiftObjectMode.memberObject.nickname, _month, _day, _shift, 'YOU'];
+                } else if (_mode === 'call'){
+                    var _arrTds = [_shiftObjectMode.memberObject.nickname, _month, _day, _shift, 'YOU'];
+                }
+                // console.log(_arrTds);
+                for (var i in _arrTds) {
+                    // $(`<td>${_arrTds[i]}</td>`).appendTo(_$tr);
+                    _$tr.append($(`<td>${_arrTds[i]}</td>`));
+                }
+                console.log(_$tr);
+                this._objTbodies[_mode][_date_shift][_shift] = { 'ShiftObject': _shiftObjectMode, '_$tr': _$tr };
+                // Search for next shift.
+                break;
             }
         }
+    }
+
+    setArrModalBodies() {
+        this.setArrModalBodiesMode('put', this._arrDateObjectsPut);
+        this.setArrModalBodiesMode('call', this._arrDateObjectsCall);
     }
 
     buildModal(event) {
@@ -150,19 +152,29 @@ class MarketItemHandler {
         console.log('event!');
         // console.log(this);
         var _handler = this;
+        var _mode = $(event.target).closest('.btn-group').attr('mode');
         var _date_shift = $(event.target).closest('.div-timeline-section').attr('id');
         var _shift = $(event.target).text();
         console.log(_date_shift, _shift);
-        console.log(this._objTbodies[_date_shift][_shift]._$tr);
-        $('#tbody-modal').append(this._objTbodies[_date_shift][_shift]._$tr);
+        console.log(this._objTbodies[_mode][_date_shift][_shift]._$tr);
+        $('#tbody-modal').append(this._objTbodies[_mode][_date_shift][_shift]._$tr);
 
-        if (this._objTbodies[_date_shift][_shift].ShiftObject === null) {
+        if (this._objTbodies[_mode][_date_shift][_shift].ShiftObject === null) {
             $('#form .btn[type="submit"]').attr('disabled', true);
         } else {
             console.log('exists!');
-            $('#input-id-request').attr('value', this._arrIdPutRequestsByIdShift[this._objTbodies[_date_shift][_shift].ShiftObject.id_shift].id_request);
-            $('#input-mode').attr('value', $(event.target).closest('.btn-group').attr('mode'));
+            $('#input-mode').attr('value', _mode);
             $('#form .btn[type="submit"]').attr('action', `${this._http_host}/process/upload_market_item.php`);
+            if (_mode === 'put'){
+                $('#input-id-request').attr('value', this._arrPutRequestsByIdShift[this._objTbodies[_date_shift][_shift].ShiftObject.id_shift].id_request);
+            } else if (_mode === 'call'){
+                for(var key in this._arrCallRequestsByDate[_date_shift][_shift]){
+                    if (this._arrCallRequestsByDate[_date_shift][_shift][key].id_shift === this._objTbodies[_mode][_date_shift][_shift].ShiftObject.id_shift){
+
+                    }
+                }
+                $('#input-id-request').attr('value', this._arrCallRequestsByDate[_date_shift][_shift][this._objTbodies[_date_shift][_shift].ShiftObject.id_shift].id_request);
+            }
 
         }
     }
