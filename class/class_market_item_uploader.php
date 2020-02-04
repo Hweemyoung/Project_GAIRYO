@@ -34,8 +34,9 @@ class MarketItemUploader extends DBHandler
         $this->beginTransactionIfNotIn();
         // First call of process
         if ($this->key === NULL) {
-            // MyISAM Not compatible. Expel.
             $this->setUseSavepoints($this->lockTablesIfNotInnoDB(['shifts_assigned', 'requests_pending']));
+            // MyISAM Not compatible. Expel.
+            $this->redirectIfNotInnoDB();
             $this->setMode();
             $this->setProps();
             $this->validateUser($this->mode);
@@ -51,6 +52,17 @@ class MarketItemUploader extends DBHandler
         } else {
             // Continue iteration
             $this->matchCounterItem($this->mode, $this->key, $this->marketItemForIter);
+        }
+    }
+
+    private function redirectIfNotInnoDB()
+    {
+        if (count($this->arrTableStatus)) {
+            foreach ($this->arrTableStatus as $tableStatus) {
+                if ($tableStatus->Engine !== 'InnoDB') {
+                    $this->redirect(false, $this->url, ['f' => 4, 'e' => 8]);
+                }
+            }
         }
     }
 

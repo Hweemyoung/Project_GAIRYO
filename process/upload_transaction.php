@@ -27,7 +27,7 @@ class TransactionUploader extends DBHandler
     public function process()
     {
         $this->beginTransactionIfNotIn();
-        $this->lockTablesIfNotInnoDB(['shifts_assigned']);
+        $this->lockTablesIfNotInnoDB(['shifts_assigned', 'requests_pending']);
         $sql = "SELECT id_transaction FROM requests_pending ORDER BY id_transaction DESC LIMIT 1 FOR UPDATE;";
         $stmt = $this->querySql($sql);
         // Set next id_transaction

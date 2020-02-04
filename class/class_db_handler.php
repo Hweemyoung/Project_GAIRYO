@@ -29,14 +29,13 @@ class DBHandler
         $sql = "SHOW TABLE STATUS WHERE $sqlConditions;";
         echo $sql . '<br>';
         $stmt = $this->dbh->query($sql);
-        $arrTableStatus = $stmt->fetchAll(PDO::FETCH_CLASS);
+        $this->arrTableStatus = $stmt->fetchAll(PDO::FETCH_CLASS);
         $stmt->closeCursor();
         $sqlConditions = '';
         $arrTableNamesLocked = [];
-        if (count($arrTableStatus)) {
-            foreach ($arrTableStatus as $tableStatus) {
+        if (count($this->arrTableStatus)) {
+            foreach ($this->arrTableStatus as $tableStatus) {
                 if ($tableStatus->Engine !== 'InnoDB') {
-                    $this->redirect(false, $this->url, ['f' => 4, 'e' => 8]);
                     $sqlConditions = $sqlConditions . "$tableStatus->Name WRITE";
                     $arrTableNamesLocked[] = $tableStatus->Name;
                 }
