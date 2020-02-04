@@ -11,6 +11,7 @@ class MarketItemUploader extends DBHandler
     public $useSavepoints;
     public $arrModes;
     public $url;
+    public $shiftPart;
     # This process heavily depends on DBEngine, for it uses MySQL savepoints.
     public function __construct($master_handler, $config_handler)
     {
@@ -54,10 +55,20 @@ class MarketItemUploader extends DBHandler
 
     private function setProps()
     {
+        $this->setShiftPart();
         if ($this->mode === 'put') {
             $this->set_props_put();
         } elseif ($this->mode === 'call') {
             $this->set_props_call();
+        }
+    }
+
+    private function setShiftPart(){
+        foreach($this->config_handler->arrayShiftsByPart as $shiftPart=>$arrShifts){
+            if (in_array($this->shift, $arrShifts)){
+                $this->shiftPart = $shiftPart;
+                break;
+            }
         }
     }
 
@@ -238,7 +249,8 @@ class MarketItemUploader extends DBHandler
 
     private function checkShiftsInSamePart()
     {
-        $sql = "SELECT shift FROM shifts_assigned WHERE done=0 AND id_user=$this->id_to AND date_shift='$this->date_shift';";
+        $sqlConditions = $this->genSqlConditions($this->config_handler->arrayShiftsByPart[$this->shiftPart], 'shift', 'OR');
+        $sql = "SELECT shift FROM shifts_assigned WHERE done=0 AND id_user=$this->id_to AND date_shift='$this->date_shift' AND $sqlConditions;";
         $stmt = $this->querySql($sql);
         $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
         if (count($result)) {

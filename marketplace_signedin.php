@@ -8,7 +8,7 @@ require_once "$homedir/class/class_martket_item_handler.php";
 
 $market_item_handler = new MarketItemHandler($master_handler, $config_handler);
 ?>
-
+<header>Marketplace</header>
 <main>
     <a class="a-popover" data-toggle="popover" data-content="Very intuitive and user-friendly design." data-trigger="hover" data-placement="bottom">Market Timeline</a>
     <div class="bs4-timeline px-1 py-1 py-sm-2 py-md-4">
@@ -42,9 +42,13 @@ $market_item_handler = new MarketItemHandler($master_handler, $config_handler);
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-danger" type="button" title="Back" data-dismiss="modal"><i class="fas fa-undo"></i></button>
-                    <form id="form" action="<?= $config_handler->http_host ?>/process/market_purchase.php" method="GET">
-                        <input id="input-id-request" type="hidden" name="id_request">
+                    <form id="form" action="<?= utils\genHref($config_handler->http_host, 'process/market_purchase.php', $master_handler->arrPseudoUser) ?>" method="GET">
+                        <input id="input-pseudo-user" type="hidden" name="pseudo_user" value="<?= $_GET['pseudo_user'] ?>">
                         <input id="input-mode" type="hidden" name="mode">
+                        <input id="input-id-request" type="hidden" name="id_request">
+                        <input id="input-id-shift" type="hidden" name="id_shift">
+                        <?php if (isset($_GET['pseudo_user'])) { ?>
+                        <?php } ?>
                         <button class="btn btn-primary" type="submit" title="Confirm"><i class="fas fa-file-export"></i></button>
                     </form>
                 </div>
@@ -55,7 +59,8 @@ $market_item_handler = new MarketItemHandler($master_handler, $config_handler);
     <script src="<?= $config_handler->http_host ?>/js/marketplace.js"></script>
     <script>
         const market_item_handler = new MarketItemHandler(
-            <?= json_encode($master_handler->arrayMemberObjectsByIdUser[$master_handler->id_user], 0, 1024) ?>,
+            <?= $master_handler->id_user ?>,
+            <?= json_encode($master_handler->arrayMemberObjectsByIdUser, 0, 1024) ?>,
             <?= json_encode($market_item_handler->date_objects_handler->arrayDateObjects, 0, 1024) ?>,
             <?= json_encode($market_item_handler->arrPutRequestsByIdShift, 0, 1024) ?>,
             <?= json_encode($market_item_handler->arrCallRequestsByDate, 0, 1024) ?>,

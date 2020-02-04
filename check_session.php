@@ -17,12 +17,20 @@ $userName = 'root';
 $pw = '111111';
 $params = ['id_user' => '0']; // ADMIN
 if (isset($_GET['pseudo_user'])){
-    $params = ['id_user' => $_GET['pseudo_user']];
+    // echo gettype($_GET['pseudo_user']);
+    if (gettype($_GET['pseudo_user']) === 'string' && 0 < intval($_GET['pseudo_user']) && intval($_GET['pseudo_user']) < 26){
+        $params = ['id_user' => strval(intval($_GET['pseudo_user']))];
+    } else {
+        echo "Pseudo user must be in range 1~26";
+        exit;
+    }
+} else {
+    echo "Pseudo user must be assigned.";
+    exit;
 }
 $master_handler = new MasterHandler($test, $host, $DBName, $userName, $pw, $config_handler, $params);
 $dbh = $master_handler->dbh;
 $signedin = $master_handler->signedin;
-$id_google = $master_handler->id_google;
 // $arrayMemberObjectsByIdGoogle = $master_handler->arrayMemberObjectsByIdGoogle;
 $arrayMemberObjectsByIdUser = $master_handler->arrayMemberObjectsByIdUser;
 $id_user = $master_handler->id_user;

@@ -8,7 +8,6 @@ $host = 'localhost';
 $DBName = 'gairyo';
 $userName = 'root';
 $pw = '111111';
-$params = ['id_google' => '315977953185055105728'];
 
 $master_handler = new MasterHandler(true, $host, $DBName, $userName, $pw, $config_handler, $params);
 

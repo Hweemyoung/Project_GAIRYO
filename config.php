@@ -58,7 +58,7 @@ class ConfigHandler
     public $message = 'シフト希望は2020年2月2日から受け付けます';
 
     // ShiftsDistributor
-    public $m = '202002';
+    public $m = '202003';
     public $arr_mshifts = [];
     public $arrScoreItems = ['appForTargetPart' => 'max', 'langScore' => 'max', 'deployRatio' => 'min'];
     // public $arrScoreItems = ['appForTargetPart' => 'max', 'numShiftAppObjects' => 'min', 'langScore' => 'max', 'deployRatio' => 'min'];

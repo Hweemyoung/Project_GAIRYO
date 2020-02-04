@@ -42,6 +42,7 @@ class MarketPurchaseProcessor extends DBHandler
             $sql = "UPDATE requests_pending SET id_to=$this->id_user WHERE id_request=$this->id_request;";
             echo $sql . '<br>';
             $stmt = $this->executeSql($sql);
+            
         } elseif ($this->mode === 'call') { // User buying call item
             if(!isset($this->id_shift)){
                 echo 'Purchasing call item requires id_shift!<br>';

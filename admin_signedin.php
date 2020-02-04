@@ -279,6 +279,12 @@ if (count($nextShift)) {
     $stmt->execute();
     // var_dump($stmt->errorInfo()); OK
     $arrayShiftMembers = $stmt->fetchAll(PDO::FETCH_GROUP);
+    $arr = array('A', 'B', 'H', 'C', 'D');
+    uksort($arrayShiftMembers, function ($a, $b) use ($arr) {
+        $key_a = array_search($a, $arr);
+        $key_b = array_search($b, $arr);
+        return $key_a - $key_b;
+    });
     // var_dump($arrayShiftMembers);OK
     // $arrayShiftMembers = array('A'=>array(0=>array('other columns'=>'field values'), 1=>...), 'B'=>array(...), ...)
 }
@@ -299,25 +305,25 @@ $dbh->exec($sql);
 <header>Overview</header>
 <main>
     <section id="section-shift">
-        <a class="a-popover" data-toggle="popover" title="Upcoming shift" data-content="Selects closest upcoming shift and coleagues from DB!" data-trigger="hover" data-placement="bottom">FEATURE</a>
+        <a class="a-popover" data-toggle="popover" data-content="Selects closest upcoming shift and coleagues from DB." data-trigger="hover" data-placement="bottom">Upcoming shift</a>
         <h2>Upcoming Shift</h2>
         <?php if (count($nextShift)) {
             $nextShift = $nextShift[0];
-            $dateTime = new DateTime($nextShift);
-            $hrefRequest = utils\genHref($config_handler->http_host, 'transactionform.php', $master_handler->arrPseudoUser + ['id_from' => $master_handler->id_user, 'month' => $dateTime->format('Y_M'), 'day' => $dateTime->format('j'), 'shift' => $shift]);
-            ?>
-        <div class="card" id="card-shift">
-            <div class="card-header d-flex align-middle">
-                <a href="#shift-content" class="card-link mr-auto" data-toggle="collapse">
-                    Next: <?=$dateTime->format('M j (D)')?> <?=$nextShift["shift"]?>
-                </a>
-                <?php
-                echoExclamations($nicksAndAd);
-                ?>
-            </div>
+            $dateTime = new DateTime($nextShift['date_shift']);
+            $hrefRequest = utils\genHref($config_handler->http_host, 'transactionform.php', $master_handler->arrPseudoUser + ['id_from' => $master_handler->id_user, 'month' => $dateTime->format('Y_M'), 'day' => $dateTime->format('j'), 'shift' => $nextShift['shift']]);
+        ?>
+            <div class="card" id="card-shift">
+                <div class="card-header d-flex align-middle">
+                    <a href="#shift-content" class="card-link mr-auto" data-toggle="collapse">
+                        Next: <?= $dateTime->format('M j (D)') ?> <?= $nextShift["shift"] ?>
+                    </a>
+                    <?php
+                    echoExclamations($nicksAndAd);
+                    ?>
+                </div>
 
-            <div class="collapse show" id="shift-content">
-                <div class="card-body">
+                <div class="collapse show" id="shift-content">
+                    <div class="card-body">
 
                         <h5 class="mb-0 text-center">
                             <?php
@@ -373,26 +379,26 @@ $dbh->exec($sql);
                             </div>
                         </div>
 
-                </div>
-            </div>
-            <div class="card-footer p-2">
-                <div class="row no-gutters text-center">
-                    <div class="col-6 px-0">
-                        <a href="<?=$hrefRequest ?>" class="btn btn-sm btn-danger" type="button">Request</a>
-                    </div>
-                    <div class="col-6 px-0">
-                        <button class="btn btn-sm btn-warning" type="button">To Market</button>
                     </div>
                 </div>
+                <div class="card-footer p-2">
+                    <div class="row no-gutters text-center">
+                        <div class="col-6 px-0">
+                            <a href="<?= $hrefRequest ?>" class="btn btn-sm btn-danger" type="button">Request</a>
+                        </div>
+                        <div class="col-6 px-0">
+                            <button class="btn btn-sm btn-warning" type="button">To Market</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <?php } else {?>
-        <div>No upcoming shift!</div>
-        <?php }?>
+        <?php } else { ?>
+            <div>No upcoming shift!</div>
+        <?php } ?>
     </section>
     <hr>
     <section id="section-boards">
-        <a class="a-popover" data-toggle="popover" title="Notices" data-content="New features are bg-colored. Loading this page handles DB, setting status of item to 'checked' status, and will lose bg-colors further." data-trigger="hover" data-placement="bottom">FEATURE</a>
+        <a class="a-popover" data-toggle="popover" data-content="New features are bg-colored. Loading this page handles DB, setting status of item to 'checked' status, and will lose bg-colors further." data-trigger="hover" data-placement="bottom">Notices</a>
         <div class="row">
             <div class="col-md-6">
                 <?php

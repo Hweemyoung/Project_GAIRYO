@@ -6,7 +6,8 @@ class TempClass
     public $arr = ['a', 'b', 'c'];
 }
 
-var_dump($_FILES);
+// var_dump($_GET);
+var_dump(__FILE__);
 
 
 // $test = true;

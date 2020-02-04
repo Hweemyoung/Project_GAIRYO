@@ -73,7 +73,7 @@ class RequestsHandler extends DBHandler
             $date_shift = $arrRequest['date_shift'];
             $id_to = $arrRequest['id_to'];
             $sql = "SELECT EXISTS (SELECT 1 FROM shifts_assigned WHERE id_user=$id_to AND done=0 AND date_shift='$date_shift' AND $sqlConditions);";
-            echo $sql. '<br>';
+            echo $sql . '<br>';
             $stmt = $this->querySql($sql);
             $result = $stmt->fetch(PDO::FETCH_NUM);
             var_dump($result);
@@ -159,8 +159,8 @@ class RequestsHandler extends DBHandler
             $sqlConditions = $this->genSqlConditions(array_keys($arrayByDateShift), 'date_shift', 'OR');
             // $sqlConditions === (0) if id_shift === NULL i.e. call request
             // This sql will be used again after execution.
-            $this->sqlForNumLangs = "SELECT date_shift, date_shift, shift, id_user, id_shift FROM shifts_assigned WHERE $sqlConditions FOR UPDATE;";
-            // echo '<br>$this->sqlForNumLangs = ' . $this->sqlForNumLangs . '<br>';
+            $this->sqlForNumLangs = "SELECT date_shift, date_shift, shift, id_user, id_shift FROM shifts_assigned WHERE id_user>0 AND $sqlConditions FOR UPDATE;";
+            echo '<br>$this->sqlForNumLangs = ' . $this->sqlForNumLangs . '<br>';
             $this->arrayDateObjects_before = $this->saveDateObjects(); // === [] if call request
             // Get id_shifts
             $sqlConditions = [];
@@ -245,6 +245,8 @@ class RequestsHandler extends DBHandler
         $stmt = $this->querySql($sql);
         $sql = strtr('SELECT id_shift, id_to FROM requests_pending WHERE id_transaction=$idTrans AND agreed_from=1 AND agreed_to=1 FOR UPDATE;', array('$idTrans' => $this->id_transaction));
         $arrayRequests = $this->querySql($sql)->fetchAll(PDO::FETCH_ASSOC);
+        echo '$arrayRequests:<br>';
+        var_dump($arrayRequests);
         if (count($arrayRequests) === intval($stmt->fetchAll(PDO::FETCH_COLUMN)[0])) { // intval('2')
             echo 'All members agreed.<br>';
 
@@ -267,6 +269,7 @@ class RequestsHandler extends DBHandler
                     'UPDATE shifts_assigned SET id_user=$idUser, under_request=0 WHERE id_shift=$idShift;',
                     array('$idUser' => $arrayRequest["id_to"], '$idShift' => $arrayRequest["id_shift"])
                 );
+                echo 'Executing transaction:<br>';
                 echo $sql . '<br>';
                 $this->SQLS = ($this->SQLS) . $sql;
             }

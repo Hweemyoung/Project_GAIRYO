@@ -50,7 +50,7 @@ class DailyMembersHandler extends DateObjectsHandler
         $this->setPage();
         $this->setDateRange();
         // $this->setArrayMemberObjectsByIdUser();
-        $sql = "SELECT date_shift, date_shift, id_user, shift FROM shifts_assigned WHERE date_shift >= ? AND date_shift <= ? ORDER BY date_shift ASC";
+        $sql = "SELECT date_shift, date_shift, id_user, shift FROM shifts_assigned WHERE date_shift >= ? AND date_shift <= ? AND id_user>0 ORDER BY date_shift ASC";
         $stmt = $this->dbh->prepare($sql);
         $stmt->execute(array($this->dateStart, $this->dateEnd));
         // var_dump($stmt->errorInfo());

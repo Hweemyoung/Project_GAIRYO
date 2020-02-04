@@ -30,6 +30,7 @@ class MarketItemHandler extends DBHandler
         $stmt = $this->querySql($sql);
         $this->arrPutRequestsByIdShift = $stmt->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'RequestObject');
         $stmt->closeCursor();
+
         // Call
         $sql = "SELECT date_shift, date_shift, shift, id_from, id_to, id_request FROM requests_pending WHERE `status`=2 AND (id_from IS NULL AND id_to IS NOT NULL AND id_shift IS NULL) ORDER BY time_created ASC;";
         $stmt = $this->querySql($sql);
@@ -63,21 +64,22 @@ class MarketItemHandler extends DBHandler
             $arrDateShiftsPut = [];
         }
 
-        // Call: Load all shift candidates for this call
+        // Call: Load 'my' shift candidates for calls
         if (count($this->arrCallRequestsByDate)) {
             $arrSqlConditions = [];
-            foreach ($this->arrCallRequestsByDate as $date_shift => $arrCallRequestsByShifts) {
-                $sqlConditions = $this->genSqlConditions(array_keys($arrCallRequestsByShifts), 'shift', 'OR');
+            foreach ($this->arrCallRequestsByDate as $date_shift => $arrCallRequestsByShift) {
+                $sqlConditions = $this->genSqlConditions(array_keys($arrCallRequestsByShift), 'shift', 'OR');
                 $arrSqlConditions[] = "(date_shift='$date_shift' AND $sqlConditions)";
             }
             $sqlConditions = '(' . implode(' OR ', $arrSqlConditions) . ')';
             // '((date_shift=234543 and (shift=B or shift=C)) or (...) or (...))'
-            $sql = "SELECT date_shift, date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE done=0 AND $sqlConditions;";
+            $sql = "SELECT date_shift, date_shift, id_user, shift, id_shift FROM shifts_assigned WHERE done=0 AND id_user=$this->id_user AND $sqlConditions;";
             // echo 'Put sql:' .  $sql . '<br>';
             $stmt = $this->querySql($sql);
             $arrShiftCallObjectsByDate = $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_CLASS, 'ShiftObject', [$this->master_handler, $this->config_handler]);
             $this->date_objects_call_handler->setArrayDateObjects($arrShiftCallObjectsByDate);
-            $arrDateShiftsCall = array_keys($arrShiftCallObjectsByDate);
+            
+            $arrDateShiftsCall = array_keys($this->arrCallRequestsByDate);
         } else {
             $arrDateShiftsCall = [];
         }
@@ -120,8 +122,8 @@ class MarketItemHandler extends DBHandler
             $dateObjectPut = isset($this->date_objects_put_handler->arrayDateObjects[$date_shift]) ? $this->date_objects_put_handler->arrayDateObjects[$date_shift] : NULL;
             // var_dump($objDateObjectsByMode->dateObjectPut);
             // var_dump($this->date_objects_put_handler->arrayDateObjects[$date_shift]);
-            $dateObjectCall = isset($this->date_objects_call_handler->arrayDateObjects[$date_shift]) ? $this->date_objects_call_handler->arrayDateObjects[$date_shift] : NULL;
-            $objDateObjectsByMode->arrDateObjects = ['put' => $dateObjectPut, 'call' => $dateObjectCall];
+            $arrCallRequestsByShift = isset($this->arrCallRequestsByDate[$date_shift]) ? $this->arrCallRequestsByDate[$date_shift] : NULL;
+            $objDateObjectsByMode->arrDateObjects = ['put' => $dateObjectPut, 'call' => $arrCallRequestsByShift];
             // var_dump($objDateObjectsByMode);
             $this->echoSection($objDateObjectsByMode, $classFlexRowReverse);
             if ($key === count($this->arrDateShifts) - 1) {
@@ -185,7 +187,8 @@ class MarketItemHandler extends DBHandler
                             <div class='col-12 col-$mode d-flex $classFlexRowReverse'>";
                 echo " 
                                 <div class='btn-group' mode='$mode'>";
-                foreach (array_keys($dateObject->arrayShiftObjectsByShift) as $shift) {
+                $arrShifts = ($mode === 'put') ? array_keys($dateObject->arrayShiftObjectsByShift) : array_keys($dateObject);
+                foreach ($arrShifts as $shift) {
                     echo "
                                     <a href='#modal' class='btn btn-$shift' data-toggle='modal'>$shift</a>";
                 }
@@ -204,20 +207,12 @@ class MarketItemHandler extends DBHandler
     {
         $date = $dateTime->format('M j');
         $day = $dateTime->format('D');
-        switch ($day) {
-            case 'Sun':
-                $classTextColor = 'text-danger';
-                break;
-            case 'Sat':
-                $classTextColor = 'text-primary';
-                break;
-            default:
-                $classTextColor = '';
-        }
+        $classTextColor = utils\getClassTextColorForDay($day);
+
         echo "
                 <div class='col-2 text-center bottom d-inline-flex justify-content-center align-items-center'>
                     <div class='circle'>
-                        <div class='div-circle-text $classTextColor'>$date<br>$day</div>
+                        <div class='div-circle-text $classTextColor'><span>$date<span><br><span>$day</span></div>
                     </div>
                 </div>
         ";

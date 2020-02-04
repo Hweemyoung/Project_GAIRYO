@@ -1,7 +1,7 @@
 <header>Shifts</header>
 <main>
     <section id="section-main">
-    <a class="a-popover" data-toggle="popover" title="Tabs" data-content="Here can users check shifts assigned to all members." data-trigger="hover" data-placement="bottom">FEATURE</a>
+    <a class="a-popover" data-toggle="popover" data-content="Here can users check shifts assigned to all members." data-trigger="hover" data-placement="bottom">Tabs</a>
         <ul class="nav nav-tabs">
             <?php
             ?>

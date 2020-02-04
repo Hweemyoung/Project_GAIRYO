@@ -9,18 +9,18 @@ for ($i = 0; $i < count($days); $i++) {
 }
 try {
     $host = 'localhost';
-$DBName = 'gairyo';
-$userName = 'root';
-$pw = '9957';
-$dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-} catch (PDOException $e){
+    $DBName = 'gairyo';
+    $userName = 'root';
+    $pw = '111111';
+    $dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+} catch (PDOException $e) {
     echo 'Connection failed: ' . $e->getMessage();
 }
 
 for ($i = 0; $i < count($combined); $i++) {
     $colname = $combined[$i];
     echo $colname;
-    $sql = 'ALTER TABLE shifts_submitted ADD '.$colname.' boolean NOT NULL DEFAULT FALSE';
+    $sql = 'ALTER TABLE shifts_submitted ADD ' . $colname . ' boolean NOT NULL DEFAULT FALSE';
     $stmt = $dbh->prepare($sql);
     $result = $stmt->execute();
     echo '<br>';
