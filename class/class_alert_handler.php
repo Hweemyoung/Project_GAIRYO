@@ -170,6 +170,9 @@ class AlertHandler
                                         $shift = $_GET['shift'];
                                         $this->alertMsg = "You already have shift '$shift' on $date. Remove it first.";
                                         break;
+                                    case 8:
+                                        $this->alertMsg = "Only InnoDB is supported for auto matching. Other engines are not compatible.";
+                                        break;
                                 }
                                 break;
                             case 1:

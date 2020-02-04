@@ -34,6 +34,7 @@ class MarketItemUploader extends DBHandler
         $this->beginTransactionIfNotIn();
         // First call of process
         if ($this->key === NULL) {
+            // MyISAM Not compatible. Expel.
             $this->setUseSavepoints($this->lockTablesIfNotInnoDB(['shifts_assigned', 'requests_pending']));
             $this->setMode();
             $this->setProps();

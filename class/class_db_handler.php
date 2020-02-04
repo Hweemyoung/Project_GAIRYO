@@ -36,6 +36,7 @@ class DBHandler
         if (count($arrTableStatus)) {
             foreach ($arrTableStatus as $tableStatus) {
                 if ($tableStatus->Engine !== 'InnoDB') {
+                    $this->redirect(false, $this->url, ['f' => 4, 'e' => 8]);
                     $sqlConditions = $sqlConditions . "$tableStatus->Name WRITE";
                     $arrTableNamesLocked[] = $tableStatus->Name;
                 }
