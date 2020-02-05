@@ -92,7 +92,7 @@ class MasterHandler
         $stringLangs = implode(', ', $this->config_handler->arrayLangsShort);
         $sql = "SELECT id_user, id_user, nickname, jp, $stringLangs FROM members WHERE id_user>0;";
         $this->arrayMemberObjectsByIdUser = $this->dbh->query($sql)->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'MemberObject');
-        var_dump(array_keys($this->arrayMemberObjectsByIdUser));
+        // var_dump(array_keys($this->arrayMemberObjectsByIdUser));
         echo '<br>';
         // $sql = 'SELECT id_google, members.* FROM members WHERE `status` = 1';
         // $this->arrayMemberObjectsByIdGoogle = $this->dbh->query($sql)->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_CLASS, 'MemberObject');
