@@ -1,4 +1,7 @@
 <?php
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/check_session_shift_dist.php";
+
 function checkArrVals($dbh, $i, $arrVals)
 {
     var_dump($arrVals);
@@ -29,12 +32,7 @@ function checkArrVals($dbh, $i, $arrVals)
     }
 }
 
-$homedir = '/var/www/html/gairyo_temp';
-$host = 'localhost';
-$DBName = 'gairyo_shift_dist';
-$userName = 'root';
-$pw = '111111';
-$dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+$dbh = $master_handler->dbh;
 $dbh->beginTransaction();
 $sql = 'DELETE FROM members;';
 $dbh->exec($sql);

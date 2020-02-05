@@ -17,6 +17,7 @@ if ($_FILES['config']['size'] === 0) {
     // require_once "$config_file";
 }
 
+$config_handler->m = $_POST['m'];
 // var_dump($config_handler);
 
 // $config_handler->m = $_POST['m'];
@@ -36,6 +37,6 @@ if ($_FILES['config']['size'] === 0) {
 //     public $arrLangsByDate = [16 => [['cn' => 4, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL], ['cn' => 4, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL]]];
 
 $shift_distributor = new ShiftsDistributor($master_handler, $config_handler);
-$shift_table_generator = new ShiftTableGenerator($config_handler);
+$shift_table_generator = new ShiftTableGenerator($master_handler, $config_handler);
 ?>
 <a href="<?= $shift_table_generator->fp ?>">DOWNLOAD csv</a>

@@ -4,18 +4,9 @@ require_once "$homedir/class/class_db_handler.php";
 
 class ShiftTableGenerator extends DBHandler
 {
-    public function __construct($config_handler)
+    public function __construct($master_handler, $config_handler)
     {
-        // $host = 'sql304.epizy.com';
-        // $DBName = 'epiz_24956964_gairyo';
-        // $userName = 'epiz_24956964';
-        // $pw = 'STZDGxr4iOPDhv';
-        $host = 'localhost';
-        $DBName = 'gairyo_shift_dist';
-        $userName = 'root';
-        $pw = '111111';
-        $this->dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-        // var_dump($this->dbh);
+        $this->dbh = $master_handler->dbh;
         $this->m = $_POST['m'];
         $this->homedir = $config_handler->homedir;
         $this->http_host = $config_handler->http_host;

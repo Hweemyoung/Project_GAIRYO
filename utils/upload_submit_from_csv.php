@@ -10,7 +10,8 @@
 // var_dump($stmt->errorInfo());
 // echo '<br>';
 // }
-
+$homedir = '/var/www/html/gairyo_temp';
+require_once "$homedir/check_session_shift_dist.php";
 
 class CsvRespondsUploader
 {
@@ -135,12 +136,7 @@ class CsvRespondsUploader
     }
 }
 
-$host = 'localhost';
-$DBName = 'gairyo_shift_dist';
-$userName = 'root';
-$pw = '111111';
-$dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-$homedir = '/var/www/html/gairyo_temp';
+$dbh = $master_handler->dbh;
 $fp = "$homedir/data/csv/2月分シフト希望表.csv";
 if (isset($_FILES['csv_submit'])) {
     $fp = $_FILES['csv_submit']["tmp_name"];
