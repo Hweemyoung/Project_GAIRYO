@@ -2,6 +2,10 @@
 $signedin = false;
 $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/check_session.php";
+require_once "$homedir/class/class_alert_handler.php";
+require_once "$homedir/config.php";
+
+$alertHandler = new AlertHandler(__FILE__, $master_handler, $config_handler);
 
 ?>
 
@@ -36,4 +40,10 @@ require_once "$homedir/check_session.php";
             </div>
             <div class="col-sm-3 col-md-8 d-none d-sm-block"></div>
         </div>
+    </div>
+    <script src="<?= $config_handler->http_host ?>/js/alerthandler.js"></script>
+    <script>
+        const _alertArray = <?= json_encode($alertHandler->getAlertArray()) ?>;
+        const alertHandler = new AlertHandler(<?= json_encode($alertHandler->getAlertArray()) ?>);
+    </script>
 </body>

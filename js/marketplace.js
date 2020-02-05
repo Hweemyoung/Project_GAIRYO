@@ -119,6 +119,8 @@ class MarketItemHandler {
                         // Go to next shiftobject
                         continue;
                     }
+                    // If found
+                    break;
                 }
                 if (_notEnoughLangs) {
                     console.log('Not enough langs!');
@@ -139,7 +141,8 @@ class MarketItemHandler {
                     _$tr.append($(`<td>${_arrTds[i]}</td>`));
                 }
                 console.log(_$tr);
-                this._objTbodies[_mode][_date_shift][_shift] = { 'id_shift': _shiftObjectPut.id_shift, 'id_request': _shiftObjectPut.id_request, 'ShiftObject': _shiftObjectPut, '_$tr': _$tr };
+                console.log(_shiftObjectPut.id_shift);
+                this._objTbodies[_mode][_date_shift][_shift] = { 'id_shift': _shiftObjectPut.id_shift, 'id_request': this._arrPutRequestsByIdShift[_shiftObjectPut.id_shift].id_request, 'ShiftObject': _shiftObjectPut, '_$tr': _$tr };
                 // Search for next shift.
                 break;
             }
@@ -185,6 +188,8 @@ class MarketItemHandler {
                             // Go to next shiftobject
                             continue;
                         }
+                        // If found
+                        break;
                     }
                     if (!_notEnoughLangs) {
                         // ShiftObject found!
