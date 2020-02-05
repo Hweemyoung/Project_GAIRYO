@@ -377,13 +377,19 @@ class DailyMembersHandler extends DateObjectsHandler
                 echo "
                                     <div class='row no-gutters'><div class='div-grid-lang col-2'><p>$partName</p></div><div class='col-10 d-flex justify-content-center flex-wrap'>";
                 foreach ($dateObject->arrayNumLangsByPart[$idxPart] as $lang => $num) {
-                    $numLangNeeded = $dateObject->arrayLangsByPart[$idxPart][$lang];
-                    // $numLangNeeded === NULL doesn't matter
-                    if ($num === $numLangNeeded) {
-                        $classTextColor = 'text-warning';
-                    } elseif ($num < $numLangNeeded) {
-                        $classTextColor = 'text-danger';
+                    if (isset($dateObject->arrayLangsByPart[$idxPart][$lang])){
+                        $numLangNeeded = $dateObject->arrayLangsByPart[$idxPart][$lang];
+                        // echo "For date $dateObject->date, part $idxPart $lang needs $numLangNeeded";
+                        // $numLangNeeded === NULL doesn't matter
+                        if ($num === $numLangNeeded) {
+                            $classTextColor = 'text-warning';
+                        } elseif ($num < $numLangNeeded) {
+                            $classTextColor = 'text-danger';
+                        } else {
+                            $classTextColor = 'text-light';
+                        }
                     } else {
+                        // No numNeeded
                         $classTextColor = 'text-light';
                     }
                     echo "

@@ -14,7 +14,7 @@ class DateObject
     {
         $this->date = $date;
         $this->config_handler = $config_handler;
-        $this->arrayLangsByPart = $config_handler->getArrayLangsByPart($date);
+        $this->arrayLangsByPart = $config_handler->getArrayLangsByPart(intval(substr($date, -2, 2)));
         $this->arrayNumLangsByPart = [];
         $this->arrayShiftObjectsByShift = [];
         $this->enoughLangsByPart = [];
@@ -88,9 +88,6 @@ class DateObject
             foreach ($this->arrayLangsByPart as $shiftPart => $arrLangs) {
                 $partEnough = true;
                 foreach ($arrLangs as $lang => $numLangNeeded) {
-                    if ($numLangNeeded === NULL) {
-                        continue;
-                    }
                     if (!isset($this->arrayNumLangsByPart[$shiftPart][$lang])) {
                         $balance = -$numLangNeeded;
                         $this->enoughLangsByPart[$shiftPart] = false;

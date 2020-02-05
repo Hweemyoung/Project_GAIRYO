@@ -317,16 +317,14 @@ class FormHandler {
                 console.log('part', part);
                 console.log('after', arrayNumLangs);
                 for (var lang in arrayNumLangs) {
-                    if (arrayLangs[lang] !== null) {
-                        if (arrayNumLangs[lang] < arrayLangs[lang]) {
-                            // Insufficient number for this language
-                            console.log('date', _objectDatesByIdxFormItem[idxFormItem], 'part', part, 'lang', lang);
-                            console.log('before', Number(this._transaction_form_handler.arrayDateObjects[_objectDatesByIdxFormItem[idxFormItem]].arrayNumLangsByPart[part][lang]));
-                            if (arrayNumLangs[lang] < Number(this._transaction_form_handler.arrayDateObjects[_objectDatesByIdxFormItem[idxFormItem]].arrayNumLangsByPart[part][lang])) {
-                                // Is that due to change of number? Or it just used to be not enough? If the number is decreased by transaction, ban it.
-                                return [idxFormItem, _objectDatesByIdxFormItem[idxFormItem], lang, arrayNumLangs[lang], this._transaction_form_handler.arrayDateObjects[_objectDatesByIdxFormItem[idxFormItem]].arrayNumLangsByPart[part][lang]]
-                                // [0, 2020-01-23, cn, 1, 2]
-                            }
+                    if (arrayNumLangs[lang] < arrayLangs[lang]) {
+                        // Insufficient number for this language
+                        console.log('date', _objectDatesByIdxFormItem[idxFormItem], 'part', part, 'lang', lang);
+                        console.log('before', Number(this._transaction_form_handler.arrayDateObjects[_objectDatesByIdxFormItem[idxFormItem]].arrayNumLangsByPart[part][lang]));
+                        if (arrayNumLangs[lang] < Number(this._transaction_form_handler.arrayDateObjects[_objectDatesByIdxFormItem[idxFormItem]].arrayNumLangsByPart[part][lang])) {
+                            // Is that due to change of number? Or it just used to be not enough? If the number is decreased by transaction, ban it.
+                            return [idxFormItem, _objectDatesByIdxFormItem[idxFormItem], lang, arrayNumLangs[lang], this._transaction_form_handler.arrayDateObjects[_objectDatesByIdxFormItem[idxFormItem]].arrayNumLangsByPart[part][lang]]
+                            // [0, 2020-01-23, cn, 1, 2]
                         }
                     }
                 }

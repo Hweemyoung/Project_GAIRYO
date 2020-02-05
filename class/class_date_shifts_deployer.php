@@ -281,8 +281,11 @@ class DateShiftsDeployer extends DateObject
                     $arrLangVacancyByPart = [];
                     foreach (array_keys($arrKeyPartsApp) as $shiftPart) {
                         $arrLangs = $this->arrShiftPartStatus[$shiftPart]->arrLangs;
+                        if (!isset($arrLangs[$i])) {
+                            continue;
+                        }
                         $lang = array_keys($arrLangs)[$i];
-                        if (!in_array($lang, $arrLingualities) || $arrLangs[$lang] === NULL) {
+                        if (!in_array($lang, $arrLingualities)) {
                             // Search for next part
                             continue;
                         }
@@ -622,7 +625,7 @@ class DateShiftsDeployer extends DateObject
                 // For every lang
                 if (!isset($arr[$shiftObject->shiftPart][$lang])) {
                     // If the lang in this part wasn't considered
-                    if ($this->arrShiftPartStatus[$shiftObject->shiftPart]->arrLangs[$lang] !== NULL) {
+                    if (isset($this->arrShiftPartStatus[$shiftObject->shiftPart]->arrLangs[$lang])) {
                         // If the lang is required in this part
                         if (isset($this->arrayNumLangsByPart[$shiftObject->shiftPart][$lang])) {
                             // If there is already some people who can speak lang in this part
