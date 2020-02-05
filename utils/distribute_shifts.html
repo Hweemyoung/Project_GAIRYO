@@ -34,61 +34,20 @@
 
 <body>
     <div class="container">
-        <h1>希望表更新</h1>
-        <p>データベース上のメンバー表を初期化し、与えられたファイルで更新します。<br>Google formの集計そのままの規格を受け付けます。</p>
-        <form class="my-4" action="upload_submit_from_csv.php" method="post" enctype="multipart/form-data">
-            <input type="file" name="csv_submit" value="file_csv_submit">
-            <label for="#input-m">年月</label><input id="input-m" type="text" name="m" value="6桁の数字">
-            <button type="submit">SUBMIT</button>
+        <h1>シフト割当</h1>
+        <p>データベース上のメンバー表と希望表をもとに、シフトを割り当て、csvファイルを生成します。</p>
+        <form class="my-4" action="distribute_shifts_shift_dist.php" method="post" enctype="multipart/form-data">
+            <input type="file" name="conditions">
+            <button class="btn btn-danger" type="submit"><i class="fas fa-check"></i></button>
         </form>
-        <h3></h3>
-            <ul class="list-group list-group-flush my-4">
-                <h5>ファイル</h5>
-                <li class="list-group-item">フォーマットはcsvに限ります。</li>
-                <li class="list-group-item">Google formの集計そのままの規格（下記の例を参考）を受け付けます。</li>
-                <li class="list-group-item">1日の中に'O'とほかの希望が混ざっていても構いません。（例：A, B, O）</li>
-            </ul>
+        <h3>メンバー表と希望表を予めアップロードしてください。</h3>
             <ul class="list-group list-group-flush my-4">
                 <h5>年月</h5>
                 <li class="list-group-item">６桁の数字です。</li>
                 <li class="list-group-item">最初の4桁は年度、残りの2桁は月です。</li>
                 <li class="list-group-item">例：2021年度1月分(2020-12-16~2021-01-15) => 202101</li>
             </ul>
-        <h3>例</h3>
-        <div class="row d-flex justify-content-center mt-4 mb-5 no-gutters text-center">
-            <div class="col-12">
-                <div class="row no-gutters">
-                    <div class="col-2">タイムスタンプ</div>
-                    <div class="col-2">メールアドレス</div>
-                    <div class="col-2">名前</div>
-                    <div class="col-1">16日（木）</div>
-                    <div class="col-1">17日（金）</div>
-                    <div class="col-1">...</div>
-                    <div class="col-1">14日（金）</div>
-                    <div class="col-1">15日（土）</div>
-                </div>
-                <div class="row">
-                    <div class="col-2">2019/12/28 14:58:48</div>
-                    <div class="col-2">nobody@gmail.com</div>
-                    <div class="col-2">02 ダレカ</div>
-                    <div class="col-1"></div>
-                    <div class="col-1">B, H</div>
-                    <div class="col-1">...</div>
-                    <div class="col-1">H, D</div>
-                    <div class="col-1">B</div>
-                </div>
-                <div class="row">
-                    <div class="col-2">2019/12/28 14:58:21</div>
-                    <div class="col-2">somebody@gmail.com</div>
-                    <div class="col-2">04 あなた</div>
-                    <div class="col-1">O</div>
-                    <div class="col-1">A, B</div>
-                    <div class="col-1">...</div>
-                    <div class="col-1">B</div>
-                    <div class="col-1"></div>
-                </div>
-            </div>
-        </div>
+        
         <footer class="bg-light fixed-bottom">
             <div class="row text-center py-1">
                 <div class="col-lg-2 d-flex justify-content-around align-middle">

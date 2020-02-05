@@ -16,7 +16,14 @@ class CsvRespondsUploader
 {
     public function __construct($dbh, $homedir, $fpath)
     {
-        $this->m = $_GET['m'];    
+        if (!isset($_POST['m'])) {
+            echo "年月が与えられていません。";
+            exit;
+        } elseif (strlen($_POST['m']) !== 6 || intval($_POST['m']) === 0) {
+            echo "年月が理解できません。";
+            exit;
+        }
+        $this->m = $_POST['m'];
         $this->dbh = $dbh;
         $this->homedir = $homedir;
         $this->csv = array_map('str_getcsv', file($fpath));
@@ -24,7 +31,6 @@ class CsvRespondsUploader
         $this->setIdxRange();
         $this->setArrDate();
         $this->process();
-        
     }
 
     private function process()
@@ -58,12 +64,23 @@ class CsvRespondsUploader
     }
     private function addSql($iRow)
     {
+        echo "iRow: $iRow<br>";
         $id_user = $this->getIdUser($iRow); // 5
         echo "User: $id_user<br>";
+        $sql = "SELECT EXISTS (SELECT 1 FROM shifts_submitted WHERE id_user=$id_user AND m='$this->m')";
+        $stmt = $this->dbh->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_COLUMN);
+        var_dump($result);
+        $stmt->closeCursor();
+        if ($result !== '0') {
+            echo "重複：id_user=$id_user\は、すでにアップロードされています。<br>";
+            exit;
+        }
         $arrSqlCols = [];
         for ($iCol = 3; $iCol <= $this->colHighestIdx; $iCol++) {
             $strApp = $this->csv[$iRow][$iCol]; // 'B, O' or ''
-            if ($strApp === ''){
+            if ($strApp === '') {
                 continue;
             }
             $date = $this->arrDate[$iCol];
@@ -72,20 +89,20 @@ class CsvRespondsUploader
             var_dump($arrDateShifts);
             echo '<br>';
             foreach ($arrDateShifts as $key => $shift) {
-                $arrDateShifts[$key] ="`" . $this->arrDate[$iCol] . $shift . "`"; // ['17B', '17O']...
+                $arrDateShifts[$key] = "`" . $this->arrDate[$iCol] . $shift . "`"; // ['17B', '17O']...
                 $arrSqlVals[] = 1; // [1, 1]...
             }
             $arrSqlCols = array_merge($arrSqlCols, $arrDateShifts); // ['id_user', 'm' , '16A', '17B', '17O']
         }
         $arrSqlCols = array_unique($arrSqlCols); // I don't know why but some cols are identical...
         $arrSqlVals = array_fill(0, count($arrSqlCols), 1);
-        
+
         $sql = "INSERT INTO shifts_submitted (id_user, m, " . implode(', ', $arrSqlCols) . ") VALUES ($id_user, '$this->m', " . implode(', ', $arrSqlVals) . ');';
         echo "Insert applications for id_user $id_user:<br>$sql<br>";
         $stmt = $this->dbh->prepare($sql);
         $stmt->execute();
         var_dump($stmt->errorInfo());
-        sleep(0.05);
+        $stmt->closeCursor();
     }
     private function getIdUser($iRow)
     {
@@ -125,7 +142,10 @@ $pw = '111111';
 $dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
 $homedir = '/var/www/html/gairyo_temp';
 $fp = "$homedir/data/csv/2月分シフト希望表.csv";
-if (isset($_FILES['csv_submit'])){
-    $fp = $_FILES['csv_submit']["tmp_name"] . $_FILES['csv_submit']["name"];
+if (isset($_FILES['csv_submit'])) {
+    $fp = $_FILES['csv_submit']["tmp_name"];
+} else {
+    echo "ファイルが確認できません。";
+    exit;
 }
-$csv_responds_uploader = new CsvRespondsUploader($dbh, $homedir, $fpath);
+$csv_responds_uploader = new CsvRespondsUploader($dbh, $homedir, $fp);

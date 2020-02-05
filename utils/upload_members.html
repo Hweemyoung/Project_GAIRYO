@@ -22,19 +22,95 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/js/bootstrap.min.js"
         integrity="sha384-3qaqj0lc6sV/qpzrc1N5DC6i1VRn/HyX4qdPaiEFbn54VjQBEU341pvjz7Dv3n6P"
         crossorigin="anonymous"></script>
-    <style></style>
+    <!-- Icon libraries -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <style>
+        p {
+            margin-bottom: 0;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container">
         <div>
-            <header>メンバー更新</header>
+            <h1>メンバー更新</h1>
             <p>データベース上のメンバー表を初期化し、与えられたファイルで更新します。<br>規格に合うcsvファイルをアップロードしてください。</p>
-            <form action="upload_submit_from_csv.php" method="post" enctype="multipart/form-data">
-                <input type="file" name="csv_submit" value="file_csv_submit">
+            <form class="my-4" action="insert_members_from_csv.php" method="post" enctype="multipart/form-data">
+                <input type="file" name="csv_members" value="file_csv_members">
                 <button type="submit">SUBMIT</button>
             </form>
+            <h3>1行目は左から id_user / nickname / jp / cn と入力してください。</h3>
+            <ul class="list-group list-group-flush my-4">
+                <h5>id_user</h5>
+                <li class="list-group-item">id_userはユニークでなければなりません。かぶる番号がありますと、作業を中止します。</li>
+                <li class="list-group-item">自然数でなければなりません。(>1)</li>
+                <li class="list-group-item">連続する必要はありません。</li>
+            </ul>
+            <ul class="list-group list-group-flush my-4">
+                <h5>nickname</h5>
+                <li class="list-group-item">英数字、漢字、ひらがな、カタカナが使用できます。</li>
+            </ul>
+            <ul class="list-group list-group-flush my-4">
+                <h5>jp</h5>
+                <li class="list-group-item">国籍が日本なら1を、日本以外でしたら0を与えてください。</li>
+            </ul>
+            <ul class="list-group list-group-flush my-4">
+                <h5>cn</h5>
+                <li class="list-group-item">中国語が駆使できるなら1を、そうでなければを0与えてください。</li>
+            </ul>
+            <h3>例</h3>
+            <div class="row d-flex justify-content-center mt-4 mb-5">
+                <div class="col-8">
+                    <div class="row">
+                        <div class="col-3">id_user</div>
+                        <div class="col-3">nickname</div>
+                        <div class="col-3">jp</div>
+                        <div class="col-3">cn</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">2</div>
+                        <div class="col-3">外旅　たろう</div>
+                        <div class="col-3">1</div>
+                        <div class="col-3">0</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">4</div>
+                        <div class="col-3">習近平</div>
+                        <div class="col-3">0</div>
+                        <div class="col-3">1</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">5</div>
+                        <div class="col-3">キム　フィミョン</div>
+                        <div class="col-3">0</div>
+                        <div class="col-3">0</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">8</div>
+                        <div class="col-3">ダレカ</div>
+                        <div class="col-3">1</div>
+                        <div class="col-3">1</div>
+                    </div>
+                </div>
+            </div>
+            
         </div>
+        <footer class="bg-light fixed-bottom">
+            <div class="row text-center py-1">
+                <div class="col-lg-2 d-flex justify-content-around align-middle">
+                    <a href="http://github.com/Hweemyoung"><i class="fab fa-github text-primary fa-lg"></i></a>
+                </div>
+                <div class="col-lg-6">
+                    <p> &copy; Hwee-Myoung Kim, 2019-2020</p>
+                </div>
+                <div class="col-lg-4 d-flex justify-content-center">
+                    <i class="fas fa-envelope text-info fa-lg mx-1"></i>
+                    <p>hweemyoung@gmail.com</p>
+                </div>
+            </div>
+        </footer>
     </div>
 </body>
 
