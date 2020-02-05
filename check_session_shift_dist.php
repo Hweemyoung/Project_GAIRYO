@@ -6,7 +6,7 @@ require_once "$homepath/class/class_date_object.php";
 
 // PDO Object
 // $host = 'sql304.epizy.com';
-// $DBName = 'epiz_24956964_gairyo';
+// $DBName = 'epiz_24956964_gairyo_shifts_dist';
 // $userName = 'epiz_24956964';
 // $pw = 'STZDGxr4iOPDhv';
 

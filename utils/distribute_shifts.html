@@ -37,8 +37,9 @@
         <h1>シフト割当</h1>
         <p>データベース上のメンバー表と希望表をもとに、シフトを割り当て、csvファイルを生成します。</p>
         <form class="my-4" action="distribute_shifts_shift_dist.php" method="post" enctype="multipart/form-data">
-            <label for="#input-config">config.php</label><input type="file" name="config" id="input-config">
-            <button class="btn btn-danger" type="submit"><i class="fas fa-check"></i></button>
+            <div class="form-group"><label for="#input-config">年月</label><input type="text" name="m"></div>
+            <div class="form-group"><label for="#input-config">config.php</label><input type="file" name="config" id="input-config"></div>
+            <div class="form-group"><button class="btn btn-danger" type="submit"><i class="fas fa-check"></i></button></div>
         </form>
         <h3>メンバー表と希望表を予めアップロードしてください。</h3>
         <ul class="list-group list-group-flush my-4">
