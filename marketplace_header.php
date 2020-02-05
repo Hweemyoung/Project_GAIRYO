@@ -1,1 +1,0 @@
-<header><h2 class="pb-3 pt-2 border-bottom mb-5">Market Timeline</h2></header>

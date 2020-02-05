@@ -1,8 +1,10 @@
 <?php
 $homedir = '/var/www/html/gairyo_temp';
 require_once "$homedir/class/class_shifts_distributor.php";
+require_once "$homedir/class/class_shift_table_generator.php";
 require_once "$homedir/check_session_shift_dist.php";
-if (intval($_POST['m']) === 0 || strlen($_POST['m'])) {
+
+if (intval($_POST['m']) === 0 || strlen($_POST['m']) !== 6) {
     echo "有効な年月が与えられていません。";
     exit;
 }
@@ -10,11 +12,12 @@ if (intval($_POST['m']) === 0 || strlen($_POST['m'])) {
 if ($_FILES['config']['size'] === 0) {
     require_once "$homedir/config.php";
 } else {
-    $config_file = $_FILES['config']['tmp_name'];
-    require_once "$config_file";
+    // echo 'here';
+    // $config_file = $_FILES['config']['tmp_name'];
+    // require_once "$config_file";
 }
 
-$config_handler->m = $_POST['m'];
+// var_dump($config_handler);
 
 // $config_handler->m = $_POST['m'];
 // public $defaultNumMaxByShift = ['A' => 1, 'B' => 4, 'H' => 2, 'C' => 2, 'D' => 4];
@@ -33,3 +36,6 @@ $config_handler->m = $_POST['m'];
 //     public $arrLangsByDate = [16 => [['cn' => 4, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL], ['cn' => 4, 'kr' => NULL, 'th' => NULL, 'my' => NULL, 'ru' => NULL, 'fr' => NULL, 'de' => NULL, 'other' => NULL]]];
 
 $shift_distributor = new ShiftsDistributor($master_handler, $config_handler);
+$shift_table_generator = new ShiftTableGenerator($config_handler);
+?>
+<a href="<?= $shift_table_generator->fp ?>">DOWNLOAD csv</a>

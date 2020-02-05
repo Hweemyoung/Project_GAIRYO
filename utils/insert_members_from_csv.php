@@ -1,45 +1,4 @@
 <?php
-$homedir = '/var/www/html/gairyo_temp';
-$host = 'localhost';
-$DBName = 'gairyo_shift_dist';
-$userName = 'root';
-$pw = '111111';
-$dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-$dbh->beginTransaction();
-$sql = 'DELETE FROM members;';
-$dbh->exec($sql);
-// $fp = "$homedir/data/csv/members.csv";
-var_dump($_FILES);
-if (isset($_FILES['csv_members'])) {
-    // $fp = $_FILES['csv_members']["tmp_name"] . '/' . $_FILES['csv_members']["name"];
-    $fp = $_FILES['csv_members']["tmp_name"];
-} else {
-    echo "ファイルが確認できません。";
-    exit;
-}
-echo $fp . '<br>';
-$csv = array_map('str_getcsv', file($fp));
-$arrCols = $csv[0];
-$sqlCols = implode(', ', $arrCols);
-for ($i = 1; $i < count($csv) - 1; $i++) {
-    $arrVals = $csv[$i];
-    // $sqlVals = implode(', ', $arrVals);
-    var_dump($arrVals);
-    checkArrVals($dbh, $i, $arrVals);
-    echo '<br>';
-    // $sql = "INSERT INTO members ($sqlCols) VALUES (?,?,?,?,?,?,?,?,?,?,?);";
-    $sql = "INSERT INTO members ($sqlCols) VALUES (?,?,?,?);"; // id_user, nickname, jp, cn
-    echo $sql . '<br>';
-    $stmt = $dbh->prepare($sql);
-    $stmt->execute($arrVals);
-    if ($stmt->errorInfo()[2] !== NULL) {
-        echo "エラーが発生しました。アップロードを中止し、終了します。<br>";
-        var_dump($stmt->errorInfo());
-        echo '<br>';
-        exit;
-    }
-}
-
 function checkArrVals($dbh, $i, $arrVals)
 {
     var_dump($arrVals);
@@ -69,4 +28,48 @@ function checkArrVals($dbh, $i, $arrVals)
         exit;
     }
 }
+
+$homedir = '/var/www/html/gairyo_temp';
+$host = 'localhost';
+$DBName = 'gairyo_shift_dist';
+$userName = 'root';
+$pw = '111111';
+$dbh = new PDO("mysql:host=$host;dbname=$DBName", "$userName", "$pw", array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+$dbh->beginTransaction();
+$sql = 'DELETE FROM members;';
+$dbh->exec($sql);
+// $fp = "$homedir/data/csv/members.csv";
+var_dump($_FILES);
+if (isset($_FILES['csv_members'])) {
+    // $fp = $_FILES['csv_members']["tmp_name"] . '/' . $_FILES['csv_members']["name"];
+    $fp = $_FILES['csv_members']["tmp_name"];
+} else {
+    echo "ファイルが確認できません。";
+    exit;
+}
+echo $fp . '<br>';
+$csv = array_map('str_getcsv', file($fp));
+echo '<br>';
+$arrCols = $csv[0];
+$sqlCols = implode(', ', $arrCols);
+for ($i = 1; $i < count($csv); $i++) {
+    $arrVals = $csv[$i];
+    // $sqlVals = implode(', ', $arrVals);
+    var_dump($arrVals);
+    checkArrVals($dbh, $i, $arrVals);
+    echo '<br>';
+    // $sql = "INSERT INTO members ($sqlCols) VALUES (?,?,?,?,?,?,?,?,?,?,?);";
+    $sql = "INSERT INTO members ($sqlCols) VALUES (?,?,?,?);"; // id_user, nickname, jp, cn
+    // echo $sql . '<br>';
+    $stmt = $dbh->prepare($sql);
+    $stmt->execute($arrVals);
+    if ($stmt->errorInfo()[2] !== NULL) {
+        echo "エラーが発生しました。アップロードを中止し、終了します。<br>";
+        var_dump($stmt->errorInfo());
+        echo '<br>';
+        exit;
+    }
+}
+
+
 $dbh->commit();
