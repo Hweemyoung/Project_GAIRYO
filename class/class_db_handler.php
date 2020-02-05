@@ -36,7 +36,7 @@ class DBHandler
         if (count($this->arrTableStatus)) {
             foreach ($this->arrTableStatus as $tableStatus) {
                 if ($tableStatus->Engine !== 'InnoDB') {
-                    $sqlConditions = $sqlConditions . "$tableStatus->Name WRITE";
+                    $sqlConditions = $sqlConditions . "$tableStatus->Name WRITE ";
                     $arrTableNamesLocked[] = $tableStatus->Name;
                 }
             }
