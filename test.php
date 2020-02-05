@@ -7,7 +7,8 @@ class TempClass
 }
 
 // var_dump($_GET);
-var_dump(__FILE__);
+// var_dump(__FILE__);
+var_dump($_FILES);
 
 
 // $test = true;
