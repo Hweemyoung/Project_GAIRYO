@@ -8,7 +8,10 @@ class TempClass
 
 // var_dump($_GET);
 // var_dump(__FILE__);
-var_dump($_FILES);
+// var_dump($_FILES);
+echo strspn(' 12 asdv', '0123456789 ') . '<br>';
+echo substr(' 12 asdv', strspn(' 12 asdv', '0123456789 ')) . '<br>';
+echo intval(substr(' 12 asdv', 0, strspn(' 12 asdv', '0123456789 '))) . '<br>';
 
 
 // $test = true;
