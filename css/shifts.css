@@ -24,6 +24,14 @@
     margin-bottom: 1rem;
 }
 
+#tab-content2 .div-search .pagination .page-link{
+    line-height: 1.25rem;
+}
+
+#tab-content2 .div-search .pagination .page-link i{
+    line-height: 1.25rem;
+}
+
 .shift-member-table{
     font-size: 1rem;
 }
