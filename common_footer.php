@@ -12,11 +12,11 @@ $master_handler->dbh = NULL;
             <a href="http://github.com/Hweemyoung"><i class="fab fa-github text-primary fa-lg"></i></a>
         </div>
         <div class="col-lg-6">
-            <p> &copy; Hwee-Myoung Kim, 2019-2020</p>
+            <p class="py-0"> &copy; Hwee-Myoung Kim, 2019-2020</p>
         </div>
         <div class="col-lg-4 d-flex justify-content-center">
             <i class="fas fa-envelope text-info fa-lg mx-1"></i>
-            <p>hweemyoung@gmail.com</p>
+            <p class="py-0">hweemyoung@gmail.com</p>
         </div>
     </div>
 </footer>

@@ -147,6 +147,6 @@ main>section{
     }
 }
 
-footer i{
+footer i, footer p{
     line-height: 1.25rem !important;
 }
