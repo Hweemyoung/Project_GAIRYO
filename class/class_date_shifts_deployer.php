@@ -30,6 +30,11 @@ class DateShiftsDeployer extends DateObject
         $this->setArrShiftStatus();
     }
 
+    public function setLastDateOfMonth($lastDateOfMonth)
+    {
+        $this->lastDateOfMonth = $lastDateOfMonth;
+    }
+
     private function setArrShiftPartStatus()
     {
         for ($shiftPart = 0; $shiftPart < $this->config_handler->numOfShiftsPart; $shiftPart++) {
@@ -144,7 +149,7 @@ class DateShiftsDeployer extends DateObject
             $this->arrShiftStatus[$shiftObjectDeployed->shift]->unsetShiftAppObjectsByIdUser($shiftObjectDeployed);
 
             // Update prop of MemberObject;
-            $shiftObjectDeployed->memberObject->updateProps($shiftObjectDeployed);
+            $shiftObjectDeployed->memberObject->updateProps($shiftObjectDeployed, $this->lastDateOfMonth);
 
             // If this shift part is full, unset rest of ShiftAppObjects for this shift part from DateShiftsDeployer
             // 
@@ -378,27 +383,30 @@ class DateShiftsDeployer extends DateObject
             }
         }
 
-        if (count($arrShiftObjectsFiltered)) {
-            // Filter by worked mins
-            foreach ($arrShiftObjectsFiltered as $key => $shiftObject) {
-                // Mins per week or per month
-                $is_jp = intval($shiftObject->memberObject->jp);
-                if (isset($shiftObject->memberObject->workedMinsByWeek[$shiftObject->W])) {
-                    if ($shiftObject->memberObject->workedMinsByWeek[$shiftObject->W] + $shiftObject->workingMins > $this->config_handler->maxWorkedMinsPerWeekByJp[$is_jp]) {
-                        // If over
-                        echo "Workable mins for this week full!<br>";
-                        $this->unsetShiftAppObject($arrShiftObjectsFiltered[$key]);
-                        unset($arrShiftObjectsFiltered[$key]);
-                    }
-                }
-                if ($shiftObject->memberObject->workedMinsTotal + $shiftObject->workingMins > $this->config_handler->maxWorkedMinsPerMonthByJp[$is_jp]) {
-                    // If over
-                    echo "Workable mins for this month full!<br>";
-                    $this->unsetShiftAppObject($arrShiftObjectsFiltered[$key]);
-                    unset($arrShiftObjectsFiltered[$key]);
-                }
-            }
-        }
+        // Update: any consecutive 7 days
+        $arrShiftObjectsFiltered = $this->filterArrShiftObjectsByWorkingConds($arrShiftObjectsFiltered);
+
+        // if (count($arrShiftObjectsFiltered)) {
+        //     // Filter by worked mins
+        //     foreach ($arrShiftObjectsFiltered as $key => $shiftObject) {
+        //         // Mins per week or per month
+        //         $is_jp = intval($shiftObject->memberObject->jp);
+        //         if (isset($shiftObject->memberObject->workedMinsByWeek[$shiftObject->W])) {
+        //             if ($shiftObject->memberObject->workedMinsByWeek[$shiftObject->W] + $shiftObject->workingMins > $this->config_handler->maxWorkedMinsPerWeekByJp[$is_jp]) {
+        //                 // If over
+        //                 echo "Workable mins for this week full!<br>";
+        //                 $this->unsetShiftAppObject($arrShiftObjectsFiltered[$key]);
+        //                 unset($arrShiftObjectsFiltered[$key]);
+        //             }
+        //         }
+        //         if ($shiftObject->memberObject->workedMinsTotal + $shiftObject->workingMins > $this->config_handler->maxWorkedMinsPerMonthByJp[$is_jp]) {
+        //             // If over
+        //             echo "Workable mins for this month full!<br>";
+        //             $this->unsetShiftAppObject($arrShiftObjectsFiltered[$key]);
+        //             unset($arrShiftObjectsFiltered[$key]);
+        //         }
+        //     }
+        // }
 
         if (count($arrShiftObjectsFiltered) === 0) {
             echo 'All shifts have been filtered and no valid shift found.<br>';
@@ -457,6 +465,78 @@ class DateShiftsDeployer extends DateObject
             });
         }
         return $arrShiftObjectsFiltered[0];
+    }
+
+    private function filterArrShiftObjectsByWorkingConds($arrShiftObjectsFiltered)
+    {
+        if (count($arrShiftObjectsFiltered)) {
+            foreach ($arrShiftObjectsFiltered as $key => $shiftObject) {
+                echo "Another shiftObject<br>";
+                $filtered = false;
+                $is_jp = strval($shiftObject->memberObject->jp);
+                $date = ($shiftObject->j > 15) ? $shiftObject->j : $shiftObject->j + $this->lastDateOfMonth; // $date is always larger than 15
+                // Filter by consecutive worked dates
+                for ($tipLeft = $date - $this->config_handler->maxConsecutiveWorkedDatesByJp[$is_jp]; $tipLeft <= $date; $tipLeft++) {
+                    $sumDates = 0;
+                    $tipRight = $tipLeft + $this->config_handler->maxConsecutiveWorkedDatesByJp[$is_jp];
+                    $dateRange = range($tipLeft, $tipRight);
+                    foreach ($dateRange as $d) {
+                        if (isset($shiftObject->memberObject->arrWorkedMinsByDate[$d])) {
+                            $sumDates++;
+                        }
+                    }
+                    echo "Checking consecutive worked dates date range $tipLeft ~ $tipRight range : $sumDates<br>";
+                    if ($sumDates > $this->config_handler->maxConsecutiveWorkedDatesByJp[$is_jp] - 1) {
+                        // If over
+                        echo "Consecutive workable dates over!<br>";
+                        $this->unsetShiftAppObject($arrShiftObjectsFiltered[$key]);
+                        unset($arrShiftObjectsFiltered[$key]);
+                        $filtered = true;
+                        break;
+                    }
+                }
+                if ($filtered) {
+                    continue;
+                }
+
+                // Filter by worked mins
+                // By worked mins per month
+                $next = $shiftObject->memberObject->workedMinsTotal + $shiftObject->workingMins;
+                echo "Next workedMinsTotal: $next<br>";
+                if ($shiftObject->memberObject->workedMinsTotal + $shiftObject->workingMins > $this->config_handler->maxWorkedMinsPerMonthByJp[$is_jp]) {
+                    // If over
+                    echo "Workable mins for this month full!<br>";
+                    $this->unsetShiftAppObject($arrShiftObjectsFiltered[$key]);
+                    unset($arrShiftObjectsFiltered[$key]);
+                    continue;
+                }
+
+                // By worked mins per week
+                for ($tipLeft = $date - 6; $tipLeft <= $date; $tipLeft++) {
+                    $sumMins = 0;
+                    $tipRight = $tipLeft + 6;
+                    $dateRange = range($tipLeft, $tipRight);
+                    foreach ($dateRange as $d) {
+                        if (isset($shiftObject->memberObject->arrWorkedMinsByDate[$d])) {
+                            $sumMins += $shiftObject->memberObject->arrWorkedMinsByDate[$d];
+                        }
+                    }
+                    echo "Checking worked mins date range $tipLeft ~ $tipRight : $sumMins<br>";
+                    if ($sumMins > $this->config_handler->maxWorkedMinsPerWeekByJp[$is_jp]) {
+                        // If over
+                        echo "Workable mins for consecutive 7 days full!<br>";
+                        $this->unsetShiftAppObject($arrShiftObjectsFiltered[$key]);
+                        unset($arrShiftObjectsFiltered[$key]);
+                        $filtered = true;
+                        break;
+                    }
+                }
+                if ($filtered) {
+                    continue;
+                }
+            }
+        }
+        return $arrShiftObjectsFiltered;
     }
 
     private function unsetShiftAppObject($shiftObjectDeployed)
