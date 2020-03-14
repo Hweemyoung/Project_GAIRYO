@@ -29,17 +29,313 @@
         p {
             margin-bottom: 0;
         }
+
+        .query .form-group {
+            height: 100%;
+            margin-bottom: 0;
+        }
+
+        .query input {
+            width: 100%;
+            height: 100%;
+        }
+
+        .container>ul:last-of-type {
+            margin-bottom: 5rem !important;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
+        <p>更新日：<span class="text-danger">2020-03-03</span></p>
         <h1>シフト表作成</h1>
-        <p>データベース上のメンバー表と希望表をもとに、シフトを割り当て、csvファイルを生成します。<a href="http://gairyo.epizy.com/data/csv/sample_shift_table.csv">サンプル</a></p>
+        <p>データベース上のメンバー表と希望表をもとに、シフトを割り当て、csvファイルを生成します。<a
+                href="http://gairyo.epizy.com/data/xlsx/sample_4月分勤務表.xlsx">サンプル(xlsxフォーマット)</a></p>
         <form class="my-4" action="distribute_shifts_shift_dist.php" method="post" enctype="multipart/form-data">
-            <div class="form-group"><label for="#input-config">年月</label><input type="text" name="m"></div>
-            <div class="form-group"><label for="#input-config">config.php</label><input type="file" name="config" id="input-config"></div>
-            <div class="form-group"><button class="btn btn-danger" type="submit"><i class="fas fa-check"></i></button></div>
+            <input type="hidden" id="input-num-items" name="num_items">
+            <div class="jumbotron p-4">
+                <div class="row">
+                    <div class="col-12">
+                        <h3><label for="#input-m">年月</label></h3>
+                        <div class="form-group"><input class="bg-warning" id="input-m" type="text" name="m"
+                                value="YYYYMM"></div>
+                    </div>
+                </div>
+                <h3>Shifts conditions</h3>
+                <div id="query-1" class="query">
+                    <div class="row no-gutters text-center">
+                        <div class="col-1 py-2">Date</div>
+                        <div class="col-1 py-2">Max-0</div>
+                        <div class="col-1 py-2">Max-1</div>
+                        <div class="col-1">
+                            <div class="row no-gutters">
+                                <div class="col-12">A-min</div>
+                                <div class="col-12">A-max</div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="row no-gutters">
+                                <div class="col-12">B-min</div>
+                                <div class="col-12">B-max</div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="row no-gutters">
+                                <div class="col-12">H-min</div>
+                                <div class="col-12">H-max</div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="row no-gutters">
+                                <div class="col-12">C-min</div>
+                                <div class="col-12">C-max</div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="row no-gutters">
+                                <div class="col-12">D-min</div>
+                                <div class="col-12">D-max</div>
+                            </div>
+                        </div>
+                        <div class="col-1 py-2">CN-0</div>
+                        <div class="col-1 py-2">CN-1</div>
+                    </div>
+                    <div class="row no-gutters">
+                        <div class="col-1 py-2">Default</div>
+                        <div class="col-1">
+                            <div class="form-group"><input class="bg-warning" type="text" name="default_max_part_0"
+                                    value="5"></div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-group"><input class="bg-warning" type="text" name="default_max_part_1"
+                                    value="4"></div>
+                        </div>
+                        <div class="col-1">
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input type="text" name="default_min_A"></div>
+                                </div>
+                            </div>
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input class="bg-warning" type="text" name="default_max_A"
+                                            value="1"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input type="text" name="default_min_B"></div>
+                                </div>
+                            </div>
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input class="bg-warning" type="text" name="default_max_B"
+                                            value="4"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input type="text" name="default_min_H" value="1"></div>
+                                </div>
+                            </div>
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input class="bg-warning" type="text" name="default_max_H"
+                                            value="3"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input type="text" name="default_min_C" value="1"></div>
+                                </div>
+                            </div>
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input class="bg-warning" type="text" name="default_max_C"
+                                            value="2"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input type="text" name="default_min_D"></div>
+                                </div>
+                            </div>
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input class="bg-warning" type="text" name="default_max_D"
+                                            value="4"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-group"><input type="text" name="default_cn_part_0" value="2"></div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-group"><input type="text" name="default_cn_part_1" value="2"></div>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters query-item">
+                        <div class="col-1">
+                            <div class="form-group"><input type="text" name="date"></div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-group"><input class="bg-warning" type="text" name="max_part_0"></div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-group"><input class="bg-warning" type="text" name="max_part_1"></div>
+                        </div>
+                        <div class="col-1">
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input type="text" name="min_A"></div>
+                                </div>
+                            </div>
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input class="bg-warning" type="text" name="max_A"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input type="text" name="min_B"></div>
+                                </div>
+                            </div>
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input class="bg-warning" type="text" name="max_B"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input type="text" name="min_H"></div>
+                                </div>
+                            </div>
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input class="bg-warning" type="text" name="max_H"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input type="text" name="min_C"></div>
+                                </div>
+                            </div>
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input class="bg-warning" type="text" name="max_C"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input type="text" name="min_D"></div>
+                                </div>
+                            </div>
+                            <div class="row no-gutters">
+                                <div class="col-12">
+                                    <div class="form-group"><input class="bg-warning" type="text" name="max_D"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-group"><input type="text" name="cn_part_0"></div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-group"><input type="text" name="cn_part_1"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row d-flex flex-row-reverse my-4">
+                    <div class="col-4 text-right"><a id="btn-add-item" class="btn btn-primary" title="Add"><i
+                                class="fas fa-plus text-light"></i></a></div>
+                </div>
+                <h3>Working conditions</h3>
+                <div class="row no-gutters text-center">
+                    <div class="col-5">item</div>
+                    <div class="col-2">jp</div>
+                    <div class="col-2">not jp</div>
+                </div>
+                <div class="query">
+                    <div class="row no-gutters">
+                        <div class="col-5">日本人・外国人の最多連続勤務日</div>
+                        <div class="col-2">
+                            <div class="form-group"><input class="bg-warning" type="text" name="consec_jp" value="3">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group"><input class="bg-warning" type="text" name="consec_fo" value="3">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row no-gutters">
+                        <div class="col-5">日本人・外国人の週間最長勤務時間</div>
+                        <div class="col-2">
+                            <div class="form-group"><input class="bg-warning" type="text" name="weekly_mins_jp"
+                                    value="1600"></div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group"><input class="bg-warning" type="text" name="weekly_mins_fo"
+                                    value="1600"></div>
+                        </div>
+                    </div>
+                    <div class="row no-gutters">
+                        <div class="col-5">日本人・外国人の週間最多勤務日数</div>
+                        <div class="col-2">
+                            <div class="form-group"><input class="bg-warning" type="text" name="weekly_days_jp"
+                                    value="5"></div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group"><input class="bg-warning" type="text" name="weekly_days_fo"
+                                    value="5"></div>
+                        </div>
+                    </div>
+                    <div class="row no-gutters">
+                        <div class="col-5">日本人・外国人の月間最長勤務時間</div>
+                        <div class="col-2">
+                            <div class="form-group"><input class="bg-warning" type="text" name="monthly_mins_jp"
+                                    value="12000"></div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group"><input class="bg-warning" type="text" name="monthly_mins_fo"
+                                    value="12000"></div>
+                        </div>
+                    </div>
+                    <div class="row no-gutters">
+                        <div class="col-5">日本人・外国人の月間最多勤務日数</div>
+                        <div class="col-2">
+                            <div class="form-group"><input class="bg-warning" type="text" name="monthly_days_jp"
+                                    value="20"></div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group"><input class="bg-warning" type="text" name="monthly_days_fo"
+                                    value="20"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row d-flex justify-content-center my-4">
+                    <div class="col-4 text-center">
+                        <button class="btn btn-primary" type="submit">START</button>
+                    </div>
+                </div>
+            </div>
         </form>
         <h3>メンバー表と希望表を予めアップロードしてください。</h3>
         <ul class="list-group list-group-flush my-4">
@@ -49,28 +345,20 @@
             <li class="list-group-item">例：2021年度1月分(2020-12-16~2021-01-15) => 202101</li>
         </ul>
         <ul class="list-group list-group-flush my-4">
-            <h4>config.php</h4>
-            <li class="list-group-item">カスタマイズしたconfig.phpファイルを受け付けます。</li>
-            <li class="list-group-item">与えられない場合、内蔵されたconfig.phpに従ってシフトを作成します。</li>
-            <li class="list-group-item">
-                <ul class="list-group my-2">
-                    <h5>人数</h5>
-                    <li class="list-group-item">特定日付のパートごとの定員</li>
-                    <li class="list-group-item">特定日付のシフトごとの最多人数</li>
-                    <li class="list-group-item">特定日付のシフトごとの最低限人数</li>
-                </ul>
-                <ul class="list-group my-2">
-                    <h5>言語</h5>
-                    <li class="list-group-item">特定日付のパートごとの必要中国語人数</li>
-                </ul>
-                <ul class="list-group my-2">
-                    <h5>勤務規制</h5>
-                    <li class="list-group-item">日本人・外国人の週間最長労働時間</li>
-                    <li class="list-group-item">日本人・外国人の週間最多労働日数</li>
-                    <li class="list-group-item">日本人・外国人の月間最長労働時間</li>
-                    <li class="list-group-item">日本人・外国人の月間最多労働日数</li>
-                </ul>
-            </li>
+            <h4>Shifts conditions</h4>
+            <li class="list-group-item">パートごとの定員</li>
+            <li class="list-group-item">シフトごとの最低限人数</li>
+            <li class="list-group-item">シフトごとの最多人数</li>
+            <li class="list-group-item">パートごとの必要中国語人数</li>
+        </ul>
+        <ul class="list-group list-group-flush my-4">
+            <h4>勤務規制</h4>
+            <li class="list-group-item">最多連続勤務日</li>
+            <li class="list-group-item">週間最長勤務時間<span class="text-danger">*</span></li>
+            <li class="list-group-item">週間最多勤務日数<span class="text-danger">**</span></li>
+            <li class="list-group-item">月間最長勤務時間</li>
+            <li class="list-group-item">月間最多勤務日数</li>
+            <p><span class="text-danger">*</span>任意の連続した7日間<br><span class="text-danger">**</span>月曜日〜日曜日</p>
         </ul>
         <footer class="bg-light fixed-bottom">
             <div class="row text-center py-1">
@@ -87,6 +375,7 @@
             </div>
         </footer>
     </div>
+    <script src="distribute_shifts.js"></script>
 </body>
 
 </html>
