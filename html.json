@@ -1,0 +1,157 @@
+{
+	// Place your snippets for html here. Each snippet is defined under a snippet name and has a prefix, body and 
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+	// same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	"html5-template": {
+		"scope": "html",
+		"prefix": "html5-template",
+		"body": [
+			"<!DOCTYPE html>",
+			"<html lang=\"en\">",
+			"<head>",
+			"<title></title>",
+			"<meta charset=\"utf-8\">",
+			"<script></script>",
+			"<style></style>",
+			"</head>",
+			"<body>",
+			"</body>",
+			"</html>"
+		],
+		"description": "HTML5 defalut template"
+	},
+	"bootstrap4-template": {
+		"scope": "html",
+		"prefix": "bootstrap4-template",
+		"body": [
+			"<!DOCTYPE html>",
+			"<html lang=\"en\">",
+			"<head>",
+			"<title></title>",
+			"<meta charset=\"utf-8\">",
+			"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">",
+			"<!-- Deactivate zoom in mobile device -->",
+			"<!-- <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no\"> -->",
+			"<!-- jQuery -->",
+			"<script src=\"https://code.jquery.com/jquery-3.4.1.slim.min.js\"",
+			"integrity=\"sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n\"",
+			"crossorigin=\"anonymous\"></script>",
+			"<!-- Popper.js -->",
+			"<script src=\"https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js\"",
+			"integrity=\"sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo\"",
+			"crossorigin=\"anonymous\"></script>",
+			"<!-- Bootstrap CSS -->",
+			"<link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css\"",
+			"integrity=\"sha384-SI27wrMjH3ZZ89r4o+fGIJtnzkAnFs3E4qz9DIYioCQ5l9Rd/7UAa8DHcaL8jkWt\" crossorigin=\"anonymous\">",
+			"<!-- Bootstrap JS -->",
+			"<script src=\"https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/js/bootstrap.min.js\"",
+			"integrity=\"sha384-3qaqj0lc6sV/qpzrc1N5DC6i1VRn/HyX4qdPaiEFbn54VjQBEU341pvjz7Dv3n6P\"",
+			"crossorigin=\"anonymous\"></script>",
+			"<style></style>",
+			"</head>",
+			"<body>",
+			"</body>",
+			"</html>"
+		],
+		"description": "Bootstrap v4.x template"
+	},
+	"bootstrap3-template": {
+		"scope": "html",
+		"prefix": "bootstrap3-template",
+		"body": [
+			"<!DOCTYPE html>",
+			"<html lang=\"en\">",
+			"<head>",
+			"<title></title>",
+			"<meta charset=\"utf-8\">",
+			"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">",
+			"<!-- Deactivate zoom in mobile device -->",
+			"<!-- <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no\"> -->",
+			"<!-- Latest compiled and minified CSS -->",
+			"<link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css\" integrity=\"sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu\" crossorigin=\"anonymous\">",
+			"<!-- Optional theme -->",
+			"<link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css\" integrity=\"sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ\" crossorigin=\"anonymous\">",
+			"<!-- Latest compiled and minified JavaScript -->",
+			"<script src=\"https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js\" integrity=\"sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd\" crossorigin=\"anonymous\"></script>",
+			"<style></style>",
+			"</head>",
+			"<body>",
+			"</body>",
+			"</html>"
+		],
+		"description": "Bootstrap v3.4.1 template"
+	},
+	"jQuery3.x template": {
+		"scope": "html",
+		"prefix": "jQuery 3.x template",
+		"body": [
+			"<!DOCTYPE html>",
+			"<html lang=\"en\">",
+			"<head>",
+			"<title></title>",
+			"<meta charset=\"utf-8\">",
+			"<!-- jQuery CDN -->",
+			"<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js\"></script>",
+			"</head>",
+			"<body>",
+			"</body>",
+			"</html>"
+		],
+		"description": "jQuery 3.x template"
+	},
+	"jQuery3.x-CDN": {
+		"scope": "html",
+		"prefix": "jQuery 3.x ",
+		"body": [
+			"<!-- jQuery CDN -->",
+			"<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js\"></script>"
+		],
+		"description": "jQuery 3.x CDN via Google"
+	},
+	"list-group-bs4": {
+		"scope": "html",
+		"prefix": "list-group-bs4",
+		"body": [
+			"<ul class=\"list-group\">",
+			"<li class=\"list-group-item\"></li>",
+			"<li class=\"list-group-item\"></li>",
+			"</ul>"
+		],
+		"description": "Basic list-group structure w/ Bootstrap v4.x"
+	},
+	"table-bs4": {
+		"scope": "html",
+		"prefix": "table-bs4",
+		"body": [
+			"<table class=\"table\">",
+			"<thead>",
+			"<tr>",
+			"<th>th1</th>",
+			"<th>th2</th>",
+			"</tr>",
+			"</thead>",
+			"<tbody>",
+			"<tr>",
+			"<td>td1-1</td>",
+			"<td>td1-2</td>",
+			"</tr>",
+			"<tr>",
+			"<td>td2-1</td>",
+			"<td>td2-2</td>",
+			"</tr>",
+			"</tbody>",
+			"</table>"
+		],
+		"description": "Basic table structure w/ Bootstrap v4.x"
+	}
+}
