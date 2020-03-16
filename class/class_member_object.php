@@ -18,6 +18,7 @@ class MemberObject
         $this->arrWorkedDatesByWeek = [];
         $this->workedMinsTotal = 0;
         $this->workedMinsByWeek = [];
+        $this->arrWorkedMinsByDate = [];
         $this->deployRatio = 0;
     }
 
@@ -32,13 +33,27 @@ class MemberObject
         $this->updateDeployRatio();
     }
 
-    public function updateProps($shiftObjectDeployed)
+    public function updateProps($shiftObjectDeployed, $lastDayOfMonth)
     {
         $this->numDaysDeployed++;
         $this->updateDeployRatio();
 
-        $this->addWorkedMins($shiftObjectDeployed);
-        $this->pushArrWorkedDates($shiftObjectDeployed);
+        $this->pushArrWorkdMinsByDate($shiftObjectDeployed, $lastDayOfMonth);
+        $this->workedMinsTotal += $shiftObjectDeployed->workingMins;
+        echo "Worked mins total: $this->workedMinsTotal<br>";
+        // $this->addWorkedMins($shiftObjectDeployed);
+        // $this->pushArrWorkedDates($shiftObjectDeployed);
+    }
+
+    private function pushArrWorkdMinsByDate($shiftObjectDeployed, $lastDayOfMonth)
+    {
+        $currentDateTime = new DateTime($shiftObjectDeployed->date_shift);
+        $key = $currentDateTime->format('j');
+        $key = ($key > 15) ? $key : $key + $lastDayOfMonth; //array_keys($this->arrWorkedMinsByDate) = [16, ... , 28, 29, 30, ... ,44]
+        $this->arrWorkedMinsByDate[$key] = $shiftObjectDeployed->workingMins;
+        echo "Now user $this->id_user 's arrWorkedMinsByDate:<br>";
+        var_dump($this->arrWorkedMinsByDate);
+        echo '<br>';
     }
 
     private function addWorkedMins($shiftObjectDeployed)
@@ -59,7 +74,7 @@ class MemberObject
         $currentDateTime = new DateTime($shiftObjectDeployed->date_shift);
         // var_dump($currentDateTime->format('W'));
         // if (!isset($this->workedMinsByWeek[$currentDateTime->format('W')])) {
-            // $this->workedMinsByWeek[$currentDateTime->format('W')] = [];
+        // $this->workedMinsByWeek[$currentDateTime->format('W')] = [];
         // }
         $this->arrWorkedDatesByWeek[$currentDateTime->format('W')][] = $shiftObjectDeployed->date_shift;
     }

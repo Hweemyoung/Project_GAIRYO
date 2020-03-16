@@ -146,6 +146,12 @@ class ShiftsDistributor extends DBHandler
             $this->addArrIdUserApp($date);
         }
 
+        // Set last day of month
+        $this->lastDayOfMonth = end($this->arrDateRange);
+        foreach($this->arrDateShiftsDeployerByDate as $dateShiftsDeployer){
+            $dateShiftsDeployer->setLastDateOfMonth($this->lastDayOfMonth);
+        }
+
         // echo 'keys of arrShiftStatusByShift<br>';
         // var_dump(array_keys($this->arrDateShiftsDeployerByDate[16]->arrShiftStatusByShift));
         // echo '<br>';

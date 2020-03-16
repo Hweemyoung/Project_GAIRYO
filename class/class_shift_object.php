@@ -13,7 +13,7 @@ class ShiftObject
         $this->setShiftPart($config_handler->arrayShiftsByPart);
         $this->setMemberObj($master_handler->arrayMemberObjectsByIdUser);
         // var_dump($this);
-        $this->setW();
+        $this->setDateInfo();
         $this->workingMins = $config_handler->arrayShiftTimes[$this->shift]['workingMins'];
     }
     public function setMemberObj($arrayMemberObjectsByIdUser)
@@ -34,9 +34,10 @@ class ShiftObject
         $this->callable = $callable;
     }
 
-    public function setW(){
+    public function setDateInfo(){
         $dateTime = new DateTime($this->date_shift);
         $this->W = $dateTime->format('W');
+        $this->j = $dateTime->format('j');
     }
 
     public function set_Ym()
