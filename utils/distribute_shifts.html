@@ -62,47 +62,47 @@
                                 value="YYYYMM"></div>
                     </div>
                 </div>
-                <h3>Shifts conditions</h3>
+                <h3>人数設定</h3>
                 <div id="query-1" class="query">
                     <div class="row no-gutters text-center">
-                        <div class="col-1 py-2">Date</div>
-                        <div class="col-1 py-2">Max-0</div>
-                        <div class="col-1 py-2">Max-1</div>
+                        <div class="col-1 py-2">日付</div>
+                        <div class="col-1 py-2">定員(午前)</div>
+                        <div class="col-1 py-2">定員(午後)</div>
                         <div class="col-1">
                             <div class="row no-gutters">
-                                <div class="col-12">A-min</div>
-                                <div class="col-12">A-max</div>
+                                <div class="col-12">A最低数</div>
+                                <div class="col-12">A最大数</div>
                             </div>
                         </div>
                         <div class="col-1">
                             <div class="row no-gutters">
-                                <div class="col-12">B-min</div>
-                                <div class="col-12">B-max</div>
+                                <div class="col-12">B最低数</div>
+                                <div class="col-12">B最大数</div>
                             </div>
                         </div>
                         <div class="col-1">
                             <div class="row no-gutters">
-                                <div class="col-12">H-min</div>
-                                <div class="col-12">H-max</div>
+                                <div class="col-12">H最低数</div>
+                                <div class="col-12">H最大数</div>
                             </div>
                         </div>
                         <div class="col-1">
                             <div class="row no-gutters">
-                                <div class="col-12">C-min</div>
-                                <div class="col-12">C-max</div>
+                                <div class="col-12">C最低数</div>
+                                <div class="col-12">C最大数</div>
                             </div>
                         </div>
                         <div class="col-1">
                             <div class="row no-gutters">
-                                <div class="col-12">D-min</div>
-                                <div class="col-12">D-max</div>
+                                <div class="col-12">D最低数</div>
+                                <div class="col-12">D最大数</div>
                             </div>
                         </div>
-                        <div class="col-1 py-2">CN-0</div>
-                        <div class="col-1 py-2">CN-1</div>
+                        <div class="col-1 py-2">中国語(午前)</div>
+                        <div class="col-1 py-2">中国語(午後)</div>
                     </div>
                     <div class="row no-gutters">
-                        <div class="col-1 py-2">Default</div>
+                        <div class="col-1 py-2">基本値</div>
                         <div class="col-1">
                             <div class="form-group"><input class="bg-warning" type="text" name="default_max_part_0"
                                     value="5"></div>
@@ -266,15 +266,15 @@
                     <div class="col-4 text-right"><a id="btn-add-item" class="btn btn-primary" title="Add"><i
                                 class="fas fa-plus text-light"></i></a></div>
                 </div>
-                <h3>Working conditions</h3>
+                <h3>勤務規制</h3>
                 <div class="row no-gutters text-center">
-                    <div class="col-5">item</div>
-                    <div class="col-2">jp</div>
-                    <div class="col-2">not jp</div>
+                    <div class="col-5">項目</div>
+                    <div class="col-2">日本人</div>
+                    <div class="col-2">外国籍</div>
                 </div>
                 <div class="query">
                     <div class="row no-gutters">
-                        <div class="col-5">日本人・外国人の最多連続勤務日</div>
+                        <div class="col-5 text-center">最多連続勤務日</div>
                         <div class="col-2">
                             <div class="form-group"><input class="bg-warning" type="text" name="consec_jp" value="3">
                             </div>
@@ -285,7 +285,7 @@
                         </div>
                     </div>
                     <div class="row no-gutters">
-                        <div class="col-5">日本人・外国人の週間最長勤務時間</div>
+                        <div class="col-5 text-center">週間最長勤務時間(分)</div>
                         <div class="col-2">
                             <div class="form-group"><input class="bg-warning" type="text" name="weekly_mins_jp"
                                     value="1600"></div>
@@ -296,7 +296,7 @@
                         </div>
                     </div>
                     <div class="row no-gutters">
-                        <div class="col-5">日本人・外国人の週間最多勤務日数</div>
+                        <div class="col-5 text-center">週間最多勤務日数</div>
                         <div class="col-2">
                             <div class="form-group"><input class="bg-warning" type="text" name="weekly_days_jp"
                                     value="5"></div>
@@ -307,7 +307,7 @@
                         </div>
                     </div>
                     <div class="row no-gutters">
-                        <div class="col-5">日本人・外国人の月間最長勤務時間</div>
+                        <div class="col-5 text-center">月間最長勤務時間(分)</div>
                         <div class="col-2">
                             <div class="form-group"><input class="bg-warning" type="text" name="monthly_mins_jp"
                                     value="12000"></div>
@@ -318,7 +318,7 @@
                         </div>
                     </div>
                     <div class="row no-gutters">
-                        <div class="col-5">日本人・外国人の月間最多勤務日数</div>
+                        <div class="col-5 text-center">月間最多勤務日数</div>
                         <div class="col-2">
                             <div class="form-group"><input class="bg-warning" type="text" name="monthly_days_jp"
                                     value="20"></div>
@@ -345,7 +345,7 @@
             <li class="list-group-item">例：2021年度1月分(2020-12-16~2021-01-15) => 202101</li>
         </ul>
         <ul class="list-group list-group-flush my-4">
-            <h4>Shifts conditions</h4>
+            <h4>人数設定</h4>
             <li class="list-group-item">パートごとの定員</li>
             <li class="list-group-item">シフトごとの最低限人数</li>
             <li class="list-group-item">シフトごとの最多人数</li>
