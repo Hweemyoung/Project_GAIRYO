@@ -1,4 +1,7 @@
 <?php
+
+use function utils\customVarDump;
+
 $homedir = '/home/vol15_8/epizy.com/epiz_24956964/htdocs';
 require_once "$homedir/class/class_shifts_distributor.php";
 require_once "$homedir/class/class_shift_table_generator.php";
@@ -6,6 +9,8 @@ require_once "$homedir/check_session_shift_dist.php";
 
 function getIntValOfPost(string $key)
 {
+    var_dump($_POST[$key]);
+    echo "<br>";
     if ($_POST[$key] === "0") {
         $val = 0;
     } else {
@@ -26,14 +31,7 @@ if (intval($_POST['m']) === 0 || strlen($_POST['m']) !== 6) {
     exit;
 }
 
-if ($_FILES['config']['size'] == 0) {
-    require_once "$homedir/config.php";
-} else {
-    // echo 'here';
-    $config_file = $_FILES['config']['tmp_name'];
-    unset($config_handler);
-    require_once "$config_file";
-}
+require_once "$homedir/config.php";
 $config_handler->m = $_POST['m'];
 $arrShifts = ["A", "B", "H", "C", "D"];
 
